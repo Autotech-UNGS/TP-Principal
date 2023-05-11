@@ -1,20 +1,29 @@
-from datetime import date, time, datetime
+#import requests
+from django.http import HttpResponse
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from administracion.models import Turno_taller
+from administracion.serializers import TurnoTallerSerializer
+from datetime import date, time
 
-def asignar_tecnico(id_tecnico:int, id_turno: int):
-    tecnico = obtener_tecnico(id_tecnico)
+@api_view(["POST"])
+def asignar_tecnico(request, id_tecnico:int, id_turno: int):
+    
     turno = obtener_turno(id_turno)
     
     if not turno_valido(turno):
-        raise ValueError("El turno no paso la prueba de papeles aun")
-    if not coinciden_los_talleres(tecnico, turno):
-        raise ValueError("El tecnico no trabaja en el taller de ese turno")
+        return HttpResponse("error: administracion no ha verificado que la documentacion esta en orden.", status=400)
     if not esta_disponible(id_tecnico):
-        raise ValueError("El tecnico no tiene disponible ese horario")
+        return HttpResponse("error: el tecnico no tiene disponible ese horario", status=400)
     
-    turno.tecnico_id = id_tecnico   # agregamos el id del tecnico al turno
-    asignar_turno(tecnico, turno.id_turno) # esto es un POST a la api de tecnicos, creo
+    turno.tecnico_id = id_tecnico           # agregamos el id del tecnico al turno
+    turno.save()
     turno.estado = "en_proceso"
+    turno.save()
+    
+    serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el tecnico recien asignado
+    return Response(serializer.data)
+    
     
 def obtener_turno(id_turno) -> Turno_taller:
     return Turno_taller.objects.get(id_turno=id_turno) # debería ser uno sólo      
@@ -28,9 +37,10 @@ def turno_valido(turno: Turno_taller):
         es_valido = False
     return es_valido
   
- #TODO 
+"""
 def coinciden_los_talleres(tecnico, turno:Turno_taller):
-    print("TODO")
+    print("A desarrollar")
+"""
     
 def esta_disponible(id_tecnico: int, dia:date, hora_inicio:time, hora_fin:time):
     turnos_del_tecnico = obtener_turnos_del_tecnico(id_tecnico)
@@ -51,14 +61,26 @@ def hay_superposicion(hora_inicio1: time, hora_fin1: time, hora_inicio2: time, h
     caso3 = hora_inicio1 >= hora_fin2 # el 1 empieza cuando el 2 termina
     caso4 = hora_fin1 <= hora_inicio2 # el 1 termina cuando el 2 empieza
     return caso1 or caso2 or caso3 or caso4
-    
-#TODO    
-def obtener_tecnico(id_tecnico: int):
-    print("TODO")
-    
-#TODO    
-def asignar_turno(tecnico, id_turno: int):
-    print("TODO")
 
 def obtener_turnos_del_tecnico(id_tecnico: int):
     return Turno_taller.objects.filter(id_tecnico = id_tecnico)
+
+"""
+def obtener_tecnico(id_tecnico: int):
+    url = "https://api-rest-pp1.onrender.com/api/usuarios/"
+    usuarios_data = requests.get(url)
+
+    if usuarios_data.status_code != 200:
+        raise requests.HTTPError(f"Error: {usuarios_data.status_code}")
+
+    usuarios_data = usuarios_data.json()
+    tecnico = [{
+        'id_empleado': tecnico['id_empleado'],
+        'nombre_completo': tecnico['nombre_completo'], 
+        'dni': tecnico['dni'], 
+        'categoria': tecnico['categoria'], 
+        'branch': tecnico['branch']
+        } for tecnico in usuarios_data if tecnico['tipo'] == "Tecnico" and tecnico['id_empleado'] == id_tecnico]   
+   
+    return tecnico
+"""
