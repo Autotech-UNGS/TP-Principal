@@ -15,7 +15,7 @@ def lista_tecnicos(request):
     """Devuelve un listado de todos los técnicos, con su ID, nombre completo y categoría.
     """
     sucursal_supervisor = request.GET.get('branch')
-    if sucursal_supervisor[0] != 'S':
+    if not sucursal_es_valida(sucursal_supervisor):
         return HttpResponse("error: el numero de sucursal no es valido", status=400)
     
     tecnicos = tecnicos_todos(sucursal_supervisor)
@@ -27,7 +27,7 @@ def detalle_trabajos_tecnico(request, id_tecnico):
     """Devuelve los detalles de los trabajos realizados por un tecnico particular.
     """
     sucursal_supervisor = request.GET.get('branch')
-    if sucursal_supervisor[0] != 'S':
+    if not sucursal_es_valida(sucursal_supervisor):
         return HttpResponse("error: el numero de sucursal no es valido", status=400)
 
     id_taller_sucursal = "T" + sucursal_supervisor[-3:]
@@ -69,7 +69,7 @@ def buscar_tecnicos(request):
     dni = request.GET.get('dni')
     nombre = request.GET.get('nombre_completo')
 
-    if sucursal_supervisor[0] != 'S':
+    if not sucursal_es_valida(sucursal_supervisor):
         return HttpResponse("error: el numero de sucursal no es valido", status=400)
 
     if not categoria_es_valida(categoria=categoria):
@@ -91,21 +91,19 @@ def buscar_tecnicos(request):
 def obtener_tecnicos(sucursal_supervisor, categoria=None, dni=None, nombre=None):
     """Retorna una lista de diccionarios que contienen información de los técnicos que cumplen con los criterios de búsqueda especificados.
     """
-    if categoria is None and dni is None and nombre is None:
-        tecnicos = tecnicos_todos(sucursal_supervisor)
-    else:
-        tecnicos = tecnicos_todos(sucursal_supervisor)
-        if categoria is not None:
-            tecnicos = [
-                tecnico for tecnico in tecnicos if tecnico['categoria'] == categoria]
-        if dni is not None:
-            tecnicos = [
-                tecnico for tecnico in tecnicos if tecnico['dni'] == dni]
-        if nombre is not None:
-            tecnicos = [tecnico for tecnico in tecnicos if nombre.lower() in tecnico['nombre_completo'].lower()]
+    tecnicos = tecnicos_todos(sucursal_supervisor)
 
-        if not tecnicos:
-            return []
+    if categoria is not None:
+        tecnicos = [tecnico for tecnico in tecnicos if tecnico['categoria'] == categoria]
+    
+    if dni is not None:
+        tecnicos = [tecnico for tecnico in tecnicos if tecnico['dni'] == dni]
+    
+    if nombre is not None:
+        tecnicos = [tecnico for tecnico in tecnicos if nombre.lower() in tecnico['nombre_completo'].lower()]
+
+    if not tecnicos:
+        return []
     return tecnicos
 
 
@@ -128,6 +126,18 @@ def tecnicos_todos(sucursal_supervisor):
         } for tecnico in usuarios_data if tecnico['branch'].endswith(sucursal_supervisor[-3:]) and tecnico['tipo'] == "Tecnico"]   
    
     return tecnicos
+
+
+def sucursal_es_valida(sucursal_supervisor):
+    if sucursal_supervisor is None:
+        return False
+    if len(sucursal_supervisor) != 4:
+        return False
+    if sucursal_supervisor[0] != 'S':
+        return False
+    if not sucursal_supervisor[1:].isdigit():
+        return False
+    return True
 
 
 def categoria_es_valida(categoria=None):
