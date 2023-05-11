@@ -1,35 +1,9 @@
 #import requests
-from django.http import HttpResponse
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from administracion.models import Turno_taller
-from administracion.serializers import TurnoTallerSerializer
-from datetime import date, time
-
-@api_view(["POST"])
-def asignar_tecnico(request, id_tecnico:int, id_turno: int):
-    
-    turno = obtener_turno(id_turno)
-    
-    if not turno_valido(turno):
-        return HttpResponse("error: administracion no ha verificado que la documentacion esta en orden.", status=400)
-    if not esta_disponible(id_tecnico):
-        return HttpResponse("error: el tecnico no tiene disponible ese horario", status=400)
-    
-    turno.tecnico_id = id_tecnico           # agregamos el id del tecnico al turno
-    turno.save()
-    turno.estado = "en_proceso"
-    turno.save()
-    
-    serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el tecnico recien asignado
-    return Response(serializer.data)
-    
-    
-def obtener_turno(id_turno) -> Turno_taller:
-    return Turno_taller.objects.get(id_turno=id_turno) # debería ser uno sólo      
+from datetime import date, time      
     
 def turno_valido(turno: Turno_taller):
-    if turno.tipo != "EVALUACION":
+    if turno.tipo != "Evaluacion":
         es_valido = True
     elif turno.papeles_en_regla == True:
         es_valido = True
