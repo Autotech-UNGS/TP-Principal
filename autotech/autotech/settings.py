@@ -31,7 +31,13 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+""" ALLOWED_HOSTS = ['*'] """
+
+ALLOWED_HOSTS = []
+
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:    
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 # Application definition
 
@@ -94,10 +100,21 @@ WSGI_APPLICATION = 'autotech.wsgi.application'
 } """
 
 
-DATABASES = {
+""" DATABASES = {
 
     'default': dj_database_url.config('postgres://insomniadb_itl0_user:i6J4uJVDJH1po9OQ84VWOirZWSag60B5@dpg-chakmuvdvk4ktc5c0a0g-a.ohio-postgres.render.com/insomniadb_itl0')
 
+} """
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'insomniadb_itl0',
+        'USER': 'insomniadb_itl0_user',
+        'PASSWORD': 'i6J4uJVDJH1po9OQ84VWOirZWSag60B5',
+        'HOST': 'dpg-chakmuvdvk4ktc5c0a0g-a.ohio-postgres.render.com',
+        'PORT': '5432',
+    }
 }
 
 # Password validation
