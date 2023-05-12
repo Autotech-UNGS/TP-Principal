@@ -47,6 +47,8 @@ def crearTurno(request):
     horario_inicio = request.data.get("hora_inicio")
     horario_fin = request.data.get("hora_fin")
     taller_id = request.data.get("taller_id")
+    tipo = request.data.get("tipo")
+    km = request.data.get("frecuencia_km")
 
     horario_inicio_time = datetime.strptime(horario_inicio, '%H:%M:%S').time()
     horario_fin_time = datetime.strptime(horario_fin, '%H:%M:%S').time()
@@ -55,12 +57,16 @@ def crearTurno(request):
     
     """if not tiempos_coherentes(horario_inicio_time, horario_fin_time, dia_inicio_date, dia_fin_date):
         return HttpResponse("error: un turno debe terminar despues de comenzar", status=400)"""
+    if tipo == "Service" and tipo == None:
+        return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
     if not horarios_exactos(horario_inicio_time, horario_fin_time):
         return HttpResponse("error: los horarios de comienzo y fin de un turno deben ser horas exactas", status=400)
     if not horarios_dentro_de_rango(dia_inicio_date, horario_inicio_time, horario_fin_time):
         return HttpResponse("error: los horarios superan el limite de la jornada laboral", status=400)
     if not dia_valido(dia_inicio_date):
         return HttpResponse("error: no se puede sacar un turno para una fecha que ya paso.", status=400)
+    if not dia_hora_coherentes(dia_inicio_date, horario_inicio_time, dia_fin_date , horario_fin_time):
+        return HttpResponse("error: un turno no puede terminar antes de que empiece", status=400)
     if not esta_disponible(dia_inicio_date, horario_inicio_time, horario_fin_time, taller_id):
         return HttpResponse("error: ese dia no esta disponible en ese horario", status=400)
 
@@ -92,8 +98,17 @@ def horarios_dentro_de_rango(dia:date, horario_inicio:time, horario_fin:time):
         horario_fin_valido = horario_fin.hour >= 9 and horario_fin.hour <= 17 # los turnos pueden terminar de 9 a 17
     return horario_inicio_valido and horario_fin_valido
     
+def dia_hora_coherentes(dia_inicio: date, horario_inicio: time, dia_fin: date , horario_fin: time):
+    if dia_inicio < dia_fin:
+        es_valido = True
+    elif dia_inicio == dia_fin:
+        es_valido = horario_inicio < horario_fin
+    else:
+        es_valido = False
+    return es_valido
+    
 def dia_valido(dia: date):
-    return dia >= date.today()
+    return dia > date.today()
 
 """
 def tiempos_coherentes(horario_inicio: time, horario_fin: time, dia_inicio: date, dia_fin: date):
