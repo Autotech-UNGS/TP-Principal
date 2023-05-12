@@ -5,20 +5,14 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import turno from '../turnos/turno'
-import { PatternTwoTone } from '@mui/icons-material';
-
-
-//Poner en un json general, juntar con los otros datos, se obtiene id del taller
-const tallerID =
-    [
-        {
-            id: '',
-        }
-    ]
+import { useState, useEffect } from "react"
 
 const talleres =
     [
         {
+            San_Miguel: 'T001',
+            Malvinas_Argentinas: 'T002',
+            Belgrano: 'T003',
             T001: 'San Miguel',
             T002: 'Malvinas Argentinas',
             T003: 'Belgrano',
@@ -33,9 +27,13 @@ export default function TallerSelect() {
                 {talleres.map((data, key) => {
                     return (
                         <Taller key={key}
+                            San_Miguel={data.San_Miguel}
+                            Malvinas_Argentinas={data.Malvinas_Argentinas}
+                            Belgrano={data.Belgrano}
                             T001={data.T001}
                             T002={data.T002}
                             T003={data.T003}
+
                         />
                     );
                 })}
@@ -44,20 +42,25 @@ export default function TallerSelect() {
     );
 }
 
-const Taller = ({ T001, T002, T003 }) => {
+const Taller = ({ San_Miguel, Malvinas_Argentinas, Belgrano, T001, T002, T003 }) => {
 
-    const [taller, setTaller] = React.useState('');
+    /////////////////////////////////////////////////////////////// Nuevo
 
-    const handleChange = (event) => {
-        setTaller(event.target.value);
-        tallerID.id = taller;
-        console.log(tallerID.id);
-        turno.turno_id = taller;
-        console.log("Id del taller, json:", turno.turno_id)
-        console.log("Datos de otro lado, tipo de turno:", turno.tipo)
-        console.log("Datos de otro lado, kilometraje:", turno.kilometraje)
-        console.log("Datos de otro lado, patente:", turno.patente)
+    const [t, setT] = useState({
+        taller: '',
+    });
+
+    const guardarCambio = (event) => {
+        const { name, value } = event.target;
+        setT((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
+        console.log(value)
+        turno.taller_id = value;
+        console.log("Id del taller, json:", turno.taller_id)
     };
+    ////////////////////////////////////////////////////////////////////////////////
 
     return (
         <FormControl fullWidth>
@@ -65,13 +68,14 @@ const Taller = ({ T001, T002, T003 }) => {
             <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={taller}
-                label="Talleres"
-                onChange={handleChange}
+                type='text'
+                name="taller"
+                value={t.taller}
+                onChange={guardarCambio}
             >
-                <MenuItem value={10}>{T001}</MenuItem>
-                <MenuItem value={20}>{T002}</MenuItem>
-                <MenuItem value={30}>{T003}</MenuItem>
+                <MenuItem value={San_Miguel}>{T001}</MenuItem>
+                <MenuItem value={Malvinas_Argentinas}>{T002}</MenuItem>
+
             </Select>
         </FormControl>
     )

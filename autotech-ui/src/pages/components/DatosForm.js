@@ -11,30 +11,10 @@ import FormLabel from '@mui/material/FormLabel';
 import Box from '@mui/material/Box';
 import { Input } from '@mui/material';
 import turno from '../turnos/turno'
-import { number } from 'yup';
 
 //Acá obtengo tipo de turno, kilometraje y patente
 
-//poner en un json general y juntar con los otros datos
-const inputCliente = {
-    patente: '',
-    tipoDeTurno: '',
-    kilometraje: '',
-};
-
 function ControlledRadioButtonsGroup() {
-    //Tipo de turno
-    const [value, setValue] = React.useState('evaluacion');
-
-    //para guardar el input del cliente
-    const guardarTipoDeTurno = (event) => {
-        setValue(event.target.value);
-        inputCliente.tipoDeTurno = value;
-        console.log(inputCliente.tipoDeTurno)
-        turno.tipo = value;
-        console.log('Tipo de turno cargado en el json:', turno.tipo)
-    };
-
     //Para mostrar input de Kilometraje o no mostrarlo, según tipo de turno
     const [kmInput, setKmInput] = React.useState('');
 
@@ -42,19 +22,29 @@ function ControlledRadioButtonsGroup() {
         setKmInput(event.target.value);
     };
 
+    //Tipo de turno
+
+    const [tipo, setTipo] = useState({
+        tipoTurno: '',
+    });
+    const guardarCambio = (event) => {
+        const { name, value } = event.target;
+        setTipo((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
+        turno.tipo = value;
+        console.log('Tipo de turno cargado en el json:', turno.tipo)
+    };
+
     return (
         <FormControl>
             <FormLabel id="demo-controlled-radio-buttons-group">Tipo de turno</FormLabel>
             <RadioGroup
                 aria-labelledby="demo-controlled-radio-buttons-group"
-                name="controlled-radio-buttons-group"
-                value={value}
-                onChange={guardarTipoDeTurno}
-            /*onChange={(newValue) => {
-                setValue(newValue);
-                turno.tipo = newValue;
-                console.log('Tipo de turno cargado en el json:', turno.tipo.value)
-            }}*/
+                name="tipo"
+                value={tipo.tipoTurno}
+                onChange={guardarCambio}
             >
                 <FormControlLabel
                     value="evaluacion"
@@ -80,49 +70,31 @@ function ControlledRadioButtonsGroup() {
 
 //Esto se muestra solo en caso de que ponga service
 function Kilometraje() {
-    const [km, setKm] = React.useState('');
 
-    const handleChange = (event) => {
-        setKm(event.target.value);
-        inputCliente.kilometraje = km;
-        console.log(inputCliente.kilometraje);
-        turno.kilometraje = km;
-        console.log('Kilometraje cargado en el json:', turno.kilometraje)
+    const [km, setKm] = useState({
+        km1: '',
+    });
+
+    const guardarCambio = (event) => {
+        const { name, value } = event.target;
+        setKm((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
+        turno.frecuencia_km = value;
+        console.log('frecuencia_km cargado en el json:', turno.frecuencia_km)
     };
 
-    function guardar() {
-        turno.kilometraje = km;
-        console.log('Kilometraje cargado en el json:', turno.kilometraje)
-    }
-    /*  
-      const [state, setState] = React.useState('Hello World');
-    onChange={(event) => {
-          setState(event.target.value);
-        }}
-      <p>
-        <strong>Current value:</strong>
-        {state}*/
     return (
         <Box sx={{ minWidth: 120 }}>
             <FormControl fullWidth>
                 <FormLabel id="demo-radio-buttons-group-label">Kilometraje</FormLabel>
                 <Input
                     type='number'
-                    name="kilometraje"
-                    /*onBlur={handleChange}
-                    value={km}
-                    /*onBlur={(newValue) => {
-                        setKm(newValue);
-                        turno.kilometraje = newValue;
-                        console.log('Kilometraje cargado en el json:', turno.kilometraje)
-                    }}*/
-                    onChange={(event) => {
-                        setKm(event.target.value);
-                        guardar();
-                    }}
-
-
-                    placeholder="Ejemplo: 4724 km"
+                    name="km1"
+                    value={km.km1}
+                    onChange={guardarCambio}
+                    placeholder="Solo múltiplos de 5000, por favor."
                     className="form-control form-control-lg mb-2">Kilometraje</Input>
             </FormControl>
         </Box>
@@ -133,10 +105,13 @@ export default function DatosForm() {
     const [patente, setPatente] = React.useState('');
 
     const handleChange = (event) => {
-        setPatente(event.target.value);
-        inputCliente.patente = patente;
-        console.log(inputCliente.patente);
-        turno.patente = patente;
+
+        const { name, value } = event.target;
+        setPatente((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
+        turno.patente = value;
         console.log('Patente cargada en el json:', turno.patente)
     };
     return (
@@ -153,7 +128,7 @@ export default function DatosForm() {
                         label="Patente"
                         fullWidth
                         variant="outlined"
-                        onMouseOut={handleChange}
+                        onChange={handleChange}
                     />
                 </Grid>
                 <Grid item xs={12}>
