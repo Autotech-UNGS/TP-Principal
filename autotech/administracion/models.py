@@ -2,11 +2,6 @@ from django.db import models
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
 
-id_taller_regex = RegexValidator(
-        '^T\d{3}$',
-        message="El ID del taller debe tener el formato T001",
-        code="invalid_id_taller")
-
 nombre_taller_regex = RegexValidator(
         regex='^[a-zA-Z0-9]+$',
         message="El nombre de taller debe tener solo numeros y letras",
@@ -17,11 +12,6 @@ telefono_regex = RegexValidator(
     message="El número de teléfono debe tener el formato +1234567890 y contener de 9 a 15 dígitos.",
     code="invalid_phone_number")
 
-id_sucursal_regex = RegexValidator(
-        '^S\d{3}$',
-        message="El ID de sucursal debe tener el formato S001",
-        code="invalid_id_sucursal")
-
 patente_regex = RegexValidator(
     '^(([A-Z]{2}\d{3}[A-Z]{2})|([A-Z]{3}\d{3}))$',
     message="La patente ingresada no es valida. Debe ser en mayusculas con el formato 00AAA00 o ",
@@ -29,7 +19,7 @@ patente_regex = RegexValidator(
 # ----------------------------------------------------------------------------------------------------#
 
 class Taller(models.Model):
-    id_taller = models.CharField(max_length=4, primary_key=True, validators=[id_taller_regex])
+    id_taller = models.CharField(max_length=4, primary_key=True)
     nombre = models.CharField(max_length=50, validators=[nombre_taller_regex])
     id_direccion = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(999)])
     mail = models.EmailField()
