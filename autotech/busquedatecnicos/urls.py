@@ -3,15 +3,15 @@ from django.urls import path
 
 urlpatterns = [
     # Ruta para obtener todos los Tecnicos
-    path('tecnicos/', views.lista_tecnicos, name='listaTecnicos'),
+    path('tecnicos/', views.lista_tecnicos, name='lista_tecnicos'),
     
     # Ruta para obtener un Tecnico específico por ID
-    path('tecnico/<int:id_tecnico>/', views.detalle_trabajos_tecnico, name='detalleTecnico'),
+    path('tecnico/<int:id_tecnico>/', views.detalle_trabajos_tecnico, name='detalle_trabajos_tecnico'),
 
     # Ruta para obtener las categorías
     path('categorias/', views.categorias, name='categorias'), 
 
     # Definimos las posibles combinaciones de busquedas a realizar.
-    path('filtro/', views.buscar_tecnicos, name='filtros')
+    path('filtro/', views.filtrar_tecnicos, name='filtrar_tecnicos')
 
 ]

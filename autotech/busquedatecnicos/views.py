@@ -15,8 +15,9 @@ def lista_tecnicos(request):
     """Devuelve un listado de todos los técnicos, con su ID, nombre completo y categoría.
     """
     sucursal_supervisor = request.GET.get('branch')
+
     if not sucursal_es_valida(sucursal_supervisor):
-        return HttpResponse("error: el numero de sucursal no es valido", status=400)
+        return HttpResponse({'message' : 'error: el numero de sucursal no es valido'}, status=400)
     
     tecnicos = tecnicos_todos(sucursal_supervisor)
     return JsonResponse({'tecnicos': tecnicos})
@@ -28,7 +29,7 @@ def detalle_trabajos_tecnico(request, id_tecnico):
     """
     sucursal_supervisor = request.GET.get('branch')
     if not sucursal_es_valida(sucursal_supervisor):
-        return HttpResponse("error: el numero de sucursal no es valido", status=400)
+        return HttpResponse({'message' : 'error: el numero de sucursal no es valido'}, status=400)
 
     id_taller_sucursal = "T" + sucursal_supervisor[-3:]
     turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, taller_id=id_taller_sucursal).order_by('estado')
@@ -57,7 +58,7 @@ def categorias(request):
 
 
 @api_view(['GET'])
-def buscar_tecnicos(request):
+def filtrar_tecnicos(request):
     """Busca y devuelve una lista de técnicos según los filtros especificados.
 
     Returns:
@@ -68,15 +69,15 @@ def buscar_tecnicos(request):
     categoria = request.GET.get('categoria')
     dni = request.GET.get('dni')
     nombre = request.GET.get('nombre_completo')
-
+    
     if not sucursal_es_valida(sucursal_supervisor):
-        return HttpResponse("error: el numero de sucursal no es valido", status=400)
+        return HttpResponse({'message' : 'Sucursal no valida'}, status=400)
 
     if not categoria_es_valida(categoria=categoria):
-        return HttpResponse("error: Categoría no válida", status=400)
+        return HttpResponse({'message' : 'Categoría no válida'}, status=400)
 
     if not dni_es_valido(dni=dni):
-        return HttpResponse("error: DNI no válida", status=400)
+        return HttpResponse({'message' : 'DNI no válida'}, status=400)
     try:
         tecnicos = obtener_tecnicos(sucursal_supervisor, categoria, dni, nombre)     
         return JsonResponse({'tecnicos': tecnicos})
@@ -95,15 +96,14 @@ def obtener_tecnicos(sucursal_supervisor, categoria=None, dni=None, nombre=None)
 
     if categoria is not None:
         tecnicos = [tecnico for tecnico in tecnicos if tecnico['categoria'] == categoria]
-    
     if dni is not None:
-        tecnicos = [tecnico for tecnico in tecnicos if tecnico['dni'] == dni]
-    
+        tecnicos = [tecnico for tecnico in tecnicos if tecnico['dni'] == dni]  
     if nombre is not None:
         tecnicos = [tecnico for tecnico in tecnicos if nombre.lower() in tecnico['nombre_completo'].lower()]
 
     if not tecnicos:
         return []
+    
     return tecnicos
 
 
@@ -137,6 +137,7 @@ def sucursal_es_valida(sucursal_supervisor):
         return False
     if not sucursal_supervisor[1:].isdigit():
         return False
+    
     return True
 
 
@@ -144,10 +145,12 @@ def categoria_es_valida(categoria=None):
     tipos_categorias = ["A", "B", "C", "D"]
     if categoria is not None and categoria not in tipos_categorias:
         return False
+    
     return True
 
 
 def dni_es_valido(dni=None):
     if dni is not None and (not dni.isdigit() or (len(dni) <= 0 or len(dni) > 10)):
         return False
+    
     return True
