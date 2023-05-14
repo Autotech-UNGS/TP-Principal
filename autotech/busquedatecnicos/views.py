@@ -4,8 +4,6 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from administracion.models import Turno_taller
-from administracion.serializers import TurnoTallerSerializer
-from .asignar_tecnico_a_turno.asignar_tecnico import * 
 
 # ---------------------
 # Funciones principales
@@ -86,26 +84,6 @@ def buscar_tecnicos(request):
     except requests.HTTPError as e:
         return HttpResponse(str(e), status=e.response.status_code)
     
-    
-@api_view(["POST"])
-def asignar_tecnico(request, id_tecnico:int, id_turno: int):
-    
-    turno = Turno_taller.objects.get(id_turno=id_turno) # debería ser uno sólo
-    tipo_turno = turno.tipo
-    papeles_en_regla_turno = turno.papeles_en_regla
-    
-    if not se_puede_asignar_tecnico(tipo_turno, papeles_en_regla_turno):
-        return HttpResponse("error: administracion no ha aprobado la documentacion.", status=400)
-    if not esta_disponible(id_tecnico):
-        return HttpResponse("error: el tecnico no tiene disponible ese horario", status=400)
-    
-    turno.tecnico_id = id_tecnico  # agregamos el id del tecnico al turno
-    turno.save()
-    turno.estado = "En proceso" # cambiamos el estado del turno
-    turno.save()
-    
-    serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el tecnico recien asignado
-    return Response(serializer.data)
 
 # ---------------------
 # Funciones Auxiliares

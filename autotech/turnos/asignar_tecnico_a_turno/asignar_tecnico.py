@@ -15,19 +15,16 @@ def esta_disponible(id_tecnico: int, dia:date, hora_inicio:time, hora_fin:time):
     # Si el id del tecnico no aparece en ningun turno, da una excepcion. Para evitarlo, hacemos
     # retornamos True --> no tiene turnos, entonces esta disponible
     try:
-        turnos_del_tecnico = Turno_taller.objects.filter(tecnico_id = id_tecnico)
+        turnos_del_tecnico = Turno_taller.objects.filter(tecnico_id = id_tecnico).filter(fecha_inicio = dia)
     except:
     #if turnos_del_tecnico == None:
         return True
     else:
-        turnos_del_tecnico = Turno_taller.objects.filter(tecnico_id = id_tecnico)
+        #print(Turno_taller.objects.all())
+        turnos_del_tecnico = Turno_taller.objects.filter(tecnico_id = id_tecnico).filter(fecha_inicio = dia)
         esta_disponible = True
         for turno in turnos_del_tecnico:
-            dia_inicio_turno_agendado = turno.fecha_inicio
-            if dia_inicio_turno_agendado == dia:    # si encontramos un turno el mismo dia...
-                hora_inicio_turno_agendado = turno.hora_inicio
-                hora_fin_turno_agendado = turno.hora_fin
-                esta_disponible = esta_disponible and no_hay_superposicion(hora_inicio_turno_agendado, hora_fin_turno_agendado, hora_inicio, hora_fin)
+            esta_disponible = esta_disponible and no_hay_superposicion(turno.hora_inicio, turno.hora_fin, hora_inicio, hora_fin)
         
         return esta_disponible
             

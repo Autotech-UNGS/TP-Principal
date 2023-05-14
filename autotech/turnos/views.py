@@ -5,6 +5,7 @@ from administracion.serializers import TurnoTallerSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .gestion_agenda.visualizar_y_modificar_agenda import *
+from .asignar_tecnico_a_turno.asignar_tecnico import * 
 from datetime import *
 
 
@@ -57,7 +58,7 @@ def crearTurno(request):
     
     """if not tiempos_coherentes(horario_inicio_time, horario_fin_time, dia_inicio_date, dia_fin_date):
         return HttpResponse("error: un turno debe terminar despues de comenzar", status=400)"""
-    if tipo == "Service" and tipo == None:
+    if tipo == "Service" and km == "":
         return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
     if not horarios_exactos(horario_inicio_time, horario_fin_time):
         return HttpResponse("error: los horarios de comienzo y fin de un turno deben ser horas exactas", status=400)
@@ -83,6 +84,26 @@ def turnoUpdate(request,id):
     if serializer.is_valid():
         serializer.save()
     
+    return Response(serializer.data)
+
+@api_view(["POST"])
+def asignar_tecnico(request, id_tecnico:int, id_turno: int):
+    
+    turno = Turno_taller.objects.get(id_turno=id_turno) # debería ser uno sólo
+    tipo_turno = turno.tipo
+    papeles_en_regla_turno = turno.papeles_en_regla
+    
+    if not se_puede_asignar_tecnico(tipo_turno, papeles_en_regla_turno):
+        return HttpResponse("error: administracion no ha aprobado la documentacion.", status=400)
+    if not esta_disponible(id_tecnico):
+        return HttpResponse("error: el tecnico no tiene disponible ese horario", status=400)
+    
+    turno.tecnico_id = id_tecnico  # agregamos el id del tecnico al turno
+    turno.save()
+    turno.estado = "En proceso" # cambiamos el estado del turno
+    turno.save()
+    
+    serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el tecnico recien asignado
     return Response(serializer.data)
 
 # ------------------- Funciones de validacion -------------------
