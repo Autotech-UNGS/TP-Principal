@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'administracion',
     'evaluaciones',
     'tecnicos',
-    'turnos'
+    #'turnos'
 ]
 
 MIDDLEWARE = [
