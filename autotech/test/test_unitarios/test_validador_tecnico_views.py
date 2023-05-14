@@ -61,7 +61,7 @@ class TestValidadorDatosTecnico(unittest.TestCase):
         self.assertTrue(self.validador.dni(dni))
 
     def test_dni_fuera_rango(self):
-        dni = '12345678901'
+        dni = '100000000'
         self.assertFalse(self.validador.dni(dni))
 
     def test_dni_caracteres(self):

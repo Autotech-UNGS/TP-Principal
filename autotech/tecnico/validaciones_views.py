@@ -19,6 +19,6 @@ class ValidadorDatosTecnico():
         return True
 
     def dni(self, dni=None):
-        if dni is not None and (not dni.isdigit() or (len(dni) <= 0 or len(dni) > 10)):
+        if dni is not None and (not dni.isdigit() or (len(dni) < 7 or len(dni) > 8)):
             return False 
         return True
