@@ -6,7 +6,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import sys
 import os
 from pathlib import Path
 import dj_database_url
@@ -52,8 +52,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'administracion',
-    'busquedatecnicos',
     'evaluaciones',
+    'tecnicos',
 ]
 
 MIDDLEWARE = [
@@ -107,7 +107,15 @@ WSGI_APPLICATION = 'autotech.wsgi.application'
 
 } """
 
-DATABASES = {
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'insomniadb_73w9',
