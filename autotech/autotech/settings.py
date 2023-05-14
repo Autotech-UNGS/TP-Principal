@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'turnos.apps.TurnosConfig',
-    'administracion.apps.TecnicosConfig',
+    'administracion.apps.AdministracionConfig',
     'evaluaciones.apps.EvaluacionesConfig',
     'tecnicos.apps.TecnicosConfig',
 ]
