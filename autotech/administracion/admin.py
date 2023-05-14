@@ -3,7 +3,7 @@ from .models import *
 
 # Register your models here.
 class tallerADMIN(admin.ModelAdmin):
-    list_display = ('id_taller', 'nombre', 'id_direccion', 'mail', 'telefono', 'id_sucursal',
+    list_display = ('id_taller', 'nombre', 'direccion','localidad','provincia','cod_postal', 'mail', 'telefono',
     'capacidad', 'cant_tecnicos')
 
 class turno_tallerADMIN(admin.ModelAdmin):

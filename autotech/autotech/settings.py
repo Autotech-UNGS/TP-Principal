@@ -6,7 +6,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import sys
 import os
 from pathlib import Path
 import dj_database_url
@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'administracion',
-    'busquedatecnicos',
+    'tecnico',
 ]
 
 MIDDLEWARE = [
@@ -106,7 +106,15 @@ WSGI_APPLICATION = 'autotech.wsgi.application'
 
 } """
 
-DATABASES = {
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'insomniadb_73w9',
@@ -116,6 +124,24 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+""" DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'insomniadb_73w9',
+        'USER': 'admin',
+        'PASSWORD': '3sKi4wWanO9CoaGu3OKB0HgtFow11VTT',
+        'HOST': 'dpg-chehs2ak728m8k6h8ft0-a.ohio-postgres.render.com',
+        'PORT': '5432',
+    }
+} """
+
+""" # Configuración de la base de datos de prueba
+DATABASES  = { 'default': {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': 'BASE_DIR / "db.sqlite3',
+ }
+} """
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

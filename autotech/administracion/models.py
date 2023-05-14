@@ -2,11 +2,6 @@ from django.db import models
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
 
-id_taller_regex = RegexValidator(
-        '^T\d{3}$',
-        message="El ID del taller debe tener el formato T001",
-        code="invalid_id_taller")
-
 nombre_taller_regex = RegexValidator(
         regex='^[a-zA-Z0-9]+$',
         message="El nombre de taller debe tener solo numeros y letras",
@@ -17,24 +12,20 @@ telefono_regex = RegexValidator(
     message="El número de teléfono debe tener el formato +1234567890 y contener de 9 a 15 dígitos.",
     code="invalid_phone_number")
 
-id_sucursal_regex = RegexValidator(
-        '^S\d{3}$',
-        message="El ID de sucursal debe tener el formato S001",
-        code="invalid_id_sucursal")
-
 patente_regex = RegexValidator(
     '^(([A-Z]{2}\d{3}[A-Z]{2})|([A-Z]{3}\d{3}))$',
     message="La patente ingresada no es valida. Debe ser en mayusculas con el formato 00AAA00 o ",
     code="invalid_patente")
 # ----------------------------------------------------------------------------------------------------#
-
 class Taller(models.Model):
-    id_taller = models.CharField(max_length=4, primary_key=True, validators=[id_taller_regex])
+    id_taller = models.IntegerField(primary_key=True)
     nombre = models.CharField(max_length=50, validators=[nombre_taller_regex])
-    id_direccion = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(999)])
+    direccion = models.CharField(max_length=50,null=True, blank=True)
+    localidad = models.CharField(max_length=50,null=True, blank=True)
+    provincia = models.CharField(max_length=30,null=True, blank=True)
+    cod_postal = models.CharField(max_length=4,null=True, blank=True)
     mail = models.EmailField()
     telefono = models.CharField(max_length=15, validators=[telefono_regex])
-    id_sucursal = models.CharField(max_length=4, validators=[id_sucursal_regex])
     capacidad = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(15)])
     cant_tecnicos = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(45)])
 
@@ -48,7 +39,6 @@ class Turno_taller(models.Model):
         EN_PROCESO = "en_proceso",("En proceso")
         TERMINADO = "terminado",("Terminado")
 
-    
     class TiposTurno(models.TextChoices):
         SERVICE = "service",("Service")
         EVALUACION ="evaluacion",("Evaluacion")
@@ -100,7 +90,7 @@ class Turno_taller(models.Model):
     id_turno = models.AutoField(primary_key=True)
     tipo = models.CharField(max_length=14, choices=TiposTurno.choices, default=TiposTurno.SERVICE)
     estado = models.CharField(max_length=10, choices=EstadoTurno.choices, default=EstadoTurno.EN_PROCESO)
-    taller_id = models.ForeignKey(Taller, on_delete=models.DO_NOTHING)
+    taller_id = models.ForeignKey(Taller, on_delete=models.PROTECT)
     tecnico_id = models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(999)], null=True, blank=True)
     patente = models.CharField(max_length=7, validators=[patente_regex])
     fecha_inicio = models.DateField(max_length=10)
