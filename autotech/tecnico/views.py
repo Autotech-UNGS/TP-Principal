@@ -14,7 +14,7 @@ class TecnicoViewSet(ViewSet):
     def lista_tecnicos(self, request):
         sucursal_supervisor = request.GET.get('branch')     
         if not self.validador.sucursal(sucursal_supervisor):
-            return HttpResponse({'message' : 'error: el numero de sucursal no es valido'}, status=400)
+            return HttpResponse('error: numero de sucursal no valido', status=400)
         tecnicos = self.tecnicos_todos(sucursal_supervisor)
         return JsonResponse({'tecnicos': tecnicos})
 
@@ -22,9 +22,9 @@ class TecnicoViewSet(ViewSet):
     def detalle_trabajos_tecnico(self, request, pk):
         sucursal_supervisor = request.GET.get('branch')       
         if not self.validador.sucursal(sucursal_supervisor):
-            return HttpResponse({'message' : 'error: el numero de sucursal no es valido'}, status=400)      
-        id_taller_sucursal = "T" + sucursal_supervisor[-3:]
-        turnos = Turno_taller.objects.filter(tecnico_id=pk, taller_id=id_taller_sucursal).order_by('estado')
+            return HttpResponse('error: numero de sucursal no valido', status=400)      
+        id_sucursal = int(sucursal_supervisor[-3:])
+        turnos = Turno_taller.objects.filter(tecnico_id=pk, taller_id=id_sucursal).order_by('estado')
         data = []
         for turno in turnos:
             data.append({
@@ -53,16 +53,16 @@ class TecnicoViewSet(ViewSet):
         dni = request.GET.get('dni')
         nombre = request.GET.get('nombre_completo')
         if not self.validador.sucursal(sucursal_supervisor):
-            return HttpResponse({'message' : 'Sucursal no valida'}, status=400)
+            return HttpResponse('error: numero de sucursal no valido', status=400)
         if not self.validador.categoria(categoria=categoria):
-            return HttpResponse({'message' : 'Categoría no válida'}, status=400)
+            return HttpResponse('error: categoría no valida', status=400)
         if not self.validador.dni(dni=dni):
-            return HttpResponse({'message' : 'DNI no válida'}, status=400)
+            return HttpResponse('error: DNI no valido', status=400)
         try:
             tecnicos = self.obtener_tecnicos(sucursal_supervisor, categoria, dni, nombre)
             return JsonResponse({'tecnicos': tecnicos})
         except requests.HTTPError as e:
-            return HttpResponse({'message': str(e)}, status=e.response.status_code)
+            return HttpResponse(str(e), status=e.response.status_code)
     
     def obtener_tecnicos(self, sucursal_supervisor, categoria=None, dni=None, nombre=None):
         tecnicos = self.tecnicos_todos(sucursal_supervisor)
