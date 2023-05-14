@@ -1,5 +1,5 @@
 import pytest
-from asignar_tecnico import * 
+from turnos.validaciones_views import * 
 from administracion.models import Turno_taller
 from datetime import date, time
 

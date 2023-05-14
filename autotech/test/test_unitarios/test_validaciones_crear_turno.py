@@ -1,6 +1,6 @@
 import pytest
 from datetime import date, time
-from .views import horarios_dentro_de_rango, horarios_exactos, dia_valido
+from turnos.validaciones_views import *
 
 # ----------- horarios_exactos ----------- #
 def test_horarios_exactos_1():

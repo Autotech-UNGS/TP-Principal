@@ -1,7 +1,7 @@
 import pytest
 from datetime import date, timedelta
 
-from agenda  import *
+from turnos.gestion_agenda.agenda  import *
 
 # ------------------------------------------------------------- esta disponible -------------------------------------------------------------
 def test_esta_disponible_1():
