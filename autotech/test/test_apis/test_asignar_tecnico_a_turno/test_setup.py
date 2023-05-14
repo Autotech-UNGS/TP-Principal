@@ -3,49 +3,28 @@ from ddf import G
 from rest_framework.test import APITestCase
 from rest_framework import status
 import pdb
-from administracion.models import Turno_taller, Taller
+from administracion.models import Turno_taller
+from datetime import date, time
 
-"""
-self.taller = G(Taller, id_taller='T001', id_sucursal='S001')
-        self.turno_taller = G(Turno_taller, tecnico_id=1, estado='En proceso', taller_id=self.taller)
-        self.turno_taller2 = G(Turno_taller, tecnico_id=1, estado='Terminado', taller_id=self.taller)
-
-        self.assertEqual(self.taller, self.turno_taller.taller_id)
-        self.assertEqual(Turno_taller.objects.count(), 2)
-        self.assertEqual(self.turno_taller.estado, "En proceso")
-        self.assertEqual(self.turno_taller2.estado, "Terminado")
-
-        return super().setUp()
-
-    def test_setup(self):
-        pass
-"""
-
-class TestSetup(APITestCase):
+class TestSetUp(APITestCase):
     def setUp(self):
-        faker = Faker()
-        self.turnos_url = '/turnos/'  
-        self.taller = G(Taller, id_taller=1, id_sucursal=1)
-        self.turno = G(Turno_taller, tecnico_id=1, tipo= "Evaluacion", estado='En proceso', taller_id=self.taller, fecha_inicio="2023-10-05", fecha_fin="2023-10-05", hora_inicio="10:00:00", hora_fin="12:00:00")
+        # turnos del tecnico con id_empleado == 2
+        self.turno1 = G(Turno_taller, id_turno= 1, tipo= 'Service', estado="Pendiente", tecnico_id= 2, fecha_inicio=date(2023,9,21), hora_inicio=time(8,0,0), fecha_fin=date(2023,9,21), hora_fin=time(9,0,0))
+        self.turno2 = G(Turno_taller, id_turno= 2, tipo= 'Service', estado="Pendiente", tecnico_id= 2, fecha_inicio=date(2023,9,21), hora_inicio=time(13,0,0), fecha_fin=date(2023,9,21), hora_fin=time(14,0,0))
+        self.turno3 = G(Turno_taller, id_turno= 3, tipo= 'Service', estado="Pendiente", tecnico_id= 2, fecha_inicio=date(2023,9,21), hora_inicio=time(16,0,0), fecha_fin=date(2023,9,21), hora_fin=time(17,0,0))
         
-        dic = {"id_turno": str(self.turno.id_turno), 
-            "tipo": self.turno.tipo,
-            "taller_id": str(self.taller.id_taller),
-            "patente": self.turno.patente,
-            "fecha_inicio": self.turno.fecha_inicio, 
-            "hora_inicio": self.turno.hora_inicio, 
-            "fecha_fin": self.turno.fecha_fin, 
-            "hora_fin": self.turno.hora_fin, 
-            "frecuencia_km" : self.turno.frecuencia_km, 
-            "papeles_en_regla": self.turno.papeles_en_regla }
-        
-        response = self.client.post(self.turnos_url + "turnos-create/", dic, format= 'json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-   
-		# para parar la ejecución acá, pdb es un paquete de python que permite detener la ejecución
-		# de la funcionalidad que estemos realizando.
-		# acá tendríamos nuestro turno creado (?)
+        # turnos para probar:
+        turno_test_1 = G(Turno_taller, id_turno= 4, tipo='Evaluacion', estado="Pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(12,0,0), papeles_en_regla=True)
+        turno_test_2 = G(Turno_taller, id_turno= 5, tipo='Evaluacion', estado="Pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(13,0,0), papeles_en_regla=True)
+        turno_test_3 = G(Turno_taller, id_turno= 6, tipo='Evaluacion', estado="Pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(13,0,0), papeles_en_regla=False)
+        turno_test_4 = G(Turno_taller, id_turno= 7, tipo='Evaluacion', estado="Pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(13,0,0), fecha_fin=date(2023,9,21), hora_fin=time(14,0,0), papeles_en_regla=True)
+        turno_test_5 = G(Turno_taller, id_turno= 8, tipo='Evaluacion', estado="Pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(12,0,0), fecha_fin=date(2023,9,21), hora_fin=time(15,0,0), papeles_en_regla=True)
+        turno_test_6 = G(Turno_taller, id_turno= 9, tipo='Evaluacion', estado="Pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(15,0,0), fecha_fin=date(2023,9,21), hora_fin=time(17,0,0), papeles_en_regla=True)
+        turno_test_7 = G(Turno_taller, id_turno= 10, tipo='Evaluacion', estado="Pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(8,0,0), fecha_fin=date(2023,9,21), hora_fin=time(10,0,0), papeles_en_regla=True)
+    
+        self.assertEqual(Turno_taller.objects.count(), 10)
+
         return super().setUp()
     
-    def test_sdadas(self):
+    def test_setup(self):
         pass

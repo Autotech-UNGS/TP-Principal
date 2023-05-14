@@ -15,7 +15,7 @@ urlpatterns = [
     
     path('horarios-disponibles/<str:taller_id>', views.diasHorariosDisponibles,name="horarios-disponibles"),
     
-    path('asignar-tecnico/<int:id_tecnico>/<int:id_turno>/', views.asignar_tecnico, name='asignarTecnico')
+    path('asignar-tecnico/<int:id_tecnico>/<int:_id_turno>', views.asignar_tecnico, name='asignar-tecnico')
 ]
 
 

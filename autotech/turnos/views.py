@@ -1,6 +1,6 @@
 import requests
 from django.http import JsonResponse, HttpResponse
-from administracion.models import Turno_taller
+from administracion.models import *
 from administracion.serializers import TurnoTallerSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -87,15 +87,17 @@ def turnoUpdate(request,id):
     return Response(serializer.data)
 
 @api_view(["POST"])
-def asignar_tecnico(request, id_tecnico:int, id_turno: int):
-    
-    turno = Turno_taller.objects.get(id_turno=id_turno) # debería ser uno sólo
+def asignar_tecnico(request, id_tecnico:int, _id_turno: int):
+    turno = Turno_taller.objects.get(id_turno=_id_turno) # debería ser uno sólo
     tipo_turno = turno.tipo
     papeles_en_regla_turno = turno.papeles_en_regla
+    dia_inicio_turno = turno.fecha_inicio
+    hora_inicio_turno = turno.hora_inicio
+    hora_fin_turno = turno.hora_fin
     
     if not se_puede_asignar_tecnico(tipo_turno, papeles_en_regla_turno):
         return HttpResponse("error: administracion no ha aprobado la documentacion.", status=400)
-    if not esta_disponible(id_tecnico):
+    if not esta_disponible(id_tecnico,dia_inicio_turno, hora_inicio_turno, hora_fin_turno):
         return HttpResponse("error: el tecnico no tiene disponible ese horario", status=400)
     
     turno.tecnico_id = id_tecnico  # agregamos el id del tecnico al turno
