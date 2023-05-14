@@ -1,17 +1,10 @@
-from . import views
 from django.urls import path
+from . import views
+
 
 urlpatterns = [
-    # Ruta para obtener todos los Tecnicos
-    path('tecnicos/', views.lista_tecnicos, name='lista_tecnicos'),
-    
-    # Ruta para obtener un Tecnico específico por ID
-    path('tecnico/<int:id_tecnico>/', views.detalle_trabajos_tecnico, name='detalle_trabajos_tecnico'),
-
-    # Ruta para obtener las categorías
-    path('categorias/', views.categorias, name='categorias'), 
-
-    # Definimos las posibles combinaciones de busquedas a realizar.
-    path('filtro/', views.filtrar_tecnicos, name='filtrar_tecnicos')
-
+    path('tecnicos/', views.TecnicoViewSet.as_view({'get': 'lista_tecnicos'}), name='lista_tecnicos'),
+    path('tecnico/<int:pk>/', views.TecnicoViewSet.as_view({'get': 'detalle_trabajos_tecnico'}), name='detalle_trabajos_tecnico'),
+    path('categorias/', views.TecnicoViewSet.as_view({'get': 'categorias'}), name='categorias'),
+    path('filtro/', views.TecnicoViewSet.as_view({'get': 'filtrar_tecnicos'}), name='filtrar_tecnicos'),
 ]

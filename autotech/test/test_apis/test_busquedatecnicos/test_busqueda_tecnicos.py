@@ -1,7 +1,7 @@
 from unittest.mock import patch, Mock
 from django.urls import reverse
 from .test_setup import TestSetUp
-from .busqueda_tecnicos_factories import UsuarioFactory
+from test.factories.tecnicos_factories import UsuarioFactory
 from administracion.models import Turno_taller
 
 class BusquedaTecnicoTestCase(TestSetUp):
@@ -99,12 +99,12 @@ class BusquedaTecnicoTestCase(TestSetUp):
         url = reverse('categorias')
         return self.client.get(url) 
     
-    def test_categorias_ok(self):
+    def test_categorias_validas_ok(self):
         categorias = ['A', 'B', 'C', 'D']
         self.assertEqual(self.get_response_categorias().status_code, 200 )
         self.assertEqual(self.get_response_categorias().json(), categorias)
     
-    def test_categorias_ok(self):
+    def test_categorias_no_validas_ok(self):
         categorias = ['T', 'x', 'C', 'D']
         self.assertEqual(self.get_response_categorias().status_code, 200 )
         self.assertNotEqual(self.get_response_categorias().json(), categorias)
@@ -120,8 +120,7 @@ class BusquedaTecnicoTestCase(TestSetUp):
                 url += f'&dni={dni}'
             if nombre is not None:
                 url += f'&nombre_completo={nombre}'
-            response = self.client.get(url)
-            
+            response = self.client.get(url)    
         return response
     
     def get_response_esperado_filtro(self, tecnico):

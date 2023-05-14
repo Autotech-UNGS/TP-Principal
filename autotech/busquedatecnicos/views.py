@@ -1,156 +1,95 @@
-
 import requests
 from django.http import JsonResponse, HttpResponse
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import action
+from rest_framework.viewsets import ViewSet
 from administracion.models import Turno_taller
-
-# ---------------------
-# Funciones principales
-# ---------------------
+from .validaciones_views import ValidadorDatosTecnico
 
 
-@api_view(["GET"])
-def lista_tecnicos(request):
-    """Devuelve un listado de todos los técnicos, con su ID, nombre completo y categoría.
-    """
-    sucursal_supervisor = request.GET.get('branch')
+class TecnicoViewSet(ViewSet):
+    validador = ValidadorDatosTecnico()
 
-    if not sucursal_es_valida(sucursal_supervisor):
-        return HttpResponse({'message' : 'error: el numero de sucursal no es valido'}, status=400)
-    
-    tecnicos = tecnicos_todos(sucursal_supervisor)
-    return JsonResponse({'tecnicos': tecnicos})
-
-
-@api_view(["GET"])
-def detalle_trabajos_tecnico(request, id_tecnico):
-    """Devuelve los detalles de los trabajos realizados por un tecnico particular.
-    """
-    sucursal_supervisor = request.GET.get('branch')
-    if not sucursal_es_valida(sucursal_supervisor):
-        return HttpResponse({'message' : 'error: el numero de sucursal no es valido'}, status=400)
-
-    id_taller_sucursal = "T" + sucursal_supervisor[-3:]
-    turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, taller_id=id_taller_sucursal).order_by('estado')
-
-    data = []
-    for turno in turnos:
-        data.append({
-            "id_turno": turno.id_turno,
-            "patente": turno.patente,
-            "fecha_inicio": turno.fecha_inicio,
-            "hora_inicio": turno.hora_inicio,
-            "fecha_fin": turno.fecha_fin,
-            "hora_fin": turno.hora_fin,
-            "tipo": turno.tipo,
-            "estado": turno.estado
-        })
-    return Response(data)
-
-
-@api_view(['GET'])
-def categorias(request):
-    """Devuelve una lista de todas las categorías de técnico disponibles.
-    """
-    tipos_categorias = ["A", "B", "C", "D"]
-    return JsonResponse(tipos_categorias, safe=False)
-
-
-@api_view(['GET'])
-def filtrar_tecnicos(request):
-    """Busca y devuelve una lista de técnicos según los filtros especificados.
-
-    Returns:
-        JsonResponse: Un objeto JSON que contiene una lista de técnicos que cumplen los filtros especificados.
-        HttpResponse: Si se encuentra un error HTTP al realizar la búsqueda.
-    """
-    sucursal_supervisor = request.GET.get('branch')
-    categoria = request.GET.get('categoria')
-    dni = request.GET.get('dni')
-    nombre = request.GET.get('nombre_completo')
-    
-    if not sucursal_es_valida(sucursal_supervisor):
-        return HttpResponse({'message' : 'Sucursal no valida'}, status=400)
-
-    if not categoria_es_valida(categoria=categoria):
-        return HttpResponse({'message' : 'Categoría no válida'}, status=400)
-
-    if not dni_es_valido(dni=dni):
-        return HttpResponse({'message' : 'DNI no válida'}, status=400)
-    try:
-        tecnicos = obtener_tecnicos(sucursal_supervisor, categoria, dni, nombre)     
+    @action(detail=False, methods=['get'])
+    def lista_tecnicos(self, request):
+        sucursal_supervisor = request.GET.get('branch')     
+        if not self.validador.sucursal(sucursal_supervisor):
+            return HttpResponse({'message' : 'error: el numero de sucursal no es valido'}, status=400)
+        tecnicos = self.tecnicos_todos(sucursal_supervisor)
         return JsonResponse({'tecnicos': tecnicos})
 
-    except requests.HTTPError as e:
-        return HttpResponse(str(e), status=e.response.status_code)
+    @action(detail=True, methods=['get'])
+    def detalle_trabajos_tecnico(self, request, pk):
+        sucursal_supervisor = request.GET.get('branch')       
+        if not self.validador.sucursal(sucursal_supervisor):
+            return HttpResponse({'message' : 'error: el numero de sucursal no es valido'}, status=400)      
+        id_taller_sucursal = "T" + sucursal_supervisor[-3:]
+        turnos = Turno_taller.objects.filter(tecnico_id=pk, taller_id=id_taller_sucursal).order_by('estado')
+        data = []
+        for turno in turnos:
+            data.append({
+                "id_turno": turno.id_turno,
+                "patente": turno.patente,
+                "fecha_inicio": turno.fecha_inicio,
+                "hora_inicio": turno.hora_inicio,
+                "fecha_fin": turno.fecha_fin,
+                "hora_fin": turno.hora_fin,
+                "tipo": turno.tipo,
+                "estado": turno.estado
+            })
+        return Response(data)
 
-# ---------------------
-# Funciones Auxiliares
-# ---------------------
+    @action(detail=False, methods=['get'])
+    def categorias(self, request):
+        """Devuelve una lista de todas las categorías de técnico disponibles.
+        """
+        tipos_categorias = ["A", "B", "C", "D"]
+        return JsonResponse(tipos_categorias, safe=False)
 
-def obtener_tecnicos(sucursal_supervisor, categoria=None, dni=None, nombre=None):
-    """Retorna una lista de diccionarios que contienen información de los técnicos que cumplen con los criterios de búsqueda especificados.
-    """
-    tecnicos = tecnicos_todos(sucursal_supervisor)
-
-    if categoria is not None:
-        tecnicos = [tecnico for tecnico in tecnicos if tecnico['categoria'] == categoria]
-    if dni is not None:
-        tecnicos = [tecnico for tecnico in tecnicos if tecnico['dni'] == dni]  
-    if nombre is not None:
-        tecnicos = [tecnico for tecnico in tecnicos if nombre.lower() in tecnico['nombre_completo'].lower()]
-
-    if not tecnicos:
-        return []
+    @action(detail=False, methods=['get'])
+    def filtrar_tecnicos(self, request):
+        sucursal_supervisor = request.GET.get('branch')
+        categoria = request.GET.get('categoria')
+        dni = request.GET.get('dni')
+        nombre = request.GET.get('nombre_completo')
+        if not self.validador.sucursal(sucursal_supervisor):
+            return HttpResponse({'message' : 'Sucursal no valida'}, status=400)
+        if not self.validador.categoria(categoria=categoria):
+            return HttpResponse({'message' : 'Categoría no válida'}, status=400)
+        if not self.validador.dni(dni=dni):
+            return HttpResponse({'message' : 'DNI no válida'}, status=400)
+        try:
+            tecnicos = self.obtener_tecnicos(sucursal_supervisor, categoria, dni, nombre)
+            return JsonResponse({'tecnicos': tecnicos})
+        except requests.HTTPError as e:
+            return HttpResponse({'message': str(e)}, status=e.response.status_code)
     
-    return tecnicos
-
-
-def tecnicos_todos(sucursal_supervisor):
-    """Realiza una solicitud GET a una API para obtener una lista de todos los técnicos y devuelve los datos como una lista de diccionarios.
-    """
-    url = "https://api-rest-pp1.onrender.com/api/usuarios/"
-    usuarios_data = requests.get(url)
-
-    if usuarios_data.status_code != 200:
-        raise requests.HTTPError(f"Error: {usuarios_data.status_code}")
-
-    usuarios_data = usuarios_data.json()
-    tecnicos = [{
-        'id_empleado': tecnico['id_empleado'],
-        'nombre_completo': tecnico['nombre_completo'], 
-        'dni': tecnico['dni'], 
-        'categoria': tecnico['categoria'], 
-        'branch': tecnico['branch']
-        } for tecnico in usuarios_data if tecnico['branch'].endswith(sucursal_supervisor[-3:]) and tecnico['tipo'] == "Tecnico"]   
-   
-    return tecnicos
-
-
-def sucursal_es_valida(sucursal_supervisor):
-    if sucursal_supervisor is None:
-        return False
-    if len(sucursal_supervisor) != 4:
-        return False
-    if sucursal_supervisor[0] != 'S':
-        return False
-    if not sucursal_supervisor[1:].isdigit():
-        return False
+    def obtener_tecnicos(self, sucursal_supervisor, categoria=None, dni=None, nombre=None):
+        tecnicos = self.tecnicos_todos(sucursal_supervisor)
+        if categoria is not None:
+            tecnicos = [tecnico for tecnico in tecnicos if tecnico['categoria'] == categoria]
+        if dni is not None:
+            tecnicos = [tecnico for tecnico in tecnicos if tecnico['dni'] == dni]  
+        if nombre is not None:
+            tecnicos = [tecnico for tecnico in tecnicos if nombre.lower() in tecnico['nombre_completo'].lower()]
+        if not tecnicos:
+            return []
+        return tecnicos
     
-    return True
+    @staticmethod
+    def tecnicos_todos(sucursal_supervisor):
+        url = "https://api-rest-pp1.onrender.com/api/usuarios/"
+        usuarios_data = requests.get(url)
+        if usuarios_data.status_code != 200:
+            raise requests.HTTPError({'message error' : usuarios_data.status_code})
+        usuarios_data = usuarios_data.json()
+        tecnicos = [{
+            'id_empleado': tecnico['id_empleado'],
+            'nombre_completo': tecnico['nombre_completo'], 
+            'dni': tecnico['dni'], 
+            'categoria': tecnico['categoria'], 
+            'branch': tecnico['branch']
+            } for tecnico in usuarios_data if tecnico['branch'].endswith(sucursal_supervisor[-3:]) and tecnico['tipo'] == "Tecnico"]   
+        return tecnicos
 
 
-def categoria_es_valida(categoria=None):
-    tipos_categorias = ["A", "B", "C", "D"]
-    if categoria is not None and categoria not in tipos_categorias:
-        return False
-    
-    return True
-
-
-def dni_es_valido(dni=None):
-    if dni is not None and (not dni.isdigit() or (len(dni) <= 0 or len(dni) > 10)):
-        return False
-    
-    return True
