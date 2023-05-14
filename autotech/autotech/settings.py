@@ -42,7 +42,6 @@ if RENDER_EXTERNAL_HOSTNAME:
 # Application definition
 
 INSTALLED_APPS = [
-    'turnos.apps.TurnosConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,10 +50,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'administracion',
-    'evaluaciones',
-    'tecnicos',
-    'turnos'
+    'turnos.apps.TurnosConfig',
+    'administracion.apps.TecnicosConfig',
+    'evaluaciones.apps.EvaluacionesConfig',
+    'tecnicos.apps.TecnicosConfig',
 ]
 
 MIDDLEWARE = [
