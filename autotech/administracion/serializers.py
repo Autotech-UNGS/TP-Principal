@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Taller,Turno_taller, Checklist_reparacion, Registro_reparacion, Registro_evaluacion_admin, Id_task_puntaje, Registro_evaluacion
+from .models import *
 
 
 class TallerSerializer(serializers.ModelSerializer):
@@ -22,9 +22,9 @@ class RegistroReparacionSerializer(serializers.ModelSerializer):
         model = Registro_reparacion
         fields = '__all__'
 
-class RegistroEvaluacionAdminSerializer(serializers.ModelSerializer):
+class RegistroEvaluacionXAdminSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Registro_evaluacion_admin
+        model = Registro_evaluacion_para_admin
         fields = '__all__'
 
 class RegistroEvaluacionSerializer(serializers.ModelSerializer):

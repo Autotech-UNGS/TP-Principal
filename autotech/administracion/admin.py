@@ -39,7 +39,7 @@ admin.site.register(Registro_reparacion,registro_reparacionADMIN)
 admin.site.register(Taller,tallerADMIN)
 admin.site.register(Turno_taller,turno_tallerADMIN)
 
-admin.site.register(Registro_evaluacion_admin,registro_evaluacion_adminADMIN)
+admin.site.register(Registro_evaluacion_para_admin,registro_evaluacion_adminADMIN)
 
 admin.site.register(Registro_evaluacion,registro_evaluacionADMIN)
 admin.site.register(Checklist_evaluacion,checklist_evaluacionADMIN)

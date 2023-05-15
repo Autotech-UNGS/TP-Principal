@@ -57,7 +57,7 @@ class Registro_reparacion(models.Model):
         return list(self.tasks.all())
     
 # ----------------------------------------------------------------------------------------------------#
-class Registro_evaluacion_admin(models.Model):
+class Registro_evaluacion_para_admin(models.Model):
     id_turno = models.ForeignKey(Turno_taller, on_delete=models.PROTECT)
     costo_total = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1000000)], default=0.0)
     duracion_total_reparaciones = models.IntegerField(validators=[MinValueValidator(0)])

@@ -2,23 +2,18 @@ import json
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 
-from django.db import transaction
 
-from administracion.models import Registro_evaluacion_admin, Id_task_puntaje, Registro_evaluacion
-from administracion.serializers import  RegistroEvaluacionAdminSerializer, IdTaskPuntajeSerializer, RegistroEvaluacionSerializer
+
+from administracion.models import  Turno_taller, Registro_evaluacion_para_admin, Registro_evaluacion
+from administracion.serializers import  RegistroEvaluacionXAdminSerializer, RegistroEvaluacionSerializer
 
 
 # -----------------------------------------------------------------------------------------------------
-
-class RegistroEvaluacionAdminReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Registro_evaluacion_admin.objects.all()
-    serializer_class = RegistroEvaluacionAdminSerializer
-    permission_classes = [permissions.AllowAny]
-
-class RegistroEvaluacionAdminCreateViewSet(viewsets.ModelViewSet):
-    queryset = Registro_evaluacion_admin.objects.all()
-    serializer_class = RegistroEvaluacionAdminSerializer
+class RegistroEvaluacionXAdminCreate(viewsets.ModelViewSet):
+    queryset = Registro_evaluacion_para_admin.objects.all()
+    serializer_class = RegistroEvaluacionXAdminSerializer
     permission_classes = [permissions.AllowAny]
 
     def create(self, request, *args, **kwargs):
@@ -27,41 +22,31 @@ class RegistroEvaluacionAdminCreateViewSet(viewsets.ModelViewSet):
         serializer.save()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    
-# -----------------------------------------------------------------------------------------------------
-class 
-    
-# -----------------------------------------------------------------------------------------------------
-class RegistroEvaluacionReadOnlyView(viewsets.ReadOnlyModelViewSet):
-    queryset = Registro_evaluacion.objects.all()
-    serializer_class = RegistroEvaluacionSerializer
+
+
+class RegistroEvaluacionXAdminReadOnly(viewsets.ReadOnlyModelViewSet):
+    queryset = Registro_evaluacion_para_admin.objects.all()
+    serializer_class = RegistroEvaluacionXAdminSerializer
     permission_classes = [permissions.AllowAny]
 
-    def list(self, request, *args, **kwargs):
-        # Obtén los registros del modelo Registro_evaluacion
-        registros = self.queryset
+    
+# -----------------------------------------------------------------------------------------------------
+class RegistroEvaluacionCreate(APIView):
+    permission_classes = [permissions.AllowAny]
+    
+    # id_turno y diccionario ["id_task_puntaje":{"1":20, "2":30}]
+    def post(self, request, *args, **kwargs):
+        id_turno = request.data.get('id_turno')
+        id_task_puntaje = request.data.get('id_task_puntaje')
 
-        # Recorre la otra tabla y realiza alguna acción adicional
-        otra_tabla = Id_task_puntaje.objects.all()
-        primer_fila = Id_task_puntaje.objects.first() 
+        # Tomo el turno que corresponde a ese id
+        turno_taller = Turno_taller.objects.get(pk=id_turno)
         
-        if primer_fila is not None: # Obtener la primera fila de la tabla
-            id_turno = primer_fila.id_turno  # Obtener el valor de la columna 'id_turno'
-            datos_diccionario = {}
-            for fila in otra_tabla:
-                # Hacer algo con los datos de la fila de otra tabla
-                checklist_evaluacion_id = fila.id_task.id_task
-                puntaje_seleccionado = fila.puntaje_seleccionado
-                datos_diccionario[str(checklist_evaluacion_id)] = puntaje_seleccionado
+        # Realizar validaciones de datos y crear objeto
+        registro_evaluacion = Registro_evaluacion.objects.create(id_turno = turno_taller, id_task_puntaje=id_task_puntaje)
 
-            registro_nuevo = Registro_evaluacion()
-            registro_nuevo.id_turno = id_turno
-            registro_nuevo.id_task_puntaje = datos_diccionario
-            registro_nuevo.save()
-        if Id_task_puntaje.objects.exists():
-            Id_task_puntaje.objects.all().delete()
-        # Llama al método 'list' de la clase padre para obtener la respuesta
-        response = super().list(request, *args, **kwargs)
-
-        # Devuelve la respuesta actualizada
-        return response
+        # Serializar objeto y devolver respuesta
+        serializer = RegistroEvaluacionSerializer(registro_evaluacion)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+# -----------------------------------------------------------------------------------------------------
