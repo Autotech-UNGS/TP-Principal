@@ -35,7 +35,7 @@ class AsignarTecnicoTestCase(TestSetUp):
                 'hora_inicio': turno.hora_inicio.strftime("%H:%M:%S"),
                 'fecha_fin': turno.fecha_fin.strftime("%Y-%m-%d"),
                 'hora_fin': turno.hora_fin.strftime("%H:%M:%S"),
-                'frecuencia_km': None,
+                'frecuencia_km': 0,
                 'papeles_en_regla': True 
             }
         
@@ -56,7 +56,7 @@ class AsignarTecnicoTestCase(TestSetUp):
                 'hora_inicio': turno.hora_inicio.strftime("%H:%M:%S"),
                 'fecha_fin': turno.fecha_fin.strftime("%Y-%m-%d"),
                 'hora_fin': turno.hora_fin.strftime("%H:%M:%S"),
-                'frecuencia_km': None,
+                'frecuencia_km': 0,
                 'papeles_en_regla': True 
             }
         
