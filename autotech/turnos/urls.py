@@ -13,7 +13,7 @@ urlpatterns = [
 
     path('turnos-update/<int:id_turno>/', views.turnoUpdate,name="turnos-update"),
     
-    path('horarios-disponibles/<str:taller_id>/', views.diasHorariosDisponibles,name="horarios-disponibles")
+    path('dias-horarios-disponibles/<int:taller_id>/', views.diasHorariosDisponibles,name="dias-horarios-disponibles")
 ]
 
 

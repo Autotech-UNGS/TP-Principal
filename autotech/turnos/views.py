@@ -37,7 +37,7 @@ def turnoDetalle(request, id_turno):
         return Response(serializer.data)
 
 @api_view(['GET'])
-def diasHorariosDisponibles(request, taller_id: str):
+def diasHorariosDisponibles(request, taller_id: int):
     try:
         taller = Taller.objects.get(id_taller= taller_id)
     except:
@@ -47,7 +47,7 @@ def diasHorariosDisponibles(request, taller_id: str):
     
         resultado = [{'dia': dia, 'horarios_disponibles':dias_horarios_data.get(dia)} for dia in dias_horarios_data]
     
-    return JsonResponse({'dias_y_capacidades':resultado})
+    return JsonResponse({'dias_y_horarios':resultado})
 
 @api_view(['POST'])
 def crearTurno(request):
