@@ -5,8 +5,8 @@ from rest_framework import status
 
 from django.db import transaction
 
-from administracion.models import Registro_evaluacion_admin, Id_task_puntaje, Registro_evaluacion, Checklist_evaluacion
-from .serializers import  RegistroEvaluacionAdminSerializer, IdTaskPuntajeSerializer, RegistroEvaluacionSerializer
+from administracion.models import Registro_evaluacion_admin, Id_task_puntaje, Registro_evaluacion
+from administracion.serializers import  RegistroEvaluacionAdminSerializer, IdTaskPuntajeSerializer, RegistroEvaluacionSerializer
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -29,27 +29,7 @@ class RegistroEvaluacionAdminCreateViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
 # -----------------------------------------------------------------------------------------------------
-
-class IdTaskPuntajeCreateView(viewsets.ModelViewSet):
-    queryset = Id_task_puntaje.objects.none()
-    serializer_class = IdTaskPuntajeSerializer
-    permission_classes = [permissions.AllowAny]
-
-    def get_queryset(self):
-        return Registro_evaluacion_admin.objects.none()
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    
-
-class IdTaskReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Id_task_puntaje.objects.all()
-    serializer_class = IdTaskPuntajeSerializer
-    permission_classes = [permissions.AllowAny]
+class 
     
 # -----------------------------------------------------------------------------------------------------
 class RegistroEvaluacionReadOnlyView(viewsets.ReadOnlyModelViewSet):

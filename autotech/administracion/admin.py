@@ -28,12 +28,10 @@ class checklist_evaluacionADMIN(admin.ModelAdmin):
     list_display = ('id_task','elemento','tarea','costo_reemplazo','duracion_reemplazo','puntaje_max')
 
 
-class id_task_puntajeADMIN(admin.ModelAdmin):
-    list_display = ('id_turno','id_task', 'puntaje_seleccionado')
-
 class registro_evaluacionADMIN(admin.ModelAdmin):
     list_display = ('id_turno','id_task_puntaje')
 
+# --------------------------------------------------------------------------------------------------------------------------
 
 admin.site.register(Checklist_reparacion,checklist_reparacionADMIN)
 admin.site.register(Registro_reparacion,registro_reparacionADMIN)
@@ -43,6 +41,5 @@ admin.site.register(Turno_taller,turno_tallerADMIN)
 
 admin.site.register(Registro_evaluacion_admin,registro_evaluacion_adminADMIN)
 
-admin.site.register(Id_task_puntaje,id_task_puntajeADMIN)
 admin.site.register(Registro_evaluacion,registro_evaluacionADMIN)
 admin.site.register(Checklist_evaluacion,checklist_evaluacionADMIN)

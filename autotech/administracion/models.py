@@ -74,11 +74,6 @@ class Checklist_evaluacion(models.Model):
     duracion_reemplazo = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator])
     puntaje_max = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(2500)])
 
-class Id_task_puntaje(models.Model):
-    id_turno = models.ForeignKey(Turno_taller, on_delete=models.PROTECT, null=True)
-    id_task = models.ForeignKey(Checklist_evaluacion, on_delete=models.PROTECT)
-    puntaje_seleccionado = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(2500)])
-
 class Registro_evaluacion(models.Model):
     id_turno = models.ForeignKey(Turno_taller, on_delete=models.PROTECT)
     id_task_puntaje = models.JSONField(null=True, blank=True)

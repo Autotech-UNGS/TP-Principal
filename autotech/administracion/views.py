@@ -1,5 +1,5 @@
 from rest_framework import viewsets, permissions
-from .serializers import TallerSerializer,TurnoTallerSerializer, ChecklistReparacionrSerializer, RegistroReparacionSerializer
+from .serializers import TallerSerializer,TurnoTallerSerializer, ChecklistReparacionSerializer, RegistroReparacionSerializer
 from .models import Taller, Turno_taller, Checklist_reparacion, Registro_reparacion
 
 class TallerViewSet(viewsets.ModelViewSet):
@@ -14,7 +14,7 @@ class TurnoTallerViewSet(viewsets.ModelViewSet):
 
 class ChecklistReparacionViewSet(viewsets.ModelViewSet):
     queryset = Checklist_reparacion.objects.all()
-    serializer_class = ChecklistReparacionrSerializer
+    serializer_class = ChecklistReparacionSerializer
     permission_classes = [permissions.AllowAny]
 
 class RegistroReparacionViewSet(viewsets.ModelViewSet):
