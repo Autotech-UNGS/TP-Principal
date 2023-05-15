@@ -8,13 +8,13 @@ urlpatterns = [
 
     path('turnos-list/', views.turnosList, name='turnos-list'),
 
-    path('turnos-detalle/<int:id>/', views.turnoDetalle, name='turnos-detalle'),
+    path('turnos-detalle/<int:id_turno>/', views.turnoDetalle, name='turnos-detalle'),
 
     path('turnos-create/', views.crearTurno,name="turnos-create"),
 
-    path('turnos-update/<int:id>/', views.turnoUpdate,name="turnos-update"),
+    path('turnos-update/<int:id_turno>/', views.turnoUpdate,name="turnos-update"),
     
-    path('horarios-disponibles/<str:taller_id>/', views.diasHorariosDisponibles,name="horarios-disponibles"),
+    path('dias-horarios-disponibles/<int:taller_id>/', views.diasHorariosDisponibles,name="dias-horarios-disponibles"),
 
     # -------------------------------------------------------------------------------------------------------------
     path('pendientes/', estado_turnos.EstadoTurnosViewSet.as_view({'get': 'turnos_pendientes'}), name='turnos-pendientes'),

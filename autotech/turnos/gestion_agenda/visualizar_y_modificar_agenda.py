@@ -3,20 +3,20 @@ from datetime import date, timedelta, time
 from administracion.models import Taller
 from administracion.models import Turno_taller
     
-def esta_disponible(dia:date, horario_inicio:time, horario_fin:time, id_taller:str) -> bool:
+def esta_disponible(dia:date, horario_inicio:time, horario_fin:time, id_taller:int) -> bool:
     agenda = _crear_agenda(id_taller)
     _cargar_turnos(dia, agenda)
     duracion = horario_fin.hour - horario_inicio.hour
     return agenda.esta_disponible(dia, horario_inicio.hour, duracion)
 
-def dias_disponibles_desde_hoy_a_treinta_dias(id_taller: str):
+def dias_disponibles_desde_hoy_a_treinta_dias(id_taller: int):
     agenda = _crear_agenda(id_taller)
     _cargar_turnos_desde_hoy_a_treinta_dias(agenda)
     dias_horarios_disponibles = {}
-    dias_horarios_disponibles = agenda.dias_horarios_disponibles_de_treinta_dias(date.today())
+    dias_horarios_disponibles = agenda.dias_horarios_disponibles_de_treinta_dias(date.today()+ timedelta(days=1))
     return dias_horarios_disponibles
 
-def _crear_agenda(_id_taller: str):
+def _crear_agenda(_id_taller: int):
     taller = Taller.objects.get(id_taller = _id_taller)
     capacidad = taller.capacidad
     id = taller.id_taller

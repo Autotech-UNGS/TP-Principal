@@ -1,12 +1,12 @@
 import requests
 from django.http import JsonResponse, HttpResponse
-from administracion.models import Turno_taller
+from administracion.models import *
 from administracion.serializers import TurnoTallerSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .gestion_agenda.visualizar_y_modificar_agenda import *
+from .validaciones_views import * 
 from datetime import *
-
 
 @api_view(['GET'])
 def turnosOverview(request):
@@ -27,18 +27,27 @@ def turnosList(request):
 
 
 @api_view(['GET'])
-def turnoDetalle(request,id):
-    turno=Turno_taller.objects.get(id_turno=id)
-    serializer= TurnoTallerSerializer(turno,many=False)
-    return Response(serializer.data)
+def turnoDetalle(request, id_turno):
+    try:
+        turno=Turno_taller.objects.get(id_turno=id_turno)
+    except:
+        return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
+    else:
+        serializer= TurnoTallerSerializer(turno,many=False)
+        return Response(serializer.data)
 
 @api_view(['GET'])
-def diasHorariosDisponibles(request, taller_id: str):
-    dias_horarios_data = dias_disponibles_desde_hoy_a_treinta_dias(taller_id)
+def diasHorariosDisponibles(request, taller_id: int):
+    try:
+        taller = Taller.objects.get(id_taller= taller_id)
+    except:
+        return HttpResponse("error: el id ingresado no pertenece a ningún taller en el sistema", status=400)
+    else:
+        dias_horarios_data = dias_disponibles_desde_hoy_a_treinta_dias(taller_id)
     
-    resultado = [{'dia': dia, 'horarios_y_capacidad':dias_horarios_data.get(dia)} for dia in dias_horarios_data]
+        resultado = [{'dia': dia, 'horarios_disponibles':dias_horarios_data.get(dia)} for dia in dias_horarios_data]
     
-    return JsonResponse({'dias_y_capacidades':resultado})
+    return JsonResponse({'dias_y_horarios':resultado})
 
 @api_view(['POST'])
 def crearTurno(request):
@@ -47,6 +56,8 @@ def crearTurno(request):
     horario_inicio = request.data.get("hora_inicio")
     horario_fin = request.data.get("hora_fin")
     taller_id = request.data.get("taller_id")
+    tipo = request.data.get("tipo")
+    km = request.data.get("frecuencia_km")
 
     horario_inicio_time = datetime.strptime(horario_inicio, '%H:%M:%S').time()
     horario_fin_time = datetime.strptime(horario_fin, '%H:%M:%S').time()
@@ -55,12 +66,16 @@ def crearTurno(request):
     
     """if not tiempos_coherentes(horario_inicio_time, horario_fin_time, dia_inicio_date, dia_fin_date):
         return HttpResponse("error: un turno debe terminar despues de comenzar", status=400)"""
+    if tipo == "Service" and km == "":
+        return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
     if not horarios_exactos(horario_inicio_time, horario_fin_time):
         return HttpResponse("error: los horarios de comienzo y fin de un turno deben ser horas exactas", status=400)
     if not horarios_dentro_de_rango(dia_inicio_date, horario_inicio_time, horario_fin_time):
         return HttpResponse("error: los horarios superan el limite de la jornada laboral", status=400)
     if not dia_valido(dia_inicio_date):
         return HttpResponse("error: no se puede sacar un turno para una fecha que ya paso.", status=400)
+    if not dia_hora_coherentes(dia_inicio_date, horario_inicio_time, dia_fin_date , horario_fin_time):
+        return HttpResponse("error: un turno no puede terminar antes de que empiece", status=400)
     if not esta_disponible(dia_inicio_date, horario_inicio_time, horario_fin_time, taller_id):
         return HttpResponse("error: ese dia no esta disponible en ese horario", status=400)
 
@@ -71,34 +86,40 @@ def crearTurno(request):
     return Response(serializer.data)
 
 @api_view(['POST'])
-def turnoUpdate(request,id):
-    turno= Turno_taller.objects.get(id_turno=id)
-    serializer=TurnoTallerSerializer(instance=turno,data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-    
-    return Response(serializer.data)
-
-# ------------------- Funciones de validacion -------------------
-def horarios_exactos(hora_inicio:time, hora_fin:time):
-    return hora_inicio.minute == 0 and hora_fin.minute == 0 and hora_inicio.second == 0 and hora_fin.second == 0 # and hora_inicio <= hora_fin
-        
-def horarios_dentro_de_rango(dia:date, horario_inicio:time, horario_fin:time):
-    if dia.weekday() == 6: # domigo
-        horario_inicio_valido = horario_inicio.hour >= 8 and horario_inicio.hour <= 11 # podemos dar turnos de 8 a 11
-        horario_fin_valido = horario_fin.hour >= 9 and horario_fin.hour <= 12 # los turnos pueden terminar de 9 a 12
+def turnoUpdate(request, id_turno):
+    try:
+        turno=Turno_taller.objects.get(id_turno=id_turno)
+    except:
+        return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
     else:
-        horario_inicio_valido = horario_inicio.hour >= 8 and horario_inicio.hour <= 16 # podemos dar turnos de 8 a 16
-        horario_fin_valido = horario_fin.hour >= 9 and horario_fin.hour <= 17 # los turnos pueden terminar de 9 a 17
-    return horario_inicio_valido and horario_fin_valido
-    
-def dia_valido(dia: date):
-    return dia >= date.today()
+        serializer=TurnoTallerSerializer(instance=turno,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
 
-"""
-def tiempos_coherentes(horario_inicio: time, horario_fin: time, dia_inicio: date, dia_fin: date):
-    if horario_inicio.hour < horario_fin.hour:
-        return True
-    elif dia_inicio < dia_fin:
-        return True
-"""
+        return Response(serializer.data)
+
+@api_view(["POST"])
+def asignar_tecnico(request, id_tecnico:int, _id_turno: int):
+    try:
+        turno=Turno_taller.objects.get(id_turno=_id_turno)
+    except:
+        return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
+    else:
+        tipo_turno = turno.tipo
+        papeles_en_regla_turno = turno.papeles_en_regla
+        dia_inicio_turno = turno.fecha_inicio
+        hora_inicio_turno = turno.hora_inicio
+        hora_fin_turno = turno.hora_fin
+    
+        if not se_puede_asignar_tecnico(tipo_turno, papeles_en_regla_turno):
+            return HttpResponse("error: administracion no ha aprobado la documentacion.", status=400)
+        if not esta_disponible(id_tecnico,dia_inicio_turno, hora_inicio_turno, hora_fin_turno):
+            return HttpResponse("error: el tecnico no tiene disponible ese horario", status=400)
+        
+        turno.tecnico_id = id_tecnico  # agregamos el id del tecnico al turno
+        turno.save()
+        turno.estado = "En proceso" # cambiamos el estado del turno
+        turno.save()
+        
+        serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el tecnico recien asignado
+        return Response(serializer.data)
