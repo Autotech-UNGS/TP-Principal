@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from administracion.models import Turno_taller
-from .validaciones_views import ValidadorDatosTecnico
+from .validadores_views import ValidadorDatosTecnico
 
 
 class TecnicoViewSet(ViewSet):

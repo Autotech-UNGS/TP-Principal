@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from . import estado_turnos
 
 urlpatterns = [
     path('',views.turnosOverview,name='turnos'),
@@ -13,7 +14,13 @@ urlpatterns = [
 
     path('turnos-update/<int:id>/', views.turnoUpdate,name="turnos-update"),
     
-    path('horarios-disponibles/<str:taller_id>/', views.diasHorariosDisponibles,name="horarios-disponibles")
+    path('horarios-disponibles/<str:taller_id>/', views.diasHorariosDisponibles,name="horarios-disponibles"),
+
+    # -------------------------------------------------------------------------------------------------------------
+    path('pendientes/', estado_turnos.EstadoTurnosViewSet.as_view({'get': 'turnos_pendientes'}), name='turnos-pendientes'),
+    path('en_proceso/',  estado_turnos.EstadoTurnosViewSet.as_view({'get': 'turnos_en_proceso'}), name='turnos-en-proceso'),
+    path('terminados/',  estado_turnos.EstadoTurnosViewSet.as_view({'get': 'turnos_terminados'}), name='turnos-terminados'),
+    path('actualizar_estado/<int:pk>/',  estado_turnos.EstadoTurnosViewSet.as_view({'patch': 'actualizar_estado_turno_en_proceso'}), name='actualizar-estado-turno')
 ]
 
 

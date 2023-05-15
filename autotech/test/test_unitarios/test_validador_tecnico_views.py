@@ -1,5 +1,5 @@
 import unittest
-from tecnicos.validaciones_views import ValidadorDatosTecnico
+from tecnicos.validadores_views import ValidadorDatosTecnico
 
 class TestValidadorDatosTecnico(unittest.TestCase):
     validador = ValidadorDatosTecnico()

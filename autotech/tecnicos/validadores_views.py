@@ -22,3 +22,4 @@ class ValidadorDatosTecnico():
         if dni is not None and (not dni.isdigit() or (len(dni) < 7 or len(dni) > 8)):
             return False 
         return True
+
