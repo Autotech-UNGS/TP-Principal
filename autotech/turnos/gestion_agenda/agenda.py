@@ -20,6 +20,7 @@ class Agenda:
                 esta_disponible = esta_disponible and hora[1] > 0
         return esta_disponible
     
+    """
     def horarios_disponibles(self, dia:date) -> list:
         horarios_del_dia = self.horarios_ocupados.get(dia)
         dia_de_la_semana = dia.weekday()
@@ -45,6 +46,35 @@ class Agenda:
             dias_horarios_disponibles[dia_a_revisar]= horarios_disponibles
             dia_a_revisar = dia_a_revisar + timedelta(days=1)
         return dias_horarios_disponibles
+    """
+    def horarios_disponibles(self, dia:date) -> list:   # [horarios disponibles]
+        horarios_del_dia = self.horarios_ocupados.get(dia)
+        dia_de_la_semana = dia.weekday()
+        horarios_disponibles = []
+        if  horarios_del_dia == None:   # cuando los turnos duren mas de un dia, esto no va a ser suficiente
+            if dia_de_la_semana != 6:
+                for i in range(self.comienzo_horario_de_trabajo,self.fin_horario_de_trabajo):
+                    horarios_disponibles.append(i)
+                   # horarios_disponibles.append([i, self.capacidad])
+            else:
+                for i in range(self.comienzo_horario_de_trabajo,self.fin_horario_de_trabajo_domingos):
+                    horarios_disponibles.append(i)
+                   # horarios_disponibles.append([i, self.capacidad])
+        else:
+            for hora in horarios_del_dia: #[8, 9, 10, etc]
+                if hora[1] > 0:
+                    horarios_disponibles.append(hora[0]) # [8, 1] --> [8]
+        return horarios_disponibles
+    
+    def dias_horarios_disponibles_de_treinta_dias(self, dia:date) -> dict:  #{date -> [horarios]}
+        dias_horarios_disponibles = {}
+        dia_a_revisar = dia
+        for i in range(31):
+            horarios_disponibles = self.horarios_disponibles(dia_a_revisar)
+            dias_horarios_disponibles[dia_a_revisar]= horarios_disponibles
+            dia_a_revisar = dia_a_revisar + timedelta(days=1)
+        return dias_horarios_disponibles
+    
     
     def cargar_turno(self, dia:date, hora:int, cant_horas:int):
         dia_de_la_semana = dia.weekday()

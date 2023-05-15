@@ -27,16 +27,25 @@ def turnosList(request):
 
 
 @api_view(['GET'])
-def turnoDetalle(request,id):
-    turno=Turno_taller.objects.get(id_turno=id)
-    serializer= TurnoTallerSerializer(turno,many=False)
-    return Response(serializer.data)
+def turnoDetalle(request, id_turno):
+    try:
+        turno=Turno_taller.objects.get(id_turno=id_turno)
+    except:
+        return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
+    else:
+        serializer= TurnoTallerSerializer(turno,many=False)
+        return Response(serializer.data)
 
 @api_view(['GET'])
 def diasHorariosDisponibles(request, taller_id: str):
-    dias_horarios_data = dias_disponibles_desde_hoy_a_treinta_dias(taller_id)
+    try:
+        taller = Taller.objects.get(id_taller= taller_id)
+    except:
+        return HttpResponse("error: el id ingresado no pertenece a ningún taller en el sistema", status=400)
+    else:
+        dias_horarios_data = dias_disponibles_desde_hoy_a_treinta_dias(taller_id)
     
-    resultado = [{'dia': dia, 'horarios_y_capacidad':dias_horarios_data.get(dia)} for dia in dias_horarios_data]
+        resultado = [{'dia': dia, 'horarios_disponibles':dias_horarios_data.get(dia)} for dia in dias_horarios_data]
     
     return JsonResponse({'dias_y_capacidades':resultado})
 
@@ -77,32 +86,40 @@ def crearTurno(request):
     return Response(serializer.data)
 
 @api_view(['POST'])
-def turnoUpdate(request,id):
-    turno= Turno_taller.objects.get(id_turno=id)
-    serializer=TurnoTallerSerializer(instance=turno,data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-    
-    return Response(serializer.data)
+def turnoUpdate(request, id_turno):
+    try:
+        turno=Turno_taller.objects.get(id_turno=id_turno)
+    except:
+        return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
+    else:
+        serializer=TurnoTallerSerializer(instance=turno,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+        return Response(serializer.data)
 
 @api_view(["POST"])
 def asignar_tecnico(request, id_tecnico:int, _id_turno: int):
-    turno = Turno_taller.objects.get(id_turno=_id_turno) # debería ser uno sólo
-    tipo_turno = turno.tipo
-    papeles_en_regla_turno = turno.papeles_en_regla
-    dia_inicio_turno = turno.fecha_inicio
-    hora_inicio_turno = turno.hora_inicio
-    hora_fin_turno = turno.hora_fin
+    try:
+        turno=Turno_taller.objects.get(id_turno=_id_turno)
+    except:
+        return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
+    else:
+        tipo_turno = turno.tipo
+        papeles_en_regla_turno = turno.papeles_en_regla
+        dia_inicio_turno = turno.fecha_inicio
+        hora_inicio_turno = turno.hora_inicio
+        hora_fin_turno = turno.hora_fin
     
-    if not se_puede_asignar_tecnico(tipo_turno, papeles_en_regla_turno):
-        return HttpResponse("error: administracion no ha aprobado la documentacion.", status=400)
-    if not esta_disponible(id_tecnico,dia_inicio_turno, hora_inicio_turno, hora_fin_turno):
-        return HttpResponse("error: el tecnico no tiene disponible ese horario", status=400)
-    
-    turno.tecnico_id = id_tecnico  # agregamos el id del tecnico al turno
-    turno.save()
-    turno.estado = "En proceso" # cambiamos el estado del turno
-    turno.save()
-    
-    serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el tecnico recien asignado
-    return Response(serializer.data)
+        if not se_puede_asignar_tecnico(tipo_turno, papeles_en_regla_turno):
+            return HttpResponse("error: administracion no ha aprobado la documentacion.", status=400)
+        if not esta_disponible(id_tecnico,dia_inicio_turno, hora_inicio_turno, hora_fin_turno):
+            return HttpResponse("error: el tecnico no tiene disponible ese horario", status=400)
+        
+        turno.tecnico_id = id_tecnico  # agregamos el id del tecnico al turno
+        turno.save()
+        turno.estado = "En proceso" # cambiamos el estado del turno
+        turno.save()
+        
+        serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el tecnico recien asignado
+        return Response(serializer.data)
