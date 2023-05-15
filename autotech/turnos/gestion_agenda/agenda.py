@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 class Agenda:
     
-    def __init__(self, taller_id:str, capacidad:int) -> None:
+    def __init__(self, taller_id:int, capacidad:int) -> None:
         self.horarios_ocupados = {} #date->[[8, capacidad], [9, capacidad], [10, capacidad],...]
         self.capacidad = capacidad
         self.taller_id = taller_id

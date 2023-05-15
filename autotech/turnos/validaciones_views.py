@@ -2,6 +2,8 @@
 from administracion.models import Turno_taller
 from datetime import date, time
 
+# -------- crear turno -------- #
+
 def horarios_exactos(hora_inicio:time, hora_fin:time):
     return hora_inicio.minute == 0 and hora_fin.minute == 0 and hora_inicio.second == 0 and hora_fin.second == 0 # and hora_inicio <= hora_fin
         
@@ -26,13 +28,7 @@ def dia_hora_coherentes(dia_inicio: date, horario_inicio: time, dia_fin: date , 
 def dia_valido(dia: date):
     return dia > date.today()
 
-"""
-def tiempos_coherentes(horario_inicio: time, horario_fin: time, dia_inicio: date, dia_fin: date):
-    if horario_inicio.hour < horario_fin.hour:
-        return True
-    elif dia_inicio < dia_fin:
-        return True
-"""
+# -------- asignar tecnico -------- #
     
 def se_puede_asignar_tecnico(tipo_turno: str, papeles_en_regla_turno: bool):
     if tipo_turno != "Evaluacion":

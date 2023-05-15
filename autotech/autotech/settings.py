@@ -42,7 +42,6 @@ if RENDER_EXTERNAL_HOSTNAME:
 # Application definition
 
 INSTALLED_APPS = [
-    'turnos.apps.TurnosConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,8 +50,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'administracion',
-    'tecnico',
+    'turnos.apps.TurnosConfig',
+    'administracion.apps.AdministracionConfig',
+    'evaluaciones.apps.EvaluacionesConfig',
+    'tecnicos.apps.TecnicosConfig',
 ]
 
 MIDDLEWARE = [
@@ -124,24 +125,6 @@ else:
         'PORT': '5432',
     }
 }
-
-""" DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'insomniadb_73w9',
-        'USER': 'admin',
-        'PASSWORD': '3sKi4wWanO9CoaGu3OKB0HgtFow11VTT',
-        'HOST': 'dpg-chehs2ak728m8k6h8ft0-a.ohio-postgres.render.com',
-        'PORT': '5432',
-    }
-} """
-
-""" # Configuración de la base de datos de prueba
-DATABASES  = { 'default': {
-    'ENGINE': 'django.db.backends.sqlite3',
-    'NAME': 'BASE_DIR / "db.sqlite3',
- }
-} """
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

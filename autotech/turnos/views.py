@@ -8,7 +8,6 @@ from .gestion_agenda.visualizar_y_modificar_agenda import *
 from .validaciones_views import * 
 from datetime import *
 
-
 @api_view(['GET'])
 def turnosOverview(request):
     turnos_urls={
