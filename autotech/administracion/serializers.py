@@ -32,3 +32,8 @@ class RegistroEvaluacionSerializer(serializers.ModelSerializer):
         model = Registro_evaluacion
         fields = '__all__'
 
+class ChecklistEvaluacionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Checklist_evaluacion
+        fields = '__all__'
+

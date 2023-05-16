@@ -68,7 +68,7 @@ class Registro_evaluacion_para_admin(models.Model):
 # ----------------------------------------------------------------------------------------------------#
 class Checklist_evaluacion(models.Model):
     id_task = models.AutoField(primary_key=True)
-    elemento = models.CharField(max_length=80)
+    elemento = models.TextField()
     tarea = models.TextField()
     costo_reemplazo = models.FloatField(validators=[MinValueValidator(0)])
     duracion_reemplazo = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator])

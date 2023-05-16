@@ -11,11 +11,11 @@ from rest_framework.views import APIView
 
 
 from administracion.models import  Turno_taller, Registro_evaluacion_para_admin, Registro_evaluacion, Checklist_evaluacion
-from administracion.serializers import  RegistroEvaluacionXAdminSerializerGET, RegistroEvaluacionSerializer
+from administracion.serializers import  RegistroEvaluacionXAdminSerializerGET, RegistroEvaluacionSerializer, ChecklistEvaluacionSerializer
 
 
 # -----------------------------------------------------------------------------------------------------
-
+#------------------------------------REGISTRO EVALUACION CREAR-----------------------------------------------
 # -----------------------------------------------------------------------------------------------------
 class RegistroEvaluacionCreate(APIView):
     permission_classes = [permissions.AllowAny]
@@ -69,7 +69,9 @@ def generar_reporte_administracion(sender, instance, created, **kwargs):
                                                  duracion_total_reparaciones=duracion_total_reparaciones, puntaje_total=puntaje_total)
         
         reporte.save()
-
+# -----------------------------------------------------------------------------------------------------
+#------------------------------------REGISTRO EVALUACION LEER TODOS------------------------------------
+# -----------------------------------------------------------------------------------------------------
 class RegistroEvaluacionList(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -79,7 +81,7 @@ class RegistroEvaluacionList(APIView):
         return Response(serializer.data)
 
 # -----------------------------------------------------------------------------------------------------
-
+#------------------------------------REGISTRO EVALUACION LEER UNO--------------------------------------
 # -----------------------------------------------------------------------------------------------------
 class RegistroEvaluacionUno(APIView):
     permission_classes = [permissions.AllowAny]
@@ -90,7 +92,7 @@ class RegistroEvaluacionUno(APIView):
         return Response(serializer.data)
 
 # -----------------------------------------------------------------------------------------------------
-
+#------------------------------------REGISTRO EVALUACION LEER CON DETALLES-----------------------------
 # -----------------------------------------------------------------------------------------------------
 class RegistroEvaluacionXAdminReadOnly(APIView):
     permission_classes = [permissions.AllowAny]
@@ -104,5 +106,12 @@ class RegistroEvaluacionXAdminReadOnly(APIView):
 # -----------------------------------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------------------------------
+class ChecklistEvaluacionList(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, format=None):
+        checklist = Checklist_evaluacion.objects.all()
+        serializer = ChecklistEvaluacionSerializer(checklist, many=True)
+        return Response(serializer.data)
 
 

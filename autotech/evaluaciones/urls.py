@@ -10,7 +10,9 @@ urlpatterns = [
     path('registros/crear/', RegistroEvaluacionCreate.as_view(), name= 'crear_registro_evaluacion'),
     path('registros/listar/', RegistroEvaluacionList.as_view(), name='listar_registro_evaluacion'),
     path('registros/listar/detalle/',RegistroEvaluacionXAdminReadOnly.as_view(), name='listar_registro_evaluacion_admin'),
-    path('registros/listar/<int:id_turno>/', RegistroEvaluacionUno.as_view(), name = 'listar_registros_evaluacion_por_id')
+    path('registros/listar/<int:id_turno>/', RegistroEvaluacionUno.as_view(), name = 'listar_registros_evaluacion_por_id'),
+
+    path('checklist/listar/', ChecklistEvaluacionList.as_view(), name= 'listar_checklist_evaluacion')
 ]
 
 
