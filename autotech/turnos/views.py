@@ -132,7 +132,7 @@ def asignar_tecnico(request, id_tecnico:int, id_turno: int):
         
         turno.tecnico_id = id_tecnico  # agregamos el id del tecnico al turno
         turno.save()
-        turno.estado = "En proceso" # cambiamos el estado del turno
+        turno.estado = "en_proceso" # cambiamos el estado del turno
         turno.save()
         
         serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el tecnico recien asignado

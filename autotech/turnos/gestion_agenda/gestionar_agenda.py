@@ -33,13 +33,14 @@ def cargar_turnos_taller(dia:date, agenda:Agenda):
 
 def tecnico_esta_disponible(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time, id_tecnico:int) -> bool:
     try:
-        turnos_del_tecnico = Turno_taller.objects.filter(tecnico_id= id_tecnico)
+        turnos_del_tecnico = Turno_taller.objects.filter(tecnico_id= id_tecnico).exclude(estado='terminado').exclude(estado='cancelado').exclude(estado='rechazado')
     except:
         return True
     else:
         agenda = crear_agenda_tecnico()
         cargar_turnos_tecnico(id_tecnico, agenda, turnos_del_tecnico)
         duracion = calcular_duracion(fecha_inicio, hora_inicio, fecha_fin, hora_fin)
+        
         return agenda.esta_disponible(fecha_inicio, hora_inicio.hour, duracion)
             
 def crear_agenda_tecnico():

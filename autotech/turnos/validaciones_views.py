@@ -41,16 +41,16 @@ def dia_valido(dia: date):
 # devuelve una lista con los id de los tecnicos que podrían encargarse del turno
 def obtener_tecnicos_disponibles(id_turno: int, id_taller: int) -> list:
     tecnicos_disponibles = []
-    id_tecnicos = obtener_id_tecnicos(id_taller)
-    turno = Turno_taller.objects.get(id_turno=id_turno)
+    id_tecnicos = obtener_id_tecnicos(id_taller)    # sólo consideramos los tecnicos que trabajan en ese taller
+    turno = Turno_taller.objects.get(id_turno=id_turno) # obtenemos el turno en cuestion, porque necesitamos sus horarios
     for id_tecnico in id_tecnicos:
+        # esta disponible ==  tiene ese espacio disponible en su agenda, sin contar turnos terminados/cancelados/rechazados
         if esta_disponible(id_tecnico, turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin):
             tecnicos_disponibles.append(id_tecnico)
     return tecnicos_disponibles
 
 def obtener_id_tecnicos(id_taller: int) -> list:
     tecnicos = ConsumidorApiTecnicos.consumir_tecnicos(f'S00{id_taller}')
-    print(tecnicos)
     id_tecnicos = []
     for tecnico in tecnicos:
         id_tecnicos.append(tecnico['id_empleado'])
@@ -59,7 +59,7 @@ def obtener_id_tecnicos(id_taller: int) -> list:
 # -------- asignar tecnico -------- #
     
 def se_puede_asignar_tecnico(tipo_turno: str, papeles_en_regla_turno: bool):
-    if tipo_turno != "Evaluacion":
+    if tipo_turno != "evaluacion":
         es_valido = True
     elif papeles_en_regla_turno == True:
         es_valido = True

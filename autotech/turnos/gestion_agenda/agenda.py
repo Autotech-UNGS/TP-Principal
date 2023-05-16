@@ -17,7 +17,7 @@ class Agenda:
             if (hora == self.fin_horario_de_trabajo and fecha.weekday() != 6) or (hora == self.fin_horario_de_trabajo_domingos and fecha.weekday() == 6):
                 hora = 8
                 fecha = fecha + timedelta(days=1)
-                horarios_del_dia = self.obtener_horarios_del_dia(fecha)  #[[8,capacidad],[9,capacidad]]
+                horarios_del_dia = self.obtener_horarios_del_dia(fecha)  #[[8,capacidad],[9,capacidad]]                
             if horarios_del_dia[hora - 8][1] == 0:
                 return False
             hora+=1
