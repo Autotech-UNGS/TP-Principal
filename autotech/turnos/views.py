@@ -4,7 +4,6 @@ from administracion.models import *
 from administracion.serializers import TurnoTallerSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .gestion_agenda.gestionar_agenda import *
 from .validaciones_views import * 
 from datetime import *
 
@@ -44,11 +43,9 @@ def diasHorariosDisponibles(request, taller_id: int):
     except:
         return HttpResponse("error: el id ingresado no pertenece a ningún taller en el sistema", status=400)
     else:
-        dias_horarios_data = dias_disponibles_desde_hoy_a_treinta_dias(taller_id)
-    
+        dias_horarios_data = dias_horarios_disponibles_treinta_dias(taller_id)
         resultado = [{'dia': dia, 'horarios_disponibles':dias_horarios_data.get(dia)} for dia in dias_horarios_data]
-    
-    return JsonResponse({'dias_y_horarios':resultado})
+        return JsonResponse({'dias_y_horarios':resultado})
 
 @api_view(['POST'])
 def crearTurno(request):
@@ -99,9 +96,16 @@ def turnoUpdate(request, id_turno):
 
         return Response(serializer.data)
     
-#@api_view(['GET'])
-#def tecnicos_disponibles(request, id_turno: int):
-    
+@api_view(['GET'])
+def tecnicos_disponibles(request, id_turno: int):
+    try:
+        turno=Turno_taller.objects.get(id_turno=id_turno)
+    except:
+        return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
+    else:
+        tecnicos_disponibles = obtener_tecnicos_disponibles(turno.id_turno, turno.taller_id.id_taller)
+        resultado = [{'id_tecnico': tecnico} for tecnico in tecnicos_disponibles]
+        return JsonResponse({'tecnicos_disponibles':resultado})
     
 
 @api_view(["POST"])

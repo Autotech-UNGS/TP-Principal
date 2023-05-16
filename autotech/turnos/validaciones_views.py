@@ -2,6 +2,11 @@
 from administracion.models import Turno_taller
 from datetime import date, time
 from .gestion_agenda.gestionar_agenda import *
+from tecnicos.views import *
+
+# -------- dias y horarios disponibles -------- #
+def dias_horarios_disponibles_treinta_dias(id_taller:int):
+    return dias_disponibles_desde_hoy_a_treinta_dias(id_taller)
 
 # -------- crear turno -------- #
 
@@ -29,6 +34,30 @@ def dia_hora_coherentes(dia_inicio: date, horario_inicio: time, dia_fin: date , 
 def dia_valido(dia: date):
     return dia > date.today()
 
+# -------- tecnicos disponibles -------- #
+
+# devuelve una lista con los id de los tecnicos que podrían encargarse del turno
+def obtener_tecnicos_disponibles(id_turno: int, id_taller: int) -> list:
+    tecnicos_disponibles = []
+    id_tecnicos = obtener_id_tecnicos(id_taller)
+    turno = Turno_taller.objects.get(id_turno=id_turno)
+    for id_tecnico in id_tecnicos:
+        if tecnico_esta_disponible(turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin, id_tecnico):
+            tecnicos_disponibles.append(id_tecnico)
+    return tecnicos_disponibles
+
+def obtener_id_tecnicos(id_taller: int):
+    url = f'https://autotech2.onrender.com/tecnicos/listar/?branch={id_taller}'
+    usuarios_data = requests.get(url)
+    if usuarios_data.status_code != 200:
+        raise requests.HTTPError({'message error' : usuarios_data.status_code})
+    usuarios_data = usuarios_data.json()
+    id_tecnicos = [{
+        'id_empleado': tecnico['id_empleado']
+        } for tecnico in usuarios_data if tecnico['branch'].endswith(id_taller) and tecnico['tipo'] == "Tecnico"]   
+    return id_tecnicos
+
+
 # -------- asignar tecnico -------- #
     
 def se_puede_asignar_tecnico(tipo_turno: str, papeles_en_regla_turno: bool):
@@ -42,38 +71,3 @@ def se_puede_asignar_tecnico(tipo_turno: str, papeles_en_regla_turno: bool):
 
 def esta_disponible(id_tecnico: int, fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time):
     return tecnico_esta_disponible(fecha_inicio, hora_inicio, fecha_fin, hora_fin, id_tecnico)
-
-"""
-def esta_disponible(id_tecnico: int, dia:date, hora_inicio:time, hora_fin:time):
-    # Si el id del tecnico no aparece en ningun turno, da una excepcion. Para evitarlo, hacemos
-    # retornamos True --> no tiene turnos, entonces esta disponible
-    try:
-        turnos_del_tecnico = Turno_taller.objects.filter(tecnico_id = id_tecnico).filter(fecha_inicio = dia)
-    except:
-    #if turnos_del_tecnico == None:
-        return True
-    else:
-        #print(Turno_taller.objects.all())
-        turnos_del_tecnico = Turno_taller.objects.filter(tecnico_id = id_tecnico).filter(fecha_inicio = dia)
-        esta_disponible = True
-        for turno in turnos_del_tecnico:
-            esta_disponible = esta_disponible and no_hay_superposicion(turno.hora_inicio, turno.hora_fin, hora_inicio, hora_fin)
-        
-        return esta_disponible
-            
-def no_hay_superposicion(hora_inicio1: time, hora_fin1: time, hora_inicio2: time, hora_fin2: time):
-    resultado = True
-    # comienzan o terminan a la vez
-    if hora_inicio1 == hora_inicio2 or hora_fin1 == hora_fin2:
-        resultado = False # sí hay superposición
-    # una está contenida dentro de la otra
-    elif (hora_inicio1 > hora_inicio2 and hora_fin1 < hora_fin2) or (hora_inicio2 > hora_inicio1 and hora_fin2 < hora_fin1):
-        resultado = False # sí hay superposición
-    # una comienza antes de que la otra termine
-    elif (hora_inicio1 > hora_inicio2 and hora_inicio1 < hora_fin2) or (hora_inicio2 > hora_inicio1 and hora_inicio2 < hora_fin1):
-        resultado = False # sí hay superposición
-    # una termina después de que la otra haya empezado
-    elif (hora_fin1 > hora_inicio2 and hora_fin1 < hora_fin2) or (hora_fin2 > hora_inicio1 and hora_fin2 < hora_fin1):
-        resultado = False
-    return resultado
-"""        
