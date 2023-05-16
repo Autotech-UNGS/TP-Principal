@@ -38,7 +38,7 @@ def tecnico_esta_disponible(fecha_inicio:date, hora_inicio:time, fecha_fin:date,
         return True
     else:
         agenda = crear_agenda_tecnico()
-        cargar_turnos_tecnico(id_tecnico, agenda)
+        cargar_turnos_tecnico(id_tecnico, agenda, turnos_del_tecnico)
         duracion = calcular_duracion(fecha_inicio, hora_inicio, fecha_fin, hora_fin)
         return agenda.esta_disponible(fecha_inicio, hora_inicio.hour, duracion)
             

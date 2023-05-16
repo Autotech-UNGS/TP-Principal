@@ -71,3 +71,19 @@ def se_puede_asignar_tecnico(tipo_turno: str, papeles_en_regla_turno: bool):
 
 def esta_disponible(id_tecnico: int, fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time):
     return tecnico_esta_disponible(fecha_inicio, hora_inicio, fecha_fin, hora_fin, id_tecnico)
+
+def coinciden_los_talleres(id_tecnico: int, id_taller: int):
+    taller_del_tecnico = obtener_taller_del_tecnico(id_tecnico)
+    return taller_del_tecnico == id_taller
+
+def obtener_taller_del_tecnico(id_tecnico):
+    url = "https://api-rest-pp1.onrender.com/api/usuarios/"
+    usuarios_data = requests.get(url)
+    if usuarios_data.status_code != 200:
+        raise requests.HTTPError({'message error' : usuarios_data.status_code})
+    usuarios_data = usuarios_data.json()
+    taller_tecnico = 0
+    for tecnico in usuarios_data:
+        if tecnico['tipo'] == 'Tecnico' and tecnico['id_empleado'] == id_tecnico:
+            taller_tecnico = tecnico['branch']
+    return taller_tecnico

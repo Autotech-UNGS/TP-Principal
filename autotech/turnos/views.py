@@ -109,9 +109,9 @@ def tecnicos_disponibles(request, id_turno: int):
     
 
 @api_view(["POST"])
-def asignar_tecnico(request, id_tecnico:int, _id_turno: int):
+def asignar_tecnico(request, id_tecnico:int, id_turno: int):
     try:
-        turno=Turno_taller.objects.get(id_turno=_id_turno)
+        turno=Turno_taller.objects.get(id_turno=id_turno)
     except:
         return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
     else:
@@ -122,6 +122,8 @@ def asignar_tecnico(request, id_tecnico:int, _id_turno: int):
         dia_fin_turno = turno.fecha_fin
         hora_fin_turno = turno.hora_fin
     
+        if not coinciden_los_talleres(id_tecnico, turno.taller_id.id_taller):
+            return HttpResponse("error: el turno no esta asignado al taller donde el tecnico trabaja.", status=400)
         if not se_puede_asignar_tecnico(tipo_turno, papeles_en_regla_turno):
             return HttpResponse("error: administracion no ha aprobado la documentacion.", status=400)
         if not esta_disponible(id_tecnico,dia_inicio_turno, hora_inicio_turno, dia_fin_turno, hora_fin_turno):
