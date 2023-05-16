@@ -119,6 +119,10 @@ def asignar_tecnico(request, id_tecnico:int, id_turno: int):
         hora_inicio_turno = turno.hora_inicio
         dia_fin_turno = turno.fecha_fin
         hora_fin_turno = turno.hora_fin
+        tecnico_asignado = turno.tecnico_id
+        
+        if tecnico_asignado != None:
+            return HttpResponse("error: el turno ya fue asignado.", status=400)
         if not coinciden_los_talleres(id_tecnico, turno.taller_id.id_taller):
             return HttpResponse("error: el turno no esta asignado al taller donde el tecnico trabaja.", status=400)
         if not se_puede_asignar_tecnico(tipo_turno, papeles_en_regla_turno):

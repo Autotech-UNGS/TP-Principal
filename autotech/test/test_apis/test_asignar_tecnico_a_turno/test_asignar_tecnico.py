@@ -26,26 +26,30 @@ class AsignarTecnicoTestCase(TestSetUp):
         url = reverse('asignar-tecnico', args=[id_tecnico,id_turno])
         return self.client.post(url)
     
+    def generar_response_esperado(self, turno: Turno_taller):
+        response_esperado ={
+            'id_turno': turno.id_turno ,
+            'tipo': turno.tipo,
+            'estado': 'En proceso',
+            'taller_id': turno.taller_id.id_taller,
+            'tecnico_id': self.id_tecnico,
+            'patente': turno.patente,
+            'fecha_inicio': turno.fecha_inicio.strftime("%Y-%m-%d"),
+            'hora_inicio': turno.hora_inicio.strftime("%H:%M:%S"),
+            'fecha_fin': turno.fecha_fin.strftime("%Y-%m-%d"),
+            'hora_fin': turno.hora_fin.strftime("%H:%M:%S"),
+            'frecuencia_km': 0,
+            'papeles_en_regla': True 
+            }
+        return response_esperado
+    
     # ------------------------ Tecnicos disponibles ------------------------ #
 
     # ------------------------ Asignar tecnico ------------------------ #
     def test_tecnico_disponible(self):
         # vamos a asignarle un turno de 10 a 12, papeles en regla --> asigna
         turno = Turno_taller.objects.get(id_turno=4)
-        response_esperado ={
-                'id_turno': turno.id_turno ,
-                'tipo': turno.tipo,
-                'estado': 'En proceso',
-                'taller_id': turno.taller_id.id_taller,
-                'tecnico_id': self.id_tecnico,
-                'patente': turno.patente,
-                'fecha_inicio': turno.fecha_inicio.strftime("%Y-%m-%d"),
-                'hora_inicio': turno.hora_inicio.strftime("%H:%M:%S"),
-                'fecha_fin': turno.fecha_fin.strftime("%Y-%m-%d"),
-                'hora_fin': turno.hora_fin.strftime("%H:%M:%S"),
-                'frecuencia_km': 0,
-                'papeles_en_regla': True 
-            }
+        response_esperado = self.generar_response_esperado(turno)
         
         self.assertEqual(self.post_response_asignar_tecnico(self.id_tecnico, turno.id_turno).status_code, 200) # da 400
         self.assertDictEqual(self.get_response_turno_detalle(turno.id_turno).json(), response_esperado)
@@ -53,23 +57,18 @@ class AsignarTecnicoTestCase(TestSetUp):
     def test_tecnico_disponible_2(self):
         # vamos a asignarle un turno de 10 a 13 --> asigna
         turno = Turno_taller.objects.get(id_turno=5)
-        response_esperado ={
-                'id_turno': turno.id_turno ,
-                'tipo': turno.tipo,
-                'estado': 'En proceso',
-                'taller_id': turno.taller_id.id_taller,
-                'tecnico_id': self.id_tecnico,
-                'patente': turno.patente,
-                'fecha_inicio': turno.fecha_inicio.strftime("%Y-%m-%d"),
-                'hora_inicio': turno.hora_inicio.strftime("%H:%M:%S"),
-                'fecha_fin': turno.fecha_fin.strftime("%Y-%m-%d"),
-                'hora_fin': turno.hora_fin.strftime("%H:%M:%S"),
-                'frecuencia_km': 0,
-                'papeles_en_regla': True 
-            }
+        response_esperado = self.generar_response_esperado(turno)
         
         self.assertEqual(self.post_response_asignar_tecnico(self.id_tecnico, turno.id_turno).status_code, 200) # da 400
         self.assertDictEqual(self.get_response_turno_detalle(turno.id_turno).json(), response_esperado)
+        
+    def test_turno_ya_asignado(self):
+        # vamos a asignarle un turno a otro tecnico --> no asigna
+        turno = Turno_taller.objects.get(id_turno=5)
+        response_esperado = self.generar_response_esperado(turno)
+        otro_id = 4
+        self.assertDictEqual(self.get_response_turno_detalle(turno.id_turno).json(), response_esperado)
+        self.assertEqual(self.post_response_asignar_tecnico(otro_id, turno.id_turno).status_code, 400)        
         
     def test_tecnico_disponible_papeles_no_en_regla(self):
         # vamos a asignarle un turno de 10 a 13 --> no asigna
@@ -94,4 +93,9 @@ class AsignarTecnicoTestCase(TestSetUp):
     def test_tecnico_no_disponible_principio(self):
         # intentamos asignarle un turno de 8 a 10 --> no asigna
         turno = Turno_taller.objects.get(id_turno=10)
+        self.assertEqual(self.post_response_asignar_tecnico(self.id_tecnico, turno.id_turno).status_code, 400)
+
+    def test_tecnico_pertenece_a_otro_taller(self):
+        # intentamos asignarle un turno que pertenece a otro taller
+        turno = Turno_taller.objects.get(id_turno=11)
         self.assertEqual(self.post_response_asignar_tecnico(self.id_tecnico, turno.id_turno).status_code, 400)
