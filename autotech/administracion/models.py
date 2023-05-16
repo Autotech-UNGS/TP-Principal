@@ -72,7 +72,7 @@ class Checklist_evaluacion(models.Model):
     tarea = models.TextField()
     costo_reemplazo = models.FloatField(validators=[MinValueValidator(0)])
     duracion_reemplazo = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator])
-    puntaje_max = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(2500)])
+    puntaje_max = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(2500)], default = 2500)
 
 class Registro_evaluacion(models.Model):
     id_turno = models.OneToOneField(Turno_taller, on_delete=models.PROTECT)

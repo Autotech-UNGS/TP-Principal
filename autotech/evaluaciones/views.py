@@ -54,7 +54,7 @@ def generar_reporte_administracion(sender, instance, created, **kwargs):
     if created:
 
         detalle = instance.detalle
-        puntaje_total = 2500
+        puntaje_total = Checklist_evaluacion._meta.get_field('puntaje_max').default
         costo_total = 0.0
         duracion_total_reparaciones = 0
 
