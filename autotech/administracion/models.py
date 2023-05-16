@@ -58,9 +58,9 @@ class Registro_reparacion(models.Model):
     
 # ----------------------------------------------------------------------------------------------------#
 class Registro_evaluacion_para_admin(models.Model):
-    id_turno = models.ForeignKey(Turno_taller, on_delete=models.PROTECT)
+    id_turno = models.OneToOneField(Turno_taller, on_delete=models.PROTECT)
     costo_total = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1000000)], default=0.0)
-    duracion_total_reparaciones = models.IntegerField(validators=[MinValueValidator(0)])
+    duracion_total_reparaciones = models.IntegerField(validators=[MinValueValidator(0)], default= 0)
     puntaje_total = models.IntegerField(validators=[MinValueValidator(-2500), MaxValueValidator(2500)], default=2500)
     detalle = models.TextField(blank=True, null=True)
     fecha_registro = models.DateField(auto_now_add=True)
@@ -75,6 +75,7 @@ class Checklist_evaluacion(models.Model):
     puntaje_max = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(2500)])
 
 class Registro_evaluacion(models.Model):
-    id_turno = models.ForeignKey(Turno_taller, on_delete=models.PROTECT)
+    id_turno = models.OneToOneField(Turno_taller, on_delete=models.PROTECT)
     id_task_puntaje = models.JSONField(null=True, blank=True)
+    detalle = models.TextField(blank=True, null=True)
 

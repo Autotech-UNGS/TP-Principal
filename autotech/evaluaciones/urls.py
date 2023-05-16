@@ -1,18 +1,16 @@
-from django.urls import path
+from django.urls import path, reverse, include
+
 from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework import routers
-from .views import RegistroEvaluacionXAdminCreate, RegistroEvaluacionXAdminReadOnly, RegistroEvaluacionCreate
+from rest_framework.views import APIView
 
-router = routers.DefaultRouter()
-
-router.register(r'registros-admin', RegistroEvaluacionXAdminReadOnly, basename='registros_evaluaciones')
-router.register(r'registros-crear-admin', RegistroEvaluacionXAdminCreate, basename='crear_registro_evaluacion_para_admin')
+from .views import *
 
 urlpatterns = [
-    path('registros/crear/', RegistroEvaluacionCreate.as_view(), name= 'crear_registro_evaluacion')
+    path('registros/crear/', RegistroEvaluacionCreate.as_view(), name= 'crear_registro_evaluacion'),
+    path('registros/listar/', RegistroEvaluacionList.as_view(), name='listar_registro_evaluacion'),
+    path('registros/listar/detalle/',RegistroEvaluacionXAdminReadOnly.as_view(), name='listar_registro_evaluacion_admin'),
+    path('registros/listar/<int:id_turno>/', RegistroEvaluacionUno.as_view(), name = 'listar_registros_evaluacion_por_id')
 ]
 
-urlpatterns = format_suffix_patterns(urlpatterns)
-
-urlpatterns += router.urls
 
