@@ -1,9 +1,18 @@
+from unittest.mock import patch, Mock
 from django.urls import reverse
 from .test_setup import TestSetUp
 from administracion.models import Turno_taller
 from turnos.views import *
+from test.factories.tecnicos_factories import *
 
 class AsignarTecnicoTestCase(TestSetUp):
+    tecnicos =  UsuarioFactory.build_batch(3, tipo="Tecnico", categoria='A')
+    tecnico_otro_taller =  UsuarioFactory.build(tipo="Tecnico", categoria='A', branch='S002')
+    tecnicos_mock = [usuario.__dict__ for usuario in tecnicos]
+
+    mock_api_response = Mock()
+    mock_api_response.status_code = 200
+    mock_api_response.json.return_value = tecnicos_mock
     id_tecnico = 2
     def get_response_lista_turnos(self):
         url = reverse('turnos-list')
@@ -16,6 +25,8 @@ class AsignarTecnicoTestCase(TestSetUp):
     def post_response_asignar_tecnico(self, id_tecnico, id_turno):
         url = reverse('asignar-tecnico', args=[id_tecnico,id_turno])
         return self.client.post(url)
+    
+    # ------------------------ Tecnicos disponibles ------------------------ #
 
     # ------------------------ Asignar tecnico ------------------------ #
     def test_tecnico_disponible(self):
@@ -36,7 +47,7 @@ class AsignarTecnicoTestCase(TestSetUp):
                 'papeles_en_regla': True 
             }
         
-        self.assertEqual(self.post_response_asignar_tecnico(self.id_tecnico, turno.id_turno).status_code, 200)
+        self.assertEqual(self.post_response_asignar_tecnico(self.id_tecnico, turno.id_turno).status_code, 200) # da 400
         self.assertDictEqual(self.get_response_turno_detalle(turno.id_turno).json(), response_esperado)
         
     def test_tecnico_disponible_2(self):
@@ -57,7 +68,7 @@ class AsignarTecnicoTestCase(TestSetUp):
                 'papeles_en_regla': True 
             }
         
-        self.assertEqual(self.post_response_asignar_tecnico(self.id_tecnico, turno.id_turno).status_code, 200)
+        self.assertEqual(self.post_response_asignar_tecnico(self.id_tecnico, turno.id_turno).status_code, 200) # da 400
         self.assertDictEqual(self.get_response_turno_detalle(turno.id_turno).json(), response_esperado)
         
     def test_tecnico_disponible_papeles_no_en_regla(self):

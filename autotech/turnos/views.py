@@ -61,9 +61,7 @@ def crearTurno(request):
     horario_fin_time = datetime.strptime(horario_fin, '%H:%M:%S').time()
     dia_inicio_date = datetime.strptime(dia, '%Y-%m-%d').date()
     dia_fin_date = datetime.strptime(dia_fin, '%Y-%m-%d').date()
-    
-    """if not tiempos_coherentes(horario_inicio_time, horario_fin_time, dia_inicio_date, dia_fin_date):
-        return HttpResponse("error: un turno debe terminar despues de comenzar", status=400)"""
+
     if tipo == "Service" and km == "":
         return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
     if not horarios_exactos(horario_inicio_time, horario_fin_time):
@@ -121,7 +119,6 @@ def asignar_tecnico(request, id_tecnico:int, id_turno: int):
         hora_inicio_turno = turno.hora_inicio
         dia_fin_turno = turno.fecha_fin
         hora_fin_turno = turno.hora_fin
-    
         if not coinciden_los_talleres(id_tecnico, turno.taller_id.id_taller):
             return HttpResponse("error: el turno no esta asignado al taller donde el tecnico trabaja.", status=400)
         if not se_puede_asignar_tecnico(tipo_turno, papeles_en_regla_turno):

@@ -40,3 +40,15 @@ class ConsumidorApiTecnicos():
         tecnico_data = cls.consumir_tecnico(id_tecnico)
         categoria_tecnico = tecnico_data.get('categoria')
         return categoria_tecnico
+
+    @classmethod
+    def obtener_taller_tecnico(cls, id_tecnico):
+        tecnico_data = cls.consumir_tecnico(id_tecnico)
+        taller_tecnico = tecnico_data.get('branch')
+        return taller_tecnico
+    
+    @classmethod
+    def obtener_id_tecnico(cls, id_tecnico):
+        tecnico_data = cls.consumir_tecnico(id_tecnico)
+        taller_tecnico = tecnico_data.get('id_empleado')
+        return taller_tecnico
