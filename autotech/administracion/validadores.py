@@ -22,6 +22,7 @@ class EstadoTurno(models.TextChoices):
     RECHAZADO = "rechazado",("Rechazado")
     EN_PROCESO = "en_proceso",("En proceso")
     TERMINADO = "terminado",("Terminado")
+    CANCELADO = "cancelado",("Cancelado")
 
 class TiposTurno(models.TextChoices):
     SERVICE = "service",("Service")

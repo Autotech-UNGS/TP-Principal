@@ -18,7 +18,7 @@ class BusquedaTecnicoTestCase(TestSetUp):
 
     def get_response_lista_tecnicos(self, id_sucursal):
         with patch('requests.get', return_value=self.mock_api_response):
-            url = reverse('lista_tecnicos') + f'?branch={id_sucursal}'
+            url = reverse('lista-tecnicos') + f'?branch={id_sucursal}'
             return self.client.get(url)
         
     def test_obtener_lista_tecnicos_con_sucursal_valida(self):
@@ -54,7 +54,7 @@ class BusquedaTecnicoTestCase(TestSetUp):
     # -------------------- Test detalle_trabajos_tecnico -------------------- #
       
     def get_response_datalle_trabajos_tecnico(self, id_tecnico, id_sucursal):   
-        url = reverse('detalle_trabajos_tecnico', args=[id_tecnico])+ f'?branch={id_sucursal}'
+        url = reverse('detalle-trabajos-tecnico', args=[id_tecnico])+ f'?branch={id_sucursal}'
         return self.client.get(url) 
     
     def get_datos_turno(self):
@@ -113,7 +113,7 @@ class BusquedaTecnicoTestCase(TestSetUp):
 
     def get_response_filtrar_tecnicos(self, id_sucursal, categoria=None, dni=None,  nombre=None):   
         with patch('requests.get', return_value=self.mock_api_response):
-            url = reverse('filtrar_tecnicos') + f'?branch={id_sucursal}'
+            url = reverse('filtrar-tecnicos') + f'?branch={id_sucursal}'
             if categoria is not None:
                 url += f'&categoria={categoria}'
             if dni is not None:

@@ -3,28 +3,31 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
+from administracion.serializers import TurnoTallerSerializer
 from administracion.models import Turno_taller
-from .validaciones_views import ValidadorDatosTecnico
+from .validadores_views import ValidadorDatosTecnico, ValidadorDatosSupervisor
+from .consumidor_api_externa import ConsumidorApiTecnicos
 
 
 class TecnicoViewSet(ViewSet):
-    validador = ValidadorDatosTecnico()
+    validador_tec = ValidadorDatosTecnico()
+    validador_sup = ValidadorDatosSupervisor()
 
     @action(detail=False, methods=['get'])
     def lista_tecnicos(self, request):
         sucursal_supervisor = request.GET.get('branch')     
-        if not self.validador.sucursal(sucursal_supervisor):
+        if not self.validador_sup.sucursal(sucursal_supervisor):
             return HttpResponse('error: numero de sucursal no valido', status=400)
-        tecnicos = self.tecnicos_todos(sucursal_supervisor)
+        tecnicos =ConsumidorApiTecnicos.consumir_tecnicos(sucursal_supervisor)
         return JsonResponse({'tecnicos': tecnicos})
 
     @action(detail=True, methods=['get'])
-    def detalle_trabajos_tecnico(self, request, pk):
+    def detalle_trabajos_tecnico(self, request, id_tecnico):
         sucursal_supervisor = request.GET.get('branch')       
-        if not self.validador.sucursal(sucursal_supervisor):
+        if not self.validador_sup.sucursal(sucursal_supervisor):
             return HttpResponse('error: numero de sucursal no valido', status=400)      
         id_sucursal = int(sucursal_supervisor[-3:])
-        turnos = Turno_taller.objects.filter(tecnico_id=pk, taller_id=id_sucursal).order_by('estado')
+        turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, taller_id=id_sucursal).order_by('estado')
         data = []
         for turno in turnos:
             data.append({
@@ -39,6 +42,24 @@ class TecnicoViewSet(ViewSet):
             })
         return Response(data)
 
+    @action(detail=True, methods=['get'])
+    def trabajos_en_proceso_tecnico(self, request, id_tecnico):
+        try:
+            turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso')
+        except Turno_taller.DoesNotExist:
+            return HttpResponse('error: tecnico no tiene turnos terminados', status=400) 
+        serializer= TurnoTallerSerializer(turnos, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])   
+    def trabajos_terminados_tecnico(self, request, id_tecnico):
+        try:
+            turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='terminado')
+        except Turno_taller.DoesNotExist:
+            return HttpResponse('error: tecnico no tiene turnos terminados', status=400) 
+        serializer= TurnoTallerSerializer(turnos, many=True)
+        return Response(serializer.data)
+    
     @action(detail=False, methods=['get'])
     def categorias(self, request):
         """Devuelve una lista de todas las categorías de técnico disponibles.
@@ -52,11 +73,11 @@ class TecnicoViewSet(ViewSet):
         categoria = request.GET.get('categoria')
         dni = request.GET.get('dni')
         nombre = request.GET.get('nombre_completo')
-        if not self.validador.sucursal(sucursal_supervisor):
+        if not self.validador_sup.sucursal(sucursal_supervisor):
             return HttpResponse('error: numero de sucursal no valido', status=400)
-        if not self.validador.categoria(categoria=categoria):
+        if not self.validador_tec.categoria(categoria=categoria):
             return HttpResponse('error: categoría no valida', status=400)
-        if not self.validador.dni(dni=dni):
+        if not self.validador_tec.dni(dni=dni):
             return HttpResponse('error: DNI no valido', status=400)
         try:
             tecnicos = self.obtener_tecnicos(sucursal_supervisor, categoria, dni, nombre)
@@ -65,7 +86,7 @@ class TecnicoViewSet(ViewSet):
             return HttpResponse(str(e), status=e.response.status_code)
     
     def obtener_tecnicos(self, sucursal_supervisor, categoria=None, dni=None, nombre=None):
-        tecnicos = self.tecnicos_todos(sucursal_supervisor)
+        tecnicos = ConsumidorApiTecnicos.consumir_tecnicos(sucursal_supervisor)
         if categoria is not None:
             tecnicos = [tecnico for tecnico in tecnicos if tecnico['categoria'] == categoria]
         if dni is not None:
@@ -76,20 +97,4 @@ class TecnicoViewSet(ViewSet):
             return []
         return tecnicos
     
-    @staticmethod
-    def tecnicos_todos(sucursal_supervisor):
-        url = "https://api-rest-pp1.onrender.com/api/usuarios/"
-        usuarios_data = requests.get(url)
-        if usuarios_data.status_code != 200:
-            raise requests.HTTPError({'message error' : usuarios_data.status_code})
-        usuarios_data = usuarios_data.json()
-        tecnicos = [{
-            'id_empleado': tecnico['id_empleado'],
-            'nombre_completo': tecnico['nombre_completo'], 
-            'dni': tecnico['dni'], 
-            'categoria': tecnico['categoria'], 
-            'branch': tecnico['branch']
-            } for tecnico in usuarios_data if tecnico['branch'].endswith(sucursal_supervisor[-3:]) and tecnico['tipo'] == "Tecnico"]   
-        return tecnicos
-
 
