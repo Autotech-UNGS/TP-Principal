@@ -1,8 +1,5 @@
-from unittest.mock import patch, Mock
 from django.urls import reverse
 from .test_setup import TestSetUp
-#from test.factories.tecnicos_factories import UsuarioFactory
-#from test.factories.turnos_factories import TurnoFactory
 from administracion.models import Turno_taller
 from turnos.views import *
 

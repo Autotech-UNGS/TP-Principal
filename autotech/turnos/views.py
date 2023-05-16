@@ -4,7 +4,7 @@ from administracion.models import *
 from administracion.serializers import TurnoTallerSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .gestion_agenda.visualizar_y_modificar_agenda import *
+from .gestion_agenda.gestionar_agenda import *
 from .validaciones_views import * 
 from datetime import *
 
@@ -13,9 +13,10 @@ def turnosOverview(request):
     turnos_urls={
         'List':'turnos-list/',
         'Detalle':'turnos-detalle/<str:id_turno>/',
-        'DiasHorariosDisponibles':'horarios-disponibles/<str:taller_id>',
+        'DiasHorariosDisponibles':'dias-horarios-disponibles/<str:taller_id>',
         'Create':'turnos-create/',
-        'Update':'turnos-update/<str:id_turno>/',
+        'Update':'turnos-update/<int:id_turno>/',
+        'Asignar-tecnico':'asignar-tecnico/<int:id_tecnico>/<int:_id_turno>/'
     }
     return Response(turnos_urls)
 
@@ -97,6 +98,11 @@ def turnoUpdate(request, id_turno):
             serializer.save()
 
         return Response(serializer.data)
+    
+#@api_view(['GET'])
+#def tecnicos_disponibles(request, id_turno: int):
+    
+    
 
 @api_view(["POST"])
 def asignar_tecnico(request, id_tecnico:int, _id_turno: int):
@@ -109,11 +115,12 @@ def asignar_tecnico(request, id_tecnico:int, _id_turno: int):
         papeles_en_regla_turno = turno.papeles_en_regla
         dia_inicio_turno = turno.fecha_inicio
         hora_inicio_turno = turno.hora_inicio
+        dia_fin_turno = turno.fecha_fin
         hora_fin_turno = turno.hora_fin
     
         if not se_puede_asignar_tecnico(tipo_turno, papeles_en_regla_turno):
             return HttpResponse("error: administracion no ha aprobado la documentacion.", status=400)
-        if not esta_disponible(id_tecnico,dia_inicio_turno, hora_inicio_turno, hora_fin_turno):
+        if not esta_disponible(id_tecnico,dia_inicio_turno, hora_inicio_turno, dia_fin_turno, hora_fin_turno):
             return HttpResponse("error: el tecnico no tiene disponible ese horario", status=400)
         
         turno.tecnico_id = id_tecnico  # agregamos el id del tecnico al turno
