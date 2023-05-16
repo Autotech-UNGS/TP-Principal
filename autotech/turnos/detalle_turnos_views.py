@@ -95,7 +95,6 @@ class DetalleTurnosViewSet(ViewSet):
         for turno in turnos:
             nombre_tecnico = ConsumidorApiTecnicos.obtener_nombre_tecnico(turno.tecnico_id)
             estado = turno.estado
-            print("llegue")
             if estado == 'en_proceso':
                 estado = 'en proceso'
             turno_data = {

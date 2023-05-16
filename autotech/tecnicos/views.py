@@ -44,21 +44,19 @@ class TecnicoViewSet(ViewSet):
 
     @action(detail=True, methods=['get'])
     def trabajos_en_proceso_tecnico(self, request, id_tecnico):
-        sucursal_supervisor = request.GET.get('branch')       
-        if not self.validador_sup.sucursal(sucursal_supervisor):
-            return HttpResponse('error: numero de sucursal no valido', status=400)
-        id_sucursal = int(sucursal_supervisor[-3:])
-        turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, taller_id=id_sucursal, estado='en_proceso')
+        try:
+            turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso')
+        except Turno_taller.DoesNotExist:
+            return HttpResponse('error: tecnico no tiene turnos terminados', status=400) 
         serializer= TurnoTallerSerializer(turnos, many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=['get'])   
     def trabajos_terminados_tecnico(self, request, id_tecnico):
-        sucursal_supervisor = request.GET.get('branch')       
-        if not self.validador_sup.sucursal(sucursal_supervisor):
-            return HttpResponse('error: numero de sucursal no valido', status=400) 
-        id_sucursal = int(sucursal_supervisor[-3:]) 
-        turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, taller_id=id_sucursal, estado='terminado')
+        try:
+            turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='terminado')
+        except Turno_taller.DoesNotExist:
+            return HttpResponse('error: tecnico no tiene turnos terminados', status=400) 
         serializer= TurnoTallerSerializer(turnos, many=True)
         return Response(serializer.data)
     
