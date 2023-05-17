@@ -3,7 +3,7 @@ from django.urls import reverse
 from .test_setup import TestSetUp
 from administracion.models import Turno_taller
 from turnos.views import *
-from test.factories.tecnicos_factories import *
+from test.factories.usuario_factorie import *
 
 class AsignarTecnicoTestCase(TestSetUp):
     id_tecnico = 2

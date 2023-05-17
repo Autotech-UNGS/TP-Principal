@@ -3,35 +3,8 @@ from tecnicos.validadores_views import ValidadorDatosTecnico, ValidadorDatosSupe
 
 class TestValidadorDatosTecnico(unittest.TestCase):
     validador_tec = ValidadorDatosTecnico()
-    validador_sup = ValidadorDatosSupervisor()
-
-    # ------------------ validacion de id sucursal ------------------ #
-    def test_sucursal_valida(self):
-        sucursal_supervisor = "S002"
-        self.assertTrue(self.validador_sup.sucursal(sucursal_supervisor))
-    
-    def test_sucursal_None(self):
-        sucursal_supervisor = None
-        self.assertFalse(self.validador_sup.sucursal(sucursal_supervisor))
-
-    def test_sucursal_longitud_invalida_1(self):
-        sucursal_supervisor = "S0001"
-        self.assertFalse(self.validador_sup.sucursal(sucursal_supervisor))
-
-    def test_sucursal_longitud_invalida_2(self):
-        sucursal_supervisor = "S01"
-        self.assertFalse(self.validador_sup.sucursal(sucursal_supervisor))
-
-    def test_sucursal_caracter_invalido(self):
-        sucursal_supervisor = "T001"
-        self.assertFalse(self.validador_sup.sucursal(sucursal_supervisor))
-
-    def test_sucursal_ultcaracteres_nodigitos(self):
-        sucursal_supervisor = "TBB1"
-        self.assertFalse(self.validador_sup.sucursal(sucursal_supervisor))
 
     # ------------------ validacion de categoria tecnico ------------------ #
-    
     def test_categoria_valida(self):
         categoria = 'D'
         self.assertTrue(self.validador_tec.categoria(categoria))  
@@ -72,3 +45,31 @@ class TestValidadorDatosTecnico(unittest.TestCase):
     def test_dni_negativo(self):
         dni = '-34565301'
         self.assertFalse(self.validador_tec.dni(dni))
+
+class TestValidadorDatosSupervisor():
+    validador_sup = ValidadorDatosSupervisor()
+
+     # ------------------ validacion de id sucursal ------------------ #
+    def test_sucursal_valida(self):
+        sucursal_supervisor = "S002"
+        self.assertTrue(self.validador_sup.sucursal(sucursal_supervisor))
+    
+    def test_sucursal_None(self):
+        sucursal_supervisor = None
+        self.assertFalse(self.validador_sup.sucursal(sucursal_supervisor))
+
+    def test_sucursal_longitud_invalida_1(self):
+        sucursal_supervisor = "S0001"
+        self.assertFalse(self.validador_sup.sucursal(sucursal_supervisor))
+
+    def test_sucursal_longitud_invalida_2(self):
+        sucursal_supervisor = "S01"
+        self.assertFalse(self.validador_sup.sucursal(sucursal_supervisor))
+
+    def test_sucursal_caracter_invalido(self):
+        sucursal_supervisor = "T001"
+        self.assertFalse(self.validador_sup.sucursal(sucursal_supervisor))
+
+    def test_sucursal_ultcaracteres_nodigitos(self):
+        sucursal_supervisor = "TBB1"
+        self.assertFalse(self.validador_sup.sucursal(sucursal_supervisor))

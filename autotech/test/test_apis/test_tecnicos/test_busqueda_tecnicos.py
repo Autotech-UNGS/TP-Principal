@@ -1,7 +1,7 @@
 from unittest.mock import patch, Mock
 from django.urls import reverse
 from .test_setup import TestSetUp
-from test.factories.tecnicos_factories import UsuarioFactory
+from test.factories.usuario_factorie import UsuarioFactory
 from administracion.models import Turno_taller
 from administracion.serializers import TurnoTallerSerializer
 from collections import OrderedDict
