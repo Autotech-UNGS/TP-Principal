@@ -6,8 +6,7 @@ from datetime import date, time
 class EnvioDeEmail:
     username = 'sorialuciac5@gmail.com'
     password = 'isymznzitbnuycra'
-    url = 'https://www.google.com/'
-    #destinatario = 'luciacsoria5@gmail.com'    
+    url = 'https://www.google.com/'  
     
     @classmethod
     def enviar_correo(cls, tipo_turno:str, destinatario: str, fecha_inicio: date, hora_inicio: time, direccion_taller: str):

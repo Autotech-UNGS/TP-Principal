@@ -85,7 +85,7 @@ def crearTurno(request):
         serializer.save()
         email_usuario = obtener_email_usuario()
         direccion_taller = obtener_direccion_taller(taller_id)
-        EnvioDeEmail.enviar_correo(tipo, email_usuario, dia_inicio_date, horario_inicio_time, direccion_taller)
+        #EnvioDeEmail.enviar_correo(tipo, email_usuario, dia_inicio_date, horario_inicio_time, direccion_taller)
     return Response(serializer.data)
 
 @api_view(['POST'])
