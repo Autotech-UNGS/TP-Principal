@@ -15,6 +15,7 @@ def turnosOverview(request):
         'DiasHorariosDisponibles':'dias-horarios-disponibles/<str:taller_id>',
         'Create':'turnos-create/',
         'Update':'turnos-update/<int:id_turno>/',
+        'Tecnicos-disponibles':'tecnicos-disponibles/<int:id_turno>/',
         'Asignar-tecnico':'asignar-tecnico/<int:id_tecnico>/<int:_id_turno>/'
     }
     return Response(turnos_urls)
@@ -62,7 +63,7 @@ def crearTurno(request):
     dia_inicio_date = datetime.strptime(dia, '%Y-%m-%d').date()
     dia_fin_date = datetime.strptime(dia_fin, '%Y-%m-%d').date()
 
-    if tipo == "Service" and km == "":
+    if tipo == "service" and km == 0:
         return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
     if not horarios_exactos(horario_inicio_time, horario_fin_time):
         return HttpResponse("error: los horarios de comienzo y fin de un turno deben ser horas exactas", status=400)
@@ -70,9 +71,9 @@ def crearTurno(request):
         return HttpResponse("error: los horarios superan el limite de la jornada laboral", status=400)
     if not dia_valido(dia_inicio_date):
         return HttpResponse("error: no se puede sacar un turno para una fecha que ya paso.", status=400)
-    if not dia_hora_coherentes(dia_inicio_date, horario_inicio_time, dia_fin_date , horario_fin_time):
+    if not dia_hora_coherentes(dia_inicio_date, horario_inicio_time, dia_fin_date, horario_fin_time):
         return HttpResponse("error: un turno no puede terminar antes de que empiece", status=400)
-    if not esta_disponible(dia_inicio_date, horario_inicio_time, horario_fin_time, taller_id):
+    if not esta_disponible(dia_inicio_date, horario_inicio_time, dia_fin_date , horario_fin_time, taller_id):
         return HttpResponse("error: ese dia no esta disponible en ese horario", status=400)
 
     serializer=TurnoTallerSerializer(data=request.data)
