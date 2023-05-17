@@ -7,7 +7,7 @@ from test.factories.usuario_factorie import *
 
 class AsignarTecnicoTestCase(TestSetUp):
     id_tecnico = 2
-    tecnicos =  UsuarioFactory.build(id_empleado=2, tipo="Tecnico", categoria='A', branch='T001')
+    tecnico =  UsuarioFactory.build(id_empleado=2, tipo="Tecnico", categoria='A', branch='T001')
 
     def get_response_turno_detalle(self, id_turno):
         url = reverse('turnos-detalle', args=[id_turno])

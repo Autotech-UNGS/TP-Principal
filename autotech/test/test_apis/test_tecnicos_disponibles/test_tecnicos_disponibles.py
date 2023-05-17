@@ -5,7 +5,10 @@ from administracion.models import Turno_taller
 from turnos.views import *
 from test.factories.usuario_factorie import *
 
-class TecnicosDisponibles(TestSetUp):
+class TecnicosDisponiblesTestCase(TestSetUp):
+    tecnico1 =  UsuarioFactory.build(id_empleado=4, tipo="Tecnico", categoria='A', branch='T002')
+    tecnico2 =  UsuarioFactory.build(id_empleado=5, tipo="Tecnico", categoria='A', branch='T002')
+    tecnico3 =  UsuarioFactory.build(id_empleado=6, tipo="Tecnico", categoria='A', branch='T002')
     
     def get_response_tecnicos_disponibles(self, id_turno):
         url = reverse('tecnicos-disponibles', args=[id_turno])
