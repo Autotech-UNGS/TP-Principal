@@ -4,6 +4,8 @@ from administracion.models import *
 from administracion.serializers import TurnoTallerSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from .enviar_turno_email import EnvioDeEmail
+from .obtener_datos_usuario import *
 from .validaciones_views import * 
 from datetime import *
 
@@ -65,6 +67,8 @@ def crearTurno(request):
 
     if tipo == "service" and km == 0:
         return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
+    if not existe_taller(taller_id):
+        return HttpResponse("error: el id ingresado no pertenece a ningún taller en el sistema", status=400)
     if not horarios_exactos(horario_inicio_time, horario_fin_time):
         return HttpResponse("error: los horarios de comienzo y fin de un turno deben ser horas exactas", status=400)
     if not horarios_dentro_de_rango(dia_inicio_date, horario_inicio_time, horario_fin_time):
@@ -79,7 +83,9 @@ def crearTurno(request):
     serializer=TurnoTallerSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-    
+        email_usuario = obtener_email_usuario()
+        direccion_taller = obtener_direccion_taller(taller_id)
+        EnvioDeEmail.enviar_correo(tipo, email_usuario, dia_inicio_date, horario_inicio_time, direccion_taller)
     return Response(serializer.data)
 
 @api_view(['POST'])

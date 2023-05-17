@@ -11,6 +11,14 @@ def dias_horarios_disponibles_treinta_dias(id_taller:int):
 
 # -------- crear turno -------- #
 
+def existe_taller(taller_id:int):
+    try:
+        taller = Taller.objects.get(id_taller= taller_id)
+    except:
+        return False
+    else:
+        return True
+    
 def horarios_exactos(hora_inicio:time, hora_fin:time):
     return hora_inicio.minute == 0 and hora_fin.minute == 0 and hora_inicio.second == 0 and hora_fin.second == 0 # and hora_inicio <= hora_fin
         
