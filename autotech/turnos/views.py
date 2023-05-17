@@ -65,7 +65,7 @@ def crearTurno(request):
     dia_inicio_date = datetime.strptime(dia, '%Y-%m-%d').date()
     dia_fin_date = datetime.strptime(dia_fin, '%Y-%m-%d').date()
 
-    if tipo == "service" and km == 0:
+    if tipo == "service" and km == None:
         return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
     if not existe_taller(taller_id):
         return HttpResponse("error: el id ingresado no pertenece a ningún taller en el sistema", status=400)

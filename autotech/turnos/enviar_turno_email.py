@@ -15,7 +15,7 @@ class EnvioDeEmail:
         mensaje['From'] = cls.username
         mensaje['To'] = destinatario
         mensaje['Subject'] = 'Recordatorio: turno KarU'
-        print(tipo_turno)
+        
         if tipo_turno == 'evaluacion':
             html = cls.generar_mensaje_evaluacion(destinatario, fecha_inicio, hora_inicio, direccion_taller)
         elif tipo_turno == 'service':

@@ -5,7 +5,6 @@ from turnos.views import *
 from test.factories.usuario_factorie import *
 
 class CrearTurnoTestCase(TestSetUp):
-    
     def post_response_crear_turno(self, turno):
         url = reverse('turnos-create')
         return self.client.post(url, turno, format='json')
@@ -19,7 +18,7 @@ class CrearTurnoTestCase(TestSetUp):
         return self.client.get(url)
     
     def test_cargar_turno_correcto_evaluacion(self):
-        turno_correcto = {"id_turno": 7,
+        turno_correcto = {"id_turno": 20,
         "tipo": "evaluacion",
         "estado": "pendiente",
         "tecnico_id": None,
@@ -28,10 +27,11 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "12:00:00",
         "fecha_fin": "2023-10-23",
         "hora_fin": "13:00:00",
-        "frecuencia_km": 0,
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
         
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         self.assertEqual(self.post_response_crear_turno(turno_correcto).status_code, 200)
         
     def test_cargar_turno_correcto_service(self):
@@ -93,7 +93,7 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "10:00:00",
         "fecha_fin": ayer.strftime("%Y-%m-%d"),
         "hora_fin": "11:00:00",
-        "frecuencia_km": 0,
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
         
@@ -110,7 +110,7 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "10:00:00",
         "fecha_fin": hoy.strftime("%Y-%m-%d"),
         "hora_fin": "11:00:00",
-        "frecuencia_km": 0,
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
         
@@ -127,7 +127,7 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "10:00:00",
         "fecha_fin": mañana.strftime("%Y-%m-%d"),
         "hora_fin": "11:00:00",
-        "frecuencia_km": 0,
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
         
@@ -175,7 +175,7 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "12:30:00",
         "fecha_fin": "2023-10-23",
         "hora_fin": "13:40:00",
-        "frecuencia_km": 0,
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
         
@@ -191,7 +191,7 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "15:00:00",
         "fecha_fin": "2023-10-23",
         "hora_fin": "18:00:00",
-        "frecuencia_km": 0,
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
         
@@ -207,7 +207,7 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "7:00:00",
         "fecha_fin": "2023-10-23",
         "hora_fin": "10:00:00",
-        "frecuencia_km": 0,
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
         
@@ -224,7 +224,7 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "11:00:00",
         "fecha_fin": "2023-10-22",
         "hora_fin": "13:00:00",
-        "frecuencia_km": 0,
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
         
@@ -240,7 +240,7 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "10:00:00",
         "fecha_fin": "2023-10-22",
         "hora_fin": "7:00:00",
-        "frecuencia_km": 0,
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
         
@@ -256,7 +256,7 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "11:00:00",
         "fecha_fin": "2023-10-23",
         "hora_fin": "11:00:00",
-        "frecuencia_km": 0,
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
         
@@ -272,7 +272,7 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "12:00:00",
         "fecha_fin": "2023-10-23",
         "hora_fin": "11:00:00",
-        "frecuencia_km": 0,
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
         
@@ -288,7 +288,7 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "12:00:00",
         "fecha_fin": "2023-10-22",
         "hora_fin": "11:00:00",
-        "frecuencia_km": 0,
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
         
@@ -304,7 +304,7 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "10:00:00",
         "fecha_fin": "2023-9-21",
         "hora_fin": "12:00:00",
-        "frecuencia_km": 0,
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 11}
         
