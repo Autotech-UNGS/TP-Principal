@@ -1,14 +1,18 @@
+from django.urls import path, reverse, include
+
+from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework import routers
-from .views import RegistroEvaluacionAdminCreateViewSet, RegistroEvaluacionAdminReadOnlyViewSet,  IdTaskPuntajeCreateView, RegistroEvaluacionReadOnlyView
+from rest_framework.views import APIView
 
-router = routers.DefaultRouter()
+from .views import *
 
-router.register(r'registros-admin', RegistroEvaluacionAdminReadOnlyViewSet, basename='registros_evaluaciones')
-router.register(r'registros-crear-admin', RegistroEvaluacionAdminCreateViewSet, basename='crear_registro_evaluacion_admin')
+urlpatterns = [
+    path('registros/crear/', RegistroEvaluacionCreate.as_view(), name= 'crear_registro_evaluacion'),
+    path('registros/listar/', RegistroEvaluacionList.as_view(), name='listar_registro_evaluacion'),
+    path('registros/listar/detalle/',RegistroEvaluacionXAdminReadOnly.as_view(), name='listar_registro_evaluacion_admin'),
+    path('registros/listar/<int:id_turno>/', RegistroEvaluacionUno.as_view(), name = 'listar_registros_evaluacion_por_id'),
 
-router.register(r'checklist-completar',IdTaskPuntajeCreateView, basename ='id_task_puntaje_create')
-router.register(r'registros',RegistroEvaluacionReadOnlyView , basename= 'crear-registro-evaluacion')
+    path('checklist/listar/', ChecklistEvaluacionList.as_view(), name= 'listar_checklist_evaluacion')
+]
 
-
-urlpatterns = router.urls
 
