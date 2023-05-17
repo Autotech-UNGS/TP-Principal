@@ -30,8 +30,7 @@ class CrearTurnoTestCase(TestSetUp):
         "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
-        
-        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    
         self.assertEqual(self.post_response_crear_turno(turno_correcto).status_code, 200)
         
     def test_cargar_turno_correcto_service(self):

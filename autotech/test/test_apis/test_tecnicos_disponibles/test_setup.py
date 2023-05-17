@@ -9,23 +9,18 @@ from datetime import date, time
 
 class TestSetUp(APITestCase):
     def setUp(self):
-        self.taller1 = G(Taller, id_taller=1, capacidad=15)
-        self.taller2 = G(Taller,id_taller=2)
         
-        # los tecnicos 2 y 3 no pueden hacer el turno 1
-        self.turno1 = G(Turno_taller, id_turno= 1, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(8,0,0), fecha_fin=date(2023,9,21), hora_fin=time(9,0,0))
-        self.turno2 = G(Turno_taller, id_turno= 2, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= 2, fecha_inicio=date(2023,9,21), hora_inicio=time(8,0,0), fecha_fin=date(2023,9,21), hora_fin=time(9,0,0))
-        self.turno3 = G(Turno_taller, id_turno= 3, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= 3, fecha_inicio=date(2023,9,21), hora_inicio=time(8,0,0), fecha_fin=date(2023,9,21), hora_fin=time(9,0,0))
+        # test 1 --> un tecnico disponible
+        self.turno20 = G(Turno_taller, id_turno= 20, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= 5, fecha_inicio=date(2023,5,27), hora_inicio=time(11,0,0), fecha_fin=date(2023,5,27), hora_fin=time(12,0,0))
+        self.turno21 = G(Turno_taller, id_turno= 20, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,5,27), hora_inicio=time(11,0,0), fecha_fin=date(2023,5,27), hora_fin=time(12,0,0))
         
-        # nadie puede hacer el turno 7
-        self.turno4 = G(Turno_taller, id_turno= 4, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= 1, fecha_inicio=date(2023,9,21), hora_inicio=time(9,0,0), fecha_fin=date(2023,9,21), hora_fin=time(10,0,0))
-        self.turno5 = G(Turno_taller, id_turno= 5, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= 2, fecha_inicio=date(2023,9,21), hora_inicio=time(9,0,0), fecha_fin=date(2023,9,21), hora_fin=time(10,0,0))
-        self.turno6 = G(Turno_taller, id_turno= 6, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= 3, fecha_inicio=date(2023,9,21), hora_inicio=time(9,0,0), fecha_fin=date(2023,9,21), hora_fin=time(10,0,0))
-        self.turno7 = G(Turno_taller, id_turno= 7, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(9,0,0), fecha_fin=date(2023,9,21), hora_fin=time(10,0,0))
+        # test 2 --> 0 tecnicos disponibles
+        self.turno22 = G(Turno_taller, id_turno= 21, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= 5, fecha_inicio=date(2023,5,21), hora_inicio=time(9,0,0), fecha_fin=date(2023,5,21), hora_fin=time(10,0,0))
+        self.turno23 = G(Turno_taller, id_turno= 21, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= 6, fecha_inicio=date(2023,5,21), hora_inicio=time(9,0,0), fecha_fin=date(2023,5,21), hora_fin=time(10,0,0))
+        self.turno24 = G(Turno_taller, id_turno= 21, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,5,21), hora_inicio=time(9,0,0), fecha_fin=date(2023,5,21), hora_fin=time(10,0,0))
         
-        # el tecnico 3 no puede hacer el turno 9
-        self.turno8 = G(Turno_taller, id_turno= 8, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= 3, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(11,0,0))
-        self.turno9 = G(Turno_taller, id_turno= 9, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(11,0,0))
+        # test 3 --> 2 tecnicos disponibles
+        self.turno25 = G(Turno_taller, id_turno= 21, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,5,223), hora_inicio=time(13,0,0), fecha_fin=date(2023,5,23), hora_fin=time(14,0,0))
         
         return super().setUp()
     
