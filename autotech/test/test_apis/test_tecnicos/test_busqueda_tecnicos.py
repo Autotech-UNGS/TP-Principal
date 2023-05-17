@@ -1,12 +1,14 @@
 from unittest.mock import patch, Mock
 from django.urls import reverse
 from .test_setup import TestSetUp
-from test.factories.tecnicos_factories import UsuarioFactory
+from test.factories.usuario_factorie import UsuarioFactory
 from administracion.models import Turno_taller
+from administracion.serializers import TurnoTallerSerializer
+from collections import OrderedDict
 
 class BusquedaTecnicoTestCase(TestSetUp):
     # Mock para simular la respuesta de la API externa
-    tecnicos =  UsuarioFactory.build_batch(3, tipo="Tecnico", categoria='A')
+    tecnicos =  UsuarioFactory.build_batch(3, tipo="Tecnico", categoria='A')  # tecnico 1 es el unico con turnos trabajados
     tecnicos_mock = [usuario.__dict__ for usuario in tecnicos]
 
     mock_api_response = Mock()
@@ -177,3 +179,57 @@ class BusquedaTecnicoTestCase(TestSetUp):
         id_sucursal_supervisor = 'S001'
         dni = '-0'
         self.assertEqual(self.get_response_filtrar_tecnicos(id_sucursal=id_sucursal_supervisor, categoria=None, dni=dni, nombre=None).status_code, 400 )   
+        
+    # -------------------- Test trabajos_en_proceso -------------------- #
+    def get_response_trabajos_en_proceso(self, id_tecnico):  
+        with patch('requests.get', return_value=self.mock_api_response): 
+            url = reverse('trabajos-en-proceso', args=[id_tecnico])
+            response = self.client.get(url)
+        return response
+    
+    def test_tecnico_trabajos_en_proceso_ok(self):
+        id_primer_tecnico = self.tecnicos_mock[0]['id_empleado']
+        turno_en_proceso = Turno_taller.objects.first() # el primer turno es un turno en proceso
+        # Serializar el objeto utilizando el serializer
+        serializer = TurnoTallerSerializer(turno_en_proceso)
+        diccionario = serializer.data
+        self.assertEqual(self.get_response_trabajos_en_proceso(id_tecnico=id_primer_tecnico).status_code, 200 )
+        self.assertEqual(self.get_response_trabajos_en_proceso(id_tecnico=id_primer_tecnico).data,[OrderedDict(diccionario)]) # convertimos al mismo formato para comparar 
+
+    def test_tecnico_sin_trabajos_en_proceso_error_404(self):
+        id_tercer_tecnico = self.tecnicos_mock[2]['id_empleado']
+        self.assertEqual(self.get_response_trabajos_en_proceso(id_tecnico=id_tercer_tecnico).status_code, 404 )
+    
+    def test_trabajos_en_estado_en_proceso(self):
+        id_primer_tecnico = self.tecnicos_mock[0]['id_empleado']
+        response_data = self.get_response_trabajos_en_proceso(id_tecnico=id_primer_tecnico).data
+        primer_elemento = response_data[0]  # Acceder al primer elemento de la lista
+        estado = primer_elemento['estado']  # Obtener el valor de 'estado'
+        self.assertEqual(self.get_response_trabajos_en_proceso(id_tecnico=id_primer_tecnico).status_code, 200 )
+        self.assertEqual(estado, 'en_proceso') 
+
+    # -------------------- Test trabajos_terminados -------------------- #
+    def get_response_trabajos_terminados(self, id_tecnico):
+        with patch('requests.get', return_value=self.mock_api_response):
+            url = reverse('trabajos-terminados', args=[id_tecnico])
+        return self.client.get(url)
+    
+    def test_tecnico_trabajos_terminados_ok(self):
+        id_primer_tecnico = self.tecnicos_mock[0]['id_empleado']
+        turno_terminado = Turno_taller.objects.all()[1] 
+        serializer = TurnoTallerSerializer(turno_terminado)
+        diccionario = serializer.data
+        self.assertEqual(self.get_response_trabajos_terminados(id_tecnico=id_primer_tecnico).status_code, 200 )
+        self.assertEqual(self.get_response_trabajos_terminados(id_tecnico=id_primer_tecnico).data,[OrderedDict(diccionario)])
+    
+    def test_tecnico_sin_trabajos_terminados_error_404(self):
+        id_segundo_tecnico = self.tecnicos_mock[1]['id_empleado']
+        self.assertEqual(self.get_response_trabajos_terminados(id_tecnico=id_segundo_tecnico).status_code, 404 )
+       
+    def test_trabajos_en_estado_terminado(self):
+        id_primer_tecnico = self.tecnicos_mock[0]['id_empleado'] 
+        response_data = self.get_response_trabajos_terminados(id_tecnico=id_primer_tecnico).data
+        primer_elemento = response_data[0]
+        estado = primer_elemento['estado']
+        self.assertEqual(self.get_response_trabajos_terminados(id_tecnico=id_primer_tecnico).status_code, 200 )
+        self.assertEqual(estado, 'terminado') 

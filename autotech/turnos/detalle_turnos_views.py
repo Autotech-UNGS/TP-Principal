@@ -38,17 +38,17 @@ class DetalleTurnosViewSet(ViewSet):
  
     def obtener_data_turno_pendiente(self, turno):
         turno_data = {
-                    'id turno': turno.id_turno,
+                    'id_turno': turno.id_turno,
                     'patente': turno.patente,
                     'estado': turno.estado,
                     'tipo': turno.tipo,
-                    'fecha inicio': turno.fecha_inicio,
-                    'hora inicio': turno.hora_inicio,
-                    'fecha fin': turno.fecha_fin,
-                    'hora fin': turno.hora_fin,
+                    'fecha_inicio': turno.fecha_inicio,
+                    'hora_inicio': turno.hora_inicio,
+                    'fecha_fin': turno.fecha_fin,
+                    'hora_fin': turno.hora_fin,
         }
         if(turno.tipo == 'service'):
-            turno_data['frecuencia km'] = turno.frecuencia_km  
+            turno_data['frecuencia_km'] = turno.frecuencia_km  
         elif(turno.tipo == 'evaluacion'):
             turno_data['papeles_en_regla'] = turno.papeles_en_regla
         return turno_data
@@ -60,20 +60,20 @@ class DetalleTurnosViewSet(ViewSet):
         if estado == 'en_proceso':
             estado = 'en proceso'
         turno_data = {
-                    'id turno': turno.id_turno,
+                    'id_turno': turno.id_turno,
                     'patente': turno.patente,
                     'estado': estado,
                     'tipo': turno.tipo,
-                    'fecha inicio': turno.fecha_inicio,
-                    'hora inicio': turno.hora_inicio,
-                    'fecha fin': turno.fecha_fin,
-                    'hora fin': turno.hora_fin,
-                    'id tecnico': turno.tecnico_id,
-                    'nombre tecnico': nombre_tecnico,
-                    'categoria tecnico': categoria_tecnico,
+                    'fecha_inicio': turno.fecha_inicio,
+                    'hora_inicio': turno.hora_inicio,
+                    'fecha_fin': turno.fecha_fin,
+                    'hora_fin': turno.hora_fin,
+                    'tecnico_id': turno.tecnico_id,
+                    'nombre_completo': nombre_tecnico,
+                    'categoria': categoria_tecnico,
                 }
         if turno.tipo == 'service':
-            turno_data['frecuencia km'] = turno.frecuencia_km     
+            turno_data['frecuencia_km'] = turno.frecuencia_km     
         return turno_data
   
     def obtener_data_turnos_pendientes(self, turnos):
@@ -84,8 +84,8 @@ class DetalleTurnosViewSet(ViewSet):
                 'patente': turno.patente,
                 'estado': turno.estado,
                 'tipo': turno.tipo,
-                'fecha inicio': turno.fecha_inicio,
-                'hora inicio': turno.hora_inicio,
+                'fecha_inicio': turno.fecha_inicio,
+                'hora_inicio': turno.hora_inicio,
             }
             turnos_data.append(turno_data)
         return turnos_data
@@ -102,10 +102,10 @@ class DetalleTurnosViewSet(ViewSet):
                 'patente': turno.patente,
                 'estado': estado,
                 'tipo': turno.tipo,
-                'fecha inicio': turno.fecha_inicio,
-                'hora inicio': turno.hora_inicio,
-                'tecnico id': turno.tecnico_id,
-                'nombre tecnico': nombre_tecnico,
+                'fecha_inicio': turno.fecha_inicio,
+                'hora_inicio': turno.hora_inicio,
+                'tecnico_id': turno.tecnico_id,
+                'categoria': nombre_tecnico,
             }
             turnos_data.append(turno_data)
         return turnos_data

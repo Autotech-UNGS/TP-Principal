@@ -3,7 +3,7 @@ from django.urls import reverse
 from .test_setup import TestSetUp
 from administracion.models import Turno_taller
 from turnos.views import *
-from test.factories.tecnicos_factories import *
+from test.factories.usuario_factorie import *
 
 class AsignarTecnicoTestCase(TestSetUp):
     id_tecnico = 2
@@ -46,6 +46,7 @@ class AsignarTecnicoTestCase(TestSetUp):
         # el tecnico 2 esta disponible para hacer el turno 4
         turno = Turno_taller.objects.get(id_turno=4)
         self.assertEqual(self.get_response_tecnicos_disponibles(turno.id_turno).status_code, 200)
+        #import pdb; pdb.set_trace()
         self.assertDictEqual(self.get_response_tecnicos_disponibles(turno.id_turno).json(), {'tecnicos_disponibles':[{'id_tecnico':2}]})
         
     def test_no_hay_tecnicos_disponibles(self): 
