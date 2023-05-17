@@ -15,7 +15,7 @@ class EnvioDeEmail:
         mensaje['From'] = cls.username
         mensaje['To'] = destinatario
         mensaje['Subject'] = 'Recordatorio: turno KarU'
-        
+        print(tipo_turno)
         if tipo_turno == 'evaluacion':
             html = cls.generar_mensaje_evaluacion(destinatario, fecha_inicio, hora_inicio, direccion_taller)
         elif tipo_turno == 'service':
@@ -27,7 +27,6 @@ class EnvioDeEmail:
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as servidor:
             servidor.login(cls.username, cls.password)
             servidor.send_message(mensaje)
-            print("Enviado")
 
     @classmethod
     def generar_mensaje_evaluacion(cls, destinatario: str, fecha_inicio:date, hora_inicio:time, direccion_taller: str):
@@ -36,7 +35,7 @@ class EnvioDeEmail:
         <body>
             <h1> Buenos días, {destinatario} </h1>
             <p> Solicitaste un turno con KarU para vender un vehículo, para el día {fecha_inicio} a las {hora_inicio} </p>
-            <p> Te esperamos ese día en nuestro taller en {direccion_taller: str} </p>
+            <p> Te esperamos ese día en nuestro taller en {direccion_taller} </p>
             <p> Recordá venir con treinta minutos de anticipación, y traer toda la documentación correspondiente, incluyendo la cedula verde del vehículo </p>
             <br>
             <p> Que tengas un buen dia! </p>
@@ -55,7 +54,7 @@ class EnvioDeEmail:
         <body>
             <h1> Buenos días, {destinatario} </h1>
             <p> Solicitaste un turno con KarU para realizarle un service a tu vehículo, para el día {fecha_inicio} a las {hora_inicio} </p>
-            <p> Te esperamos ese día en nuestro taller en {direccion_taller: str} </p>
+            <p> Te esperamos ese día en nuestro taller en {direccion_taller} </p>
             <p> El día del turno, evaluaremos el estado de tu garantía. Recordá que la garantía deja de ser válida si no realizaste el último service en alguno de nuestros talleres </p>
             <br>
             <p> Que tengas un buen dia! </p>

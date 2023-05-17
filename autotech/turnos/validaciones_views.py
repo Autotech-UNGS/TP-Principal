@@ -44,6 +44,9 @@ def dia_hora_coherentes(dia_inicio: date, horario_inicio: time, dia_fin: date , 
 def dia_valido(dia: date):
     return dia > date.today()
 
+def taller_esta_disponible(id_taller: int, fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time):
+    return taller_esta_disponible_agenda(fecha_inicio, hora_inicio, fecha_fin, hora_fin, id_taller)
+
 # -------- tecnicos disponibles -------- #
 
 # devuelve una lista con los id de los tecnicos que podrían encargarse del turno
@@ -53,7 +56,7 @@ def obtener_tecnicos_disponibles(id_turno: int, id_taller: int) -> list:
     turno = Turno_taller.objects.get(id_turno=id_turno) # obtenemos el turno en cuestion, porque necesitamos sus horarios
     for id_tecnico in id_tecnicos:
         # esta disponible ==  tiene ese espacio disponible en su agenda, sin contar turnos terminados/cancelados/rechazados
-        if esta_disponible(id_tecnico, turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin):
+        if tecnico_esta_disponible_agenda(id_tecnico, turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin):
             tecnicos_disponibles.append(id_tecnico)
     return tecnicos_disponibles
 
@@ -75,8 +78,8 @@ def se_puede_asignar_tecnico(tipo_turno: str, papeles_en_regla_turno: bool):
         es_valido = False
     return es_valido
 
-def esta_disponible(id_tecnico: int, fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time):
-    return tecnico_esta_disponible(fecha_inicio, hora_inicio, fecha_fin, hora_fin, id_tecnico)
+def tecnico_esta_disponible(id_tecnico: int, fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time):
+    return tecnico_esta_disponible_agenda(fecha_inicio, hora_inicio, fecha_fin, hora_fin, id_tecnico)
 
 def coinciden_los_talleres(id_tecnico: int, id_taller: int):
     taller_del_tecnico = obtener_taller_del_tecnico(id_tecnico)

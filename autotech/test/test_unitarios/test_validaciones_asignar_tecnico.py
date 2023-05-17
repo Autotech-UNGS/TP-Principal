@@ -36,7 +36,7 @@ def test_esta_disponible_1():
     hora_inicio = time(13,0,0)
     hora_fin = time(14,0,0)
     
-    assert esta_disponible(id_tecnico,dia, hora_inicio, hora_fin) == True
+    assert tecnico_esta_disponible_agenda(id_tecnico,dia, hora_inicio, hora_fin) == True
 
 @pytest.mark.django_db    
 def test_esta_disponible_2():
@@ -46,7 +46,7 @@ def test_esta_disponible_2():
     hora_inicio = time(11,0,0)
     hora_fin = time(12,0,0)
     
-    assert esta_disponible(id_tecnico,dia, hora_inicio, hora_fin) == False   
+    assert tecnico_esta_disponible_agenda(id_tecnico,dia, hora_inicio, hora_fin) == False   
 
 @pytest.mark.django_db    
 def test_esta_disponible_3():
@@ -56,7 +56,7 @@ def test_esta_disponible_3():
     hora_inicio = time(9,0,0)
     hora_fin = time(10,0,0)
     
-    assert esta_disponible(id_tecnico,dia, hora_inicio, hora_fin) == True 
+    assert tecnico_esta_disponible_agenda(id_tecnico,dia, hora_inicio, hora_fin) == True 
     
 @pytest.mark.django_db    
 def test_esta_disponible_4():
@@ -66,7 +66,7 @@ def test_esta_disponible_4():
     hora_inicio = time(11,0,0)
     hora_fin = time(12,0,0)
     
-    assert esta_disponible(id_tecnico,dia, hora_inicio, hora_fin) == True 
+    assert tecnico_esta_disponible_agenda(id_tecnico,dia, hora_inicio, hora_fin) == True 
     
 @pytest.mark.django_db
 def test_esta_disponible_5():
@@ -76,7 +76,7 @@ def test_esta_disponible_5():
     hora_inicio = time(10,0,0)
     hora_fin = time(13,0,0)
     
-    assert esta_disponible(id_tecnico,dia, hora_inicio, hora_fin) == False
+    assert tecnico_esta_disponible_agenda(id_tecnico,dia, hora_inicio, hora_fin) == False
 
 # ----------------- hay superposicion ----------------- #
 

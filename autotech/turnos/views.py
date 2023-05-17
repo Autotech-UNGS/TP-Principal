@@ -77,7 +77,7 @@ def crearTurno(request):
         return HttpResponse("error: no se puede sacar un turno para una fecha que ya paso.", status=400)
     if not dia_hora_coherentes(dia_inicio_date, horario_inicio_time, dia_fin_date, horario_fin_time):
         return HttpResponse("error: un turno no puede terminar antes de que empiece", status=400)
-    if not esta_disponible(dia_inicio_date, horario_inicio_time, dia_fin_date , horario_fin_time, taller_id):
+    if not taller_esta_disponible(taller_id, dia_inicio_date, horario_inicio_time, dia_fin_date , horario_fin_time):
         return HttpResponse("error: ese dia no esta disponible en ese horario", status=400)
 
     serializer=TurnoTallerSerializer(data=request.data)
@@ -134,7 +134,7 @@ def asignar_tecnico(request, id_tecnico:int, id_turno: int):
             return HttpResponse("error: el turno no esta asignado al taller donde el tecnico trabaja.", status=400)
         if not se_puede_asignar_tecnico(tipo_turno, papeles_en_regla_turno):
             return HttpResponse("error: administracion no ha aprobado la documentacion.", status=400)
-        if not esta_disponible(id_tecnico,dia_inicio_turno, hora_inicio_turno, dia_fin_turno, hora_fin_turno):
+        if not tecnico_esta_disponible(id_tecnico,dia_inicio_turno, hora_inicio_turno, dia_fin_turno, hora_fin_turno):
             return HttpResponse("error: el tecnico no tiene disponible ese horario", status=400)
         
         turno.tecnico_id = id_tecnico  # agregamos el id del tecnico al turno
