@@ -95,18 +95,30 @@ class DetalleTurnosViewSet(ViewSet):
         for turno in turnos:
             nombre_tecnico = ConsumidorApiTecnicos.obtener_nombre_tecnico(turno.tecnico_id)
             estado = turno.estado
-            if estado == 'en_proceso':
-                estado = 'en proceso'
-            turno_data = {
-                'id_turno': turno.id_turno,
-                'patente': turno.patente,
-                'estado': estado,
-                'tipo': turno.tipo,
-                'fecha_inicio': turno.fecha_inicio,
-                'hora_inicio': turno.hora_inicio,
-                'tecnico_id': turno.tecnico_id,
-                'categoria': nombre_tecnico,
-            }
+            if estado == 'en_proceso':            
+                turno_data = {
+                    'id_turno': turno.id_turno,
+                    'patente': turno.patente,
+                    'estado': 'en proceso',
+                    'tipo': turno.tipo,
+                    'fecha_inicio': turno.fecha_inicio,
+                    'hora_inicio': turno.hora_inicio,
+                    'tecnico_id': turno.tecnico_id,
+                    'nombre_completo': nombre_tecnico,
+                }
+            else:
+                turno_data = {
+                    'id_turno': turno.id_turno,
+                    'patente': turno.patente,
+                    'estado': turno.estado,
+                    'tipo': turno.tipo,
+                    'fecha_inicio': turno.fecha_inicio,
+                    'hora_inicio': turno.hora_inicio,
+                    'fecha_fin': turno.fecha_fin,
+                    'hora_fin': turno.hora_fin,
+                    'tecnico_id': turno.tecnico_id,
+                    'nombre_completo': nombre_tecnico,          
+                }
             turnos_data.append(turno_data)
         return turnos_data
             
