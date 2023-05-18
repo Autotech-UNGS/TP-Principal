@@ -4,8 +4,8 @@ from email.mime.multipart import MIMEMultipart
 from datetime import date, time
 
 class EnvioDeEmail:
-    username = 'sorialuciac5@gmail.com'
-    password = 'isymznzitbnuycra'
+    username = 'insomnia.autotech@gmail.com'
+    password = 'tlrgdovrwrsacygp'
     url = 'https://www.google.com/'  
     
     @classmethod

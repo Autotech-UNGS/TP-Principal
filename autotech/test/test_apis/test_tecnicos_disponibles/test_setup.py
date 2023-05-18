@@ -20,7 +20,7 @@ class TestSetUp(APITestCase):
         self.turno24 = G(Turno_taller, id_turno= 21, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,5,21), hora_inicio=time(9,0,0), fecha_fin=date(2023,5,21), hora_fin=time(10,0,0))
         
         # test 3 --> 2 tecnicos disponibles
-        self.turno25 = G(Turno_taller, id_turno= 21, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,5,223), hora_inicio=time(13,0,0), fecha_fin=date(2023,5,23), hora_fin=time(14,0,0))
+        self.turno25 = G(Turno_taller, id_turno= 21, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,5,23), hora_inicio=time(13,0,0), fecha_fin=date(2023,5,23), hora_fin=time(14,0,0))
         
         return super().setUp()
     
