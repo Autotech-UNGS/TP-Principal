@@ -142,7 +142,7 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "12:00:00",
         "fecha_fin": "2023-10-23",
         "hora_fin": "13:00:00",
-        "frecuencia_km": 0,
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
         
