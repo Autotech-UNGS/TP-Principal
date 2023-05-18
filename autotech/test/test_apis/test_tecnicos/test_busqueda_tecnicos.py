@@ -216,6 +216,7 @@ class BusquedaTecnicoTestCase(TestSetUp):
     
     def test_tecnico_trabajos_terminados_ok(self):
         id_primer_tecnico = self.tecnicos_mock[0]['id_empleado']
+        #import pdb; pdb.set_trace()
         turno_terminado = Turno_taller.objects.all()[1] 
         serializer = TurnoTallerSerializer(turno_terminado)
         diccionario = serializer.data
