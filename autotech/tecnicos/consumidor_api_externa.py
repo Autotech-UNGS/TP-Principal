@@ -25,6 +25,7 @@ class ConsumidorApiTecnicos():
         if tecnico_data.status_code != 200:
             raise requests.HTTPError({'message error' : tecnico_data.status_code})
         tecnico_data = tecnico_data.json()
+        #import pdb; pdb.set_trace()
         if tecnico_data.get('tipo') != 'Tecnico':
             raise requests.HTTPError({'message error' : tecnico_data.status_code})
         return tecnico_data
