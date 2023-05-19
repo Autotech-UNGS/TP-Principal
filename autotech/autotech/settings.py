@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'administracion.apps.AdministracionConfig',
     'evaluaciones.apps.EvaluacionesConfig',
     'tecnicos.apps.TecnicosConfig',
+    'talleres',
     'django_crontab',
 ]
 
