@@ -29,7 +29,7 @@ class EstadoTurnosViewSet(ViewSet):
         if papeles_en_regla.lower() == 'true':
             pendientes = self.obtener_turnos_por_estado(self.ESTADO_PENDIENTE, id_sucursal, papeles_en_regla=True)
         elif papeles_en_regla.lower() == 'false':
-            pendientes = self.obtener_turnos_por_estado(self.ESTADO_PENDIENTE, id_sucursal, papeles_en_regla=False, tipo='evaluacion')
+            pendientes = self.obtener_turnos_por_estado(self.ESTADO_PENDIENTE, id_sucursal, papeles_en_regla=False)
         turnos_data = self.detalle.obtener_data_turnos_pendientes(pendientes)
         return Response(turnos_data)
 
