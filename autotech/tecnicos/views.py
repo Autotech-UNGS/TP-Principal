@@ -45,16 +45,12 @@ class TecnicoViewSet(ViewSet):
     @action(detail=True, methods=['get'])
     def trabajos_en_proceso_tecnico(self, request, id_tecnico):
         turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso')
-        if not turnos.exists():
-            return HttpResponse('error: tecnico no tiene turnos terminados', status=404) 
         serializer= TurnoTallerSerializer(turnos, many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=['get'])   
     def trabajos_terminados_tecnico(self, request, id_tecnico):
         turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='terminado')
-        if not turnos.exists():
-            return HttpResponse('error: tecnico no tiene turnos terminados', status=404) 
         serializer= TurnoTallerSerializer(turnos, many=True)
         return Response(serializer.data)
     
