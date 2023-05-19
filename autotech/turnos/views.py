@@ -101,6 +101,20 @@ def turnoUpdate(request, id_turno):
 
         return Response(serializer.data)
     
+@api_view(['POST'])
+def turnoFinalizar(request, id_turno):
+    try:
+        turno=Turno_taller.objects.get(id_turno=id_turno)
+    except:
+        return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
+    else:
+        if turno.estado == 'en_proceso':
+            turno.estado = 'terminado'
+            turno.save()
+            return HttpResponse("estado de turno actualizado", status=200)
+        else:
+            return HttpResponse("error: no se puede finalizar un turno que no esta en proceso", status=400)
+    
 @api_view(['GET'])
 def tecnicos_disponibles(request, id_turno: int):
     try:
