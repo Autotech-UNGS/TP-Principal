@@ -10,10 +10,12 @@ router.register(r'registro_reparacion_admin', RegistroReparacionViewSet , 'regis
 
 
 urlpatterns = [
-    path('cobro_hora/todos',CobroXHoraTodosViewSet.as_view(actions={'get': 'list', 'post': 'create'}), name = 'cobro_x_hora_todos'),
-    path('cobro_hora/Tecnicos/',CobroXHoraTecnicosViewSet.as_view(actions={'get': 'list'}), name = 'cobro_x_hora_tecnicos'),
-    path('cobro_hora/Tecnicos/<str:categoria/',CobroXHoraTecnicosCategoriaViewSet.as_view(actions={'get': 'list'}), name = 'cobro_x_hora_tecnicos_categoria'),
-    path('cobro_hora/Supervisores/',CobroXHoraSupervisorViewSet.as_view(actions={'get': 'list'}), name = 'cobro_x_hora_supervisor')
+    path('cobro_hora/todos/',CobroXHoraTodosViewSet.as_view(actions={'get': 'list', 'post': 'create'}), name = 'cobro_x_hora_todos'),
+    path('cobro_hora/tecnicos/',CobroXHoraTecnicosViewSet.as_view(actions={'get': 'list'}), name = 'cobro_x_hora_tecnicos'),
+    path('cobro_hora/tecnicos/<str:categoria>/',CobroXHoraTecnicosCategoriaViewSet.as_view(actions={'get': 'list'}), name = 'cobro_x_hora_tecnicos_categoria'),
+    path('cobro_hora/tecnicos/<str:categoria>/valor/',CobroXHoraTecnicosCategoriaCobroViewSet.as_view(), name = 'cobro_x_hora_tecnicos_categoria_valor'),
+    path('cobro_hora/supervisores/valor/',CobroXHoraCobroViewSet.as_view(), name = 'cobro_x_hora_supervisor_valor'),
+    path('cobro_hora/supervisores/',CobroXHoraSupervisorViewSet.as_view(actions={'get': 'list'}), name = 'cobro_x_hora_supervisor')
 ]
 
 
