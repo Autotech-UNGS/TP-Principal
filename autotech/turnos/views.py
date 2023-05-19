@@ -14,11 +14,16 @@ def turnosOverview(request):
     turnos_urls={
         'List':'turnos-list/',
         'Detalle':'turnos-detalle/<str:id_turno>/',
-        'DiasHorariosDisponibles':'dias-horarios-disponibles/<str:taller_id>',
         'Create':'turnos-create/',
         'Update':'turnos-update/<int:id_turno>/',
+        'DiasHorariosDisponibles':'dias-horarios-disponibles/<str:taller_id>',        
         'Tecnicos-disponibles':'tecnicos-disponibles/<int:id_turno>/',
-        'Asignar-tecnico':'asignar-tecnico/<int:id_tecnico>/<int:_id_turno>/'
+        'Asignar-tecnico':'asignar-tecnico/<int:id_tecnico>/<int:_id_turno>/',
+        'Turnos-pendientes': 'pendientes/',
+        'Turnos-en-proceso': 'en-procesos/',
+        'Turnos-terminados': 'terminados/',
+        'Finalizar-turno': 'actualizar-estado/<int:id_turno>/',
+        'cancelar-turno': 'cancelar-turno/<int:id_turno>/'
     }
     return Response(turnos_urls)
 
@@ -27,7 +32,6 @@ def turnosList(request):
     turnos= Turno_taller.objects.all()
     serializer= TurnoTallerSerializer(turnos, many=True)
     return Response(serializer.data)
-
 
 @api_view(['GET'])
 def turnoDetalle(request, id_turno):
@@ -83,9 +87,10 @@ def crearTurno(request):
     serializer=TurnoTallerSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-        email_usuario = obtener_email_usuario()
-        direccion_taller = obtener_direccion_taller(taller_id)
-        #EnvioDeEmail.enviar_correo(tipo, email_usuario, dia_inicio_date, horario_inicio_time, direccion_taller)
+        if tipo == 'evaluacion' or tipo == 'service':
+            email_usuario = obtener_email_usuario()
+            direccion_taller = obtener_direccion_taller(taller_id)
+            #EnvioDeEmail.enviar_correo(tipo, email_usuario, dia_inicio_date, horario_inicio_time, direccion_taller)
     return Response(serializer.data)
 
 @api_view(['POST'])
@@ -100,20 +105,6 @@ def turnoUpdate(request, id_turno):
             serializer.save()
 
         return Response(serializer.data)
-    
-@api_view(['POST'])
-def turnoFinalizar(request, id_turno):
-    try:
-        turno=Turno_taller.objects.get(id_turno=id_turno)
-    except:
-        return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
-    else:
-        if turno.estado == 'en_proceso':
-            turno.estado = 'terminado'
-            turno.save()
-            return HttpResponse("estado de turno actualizado", status=200)
-        else:
-            return HttpResponse("error: no se puede finalizar un turno que no esta en proceso", status=400)
     
 @api_view(['GET'])
 def tecnicos_disponibles(request, id_turno: int):

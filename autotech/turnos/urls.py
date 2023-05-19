@@ -14,7 +14,6 @@ urlpatterns = [
     path('tecnicos-disponibles/<int:id_turno>/', views.tecnicos_disponibles, name="tecnicos-disponibles"),
     path('asignar-tecnico/<int:id_tecnico>/<int:id_turno>/', views.asignar_tecnico, name="asignar-tecnico"),
     
-    path('turnos-finalizar/<int:id_turno>', views.turnoFinalizar, name= 'turnos-finalizar'),
     # -------------------------------------------------------------------------------------------------------------
     path('pendientes/', estado_turnos_views.EstadoTurnosViewSet.as_view({'get': 'turnos_pendientes'}), name='turnos-pendientes'),
     path('en-procesos/',  estado_turnos_views.EstadoTurnosViewSet.as_view({'get': 'turnos_en_proceso'}), name='turnos-en-procesos'),
