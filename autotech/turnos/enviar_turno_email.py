@@ -6,7 +6,7 @@ from datetime import date, time
 class EnvioDeEmail:
     username = 'insomnia.autotech@gmail.com'
     password = 'tlrgdovrwrsacygp'
-    url = 'https://www.google.com/'  
+    url = 'https://tp-principal.vercel.app/'  
     
     @classmethod
     def enviar_correo(cls, tipo_turno:str, destinatario: str, fecha_inicio: date, hora_inicio: time, direccion_taller: str):
@@ -34,7 +34,7 @@ class EnvioDeEmail:
         <body>
             <h1> Buenos días, {destinatario} </h1>
             <p> Solicitaste un turno con KarU para vender un vehículo, para el día {fecha_inicio} a las {hora_inicio} </p>
-            <p> Te esperamos ese día en nuestro taller en {direccion_taller} </p>
+            <p> Te esperamos ese día en nuestro taller en {direccion_taller}. </p>
             <p> Recordá venir con treinta minutos de anticipación, y traer toda la documentación correspondiente, incluyendo la cedula verde del vehículo </p>
             <br>
             <p> Que tengas un buen dia! </p>
