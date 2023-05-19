@@ -1,6 +1,6 @@
 from rest_framework import viewsets, permissions
-from .serializers import TallerSerializer,TurnoTallerSerializer, ChecklistReparacionSerializer, RegistroReparacionSerializer
-from .models import Taller, Turno_taller, Checklist_reparacion, Registro_reparacion
+from .serializers import *
+from .models import *
 
 class TallerViewSet(viewsets.ModelViewSet):
     queryset = Taller.objects.all()
@@ -21,3 +21,36 @@ class RegistroReparacionViewSet(viewsets.ModelViewSet):
     queryset = Registro_reparacion.objects.all()
     serializer_class = RegistroReparacionSerializer
     permission_classes = [permissions.AllowAny] 
+
+class CobroXHoraTodosViewSet(viewsets.ModelViewSet):
+    queryset = Cobro_x_hora.objects.all()
+    serializer_class = CobroXHoraSerializer
+    permission_classes = [permissions.AllowAny] 
+
+
+class CobroXHoraTecnicosViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CobroXHoraSerializer
+    permission_classes = [permissions.AllowAny] 
+
+    def get_queryset(self):
+        queryset = Cobro_x_hora.objects.filter(puesto='tecnico')
+        return queryset
+
+class CobroXHoraTecnicosCategoriaViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CobroXHoraSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        queryset = Cobro_x_hora.objects.filter(puesto='tecnico')
+        categoria = self.kwargs['categoria']
+        if categoria:
+            queryset = queryset.filter(categoria=categoria)
+        return queryset
+
+class CobroXHoraSupervisorViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CobroXHoraSerializer
+    permission_classes = [permissions.AllowAny] 
+
+    def get_queryset(self):
+        queryset = Cobro_x_hora.objects.filter(puesto='supervisor')
+        return queryset

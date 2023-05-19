@@ -74,3 +74,8 @@ class Registro_evaluacion(models.Model):
     id_task_puntaje = models.JSONField(null=True, blank=True)
     detalle = models.TextField(blank=True, null=True)
 
+# ----------------------------------------------------------------------------------------------------#
+class Cobro_x_hora(models.Model):
+    puesto = models.CharField(max_length=30)
+    categoria = models.CharField(max_length=1, blank=True, null= True)
+    cobro_x_hora = models.FloatField(validators=[MinValueValidator(0.0),MaxValueValidator(3800.0)])
