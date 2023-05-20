@@ -12,20 +12,20 @@ class EjecutarCron(ViewSet):
         @action(detail=False, methods=['get'])
         def ejecutar_cron(self, request):
                 self.enviar_correo_prueba()
-                #self.modificar_estado_a_cancelado()
-                #self.modificar_estado_a_finalizado()
+                self.modificar_estado_a_ausente()
+                self.modificar_estado_a_terminado()
                 return HttpResponse("cron ejecutado correctamente", status=200)
                 
-        # Cambia a 'cancelado' el estado de los turnos que al final del dia todavia tengan estado 'pendiente'
-        def modificar_estado_a_cancelado(self):
+        # Cambia a 'ausente' el estado de los turnos que debían empezar hoy y no lo hicieron (su estado sigue siendo 'pendiente')
+        def modificar_estado_a_ausente(self):
                 hoy = date.today()
                 turnos_del_dia = Turno_taller.objects.filter(fecha_inicio=hoy, estado='pendiente')
                 for turno in turnos_del_dia:
-                        turno.estado = 'cancelado'
+                        turno.estado = 'ausente'
                         turno.save()
         
         # Cambia a 'terminado' el estado de los turnos que, al final del dia en que debían terminar, todavia tengan estado 'en_proceso'
-        def modificar_estado_a_cancelado(self):
+        def modificar_estado_a_terminado(self):
                 hoy = date.today()
                 turnos_del_dia = Turno_taller.objects.filter(fecha_fin=hoy, estado='en_proceso')
                 for turno in turnos_del_dia:
@@ -40,7 +40,7 @@ class EjecutarCron(ViewSet):
                 mensaje['To'] = 'luciacsoria5@gmail.com'
                 mensaje['Subject'] = 'CRON'
                 hora = datetime.now()
-                html = f""" <h1> mensaje enviado a las {hora} con cron</h1>"""
+                html = f""" <p> mensaje enviado a las {hora} con cron. Turnos modificados </p>"""
                 parte_html = MIMEText(html, 'html')
                 mensaje.attach(parte_html)
                 
