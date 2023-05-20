@@ -29,7 +29,7 @@ class Turno_taller(models.Model):
     hora_fin = models.TimeField(max_length=8)
     frecuencia_km = models.IntegerField(validators=[MinValueValidator(5000), MaxValueValidator(200000)]
                                         , choices=Frecuencia_km.choices, null=True, blank=True)
-    papeles_en_regla = models.BooleanField(default=False)
+    papeles_en_regla = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         if self.tipo != TiposTurno.SERVICE:
