@@ -61,7 +61,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
                 #email_usuario = request.META.get('email') # obtenemos 'email' del header. Otra opcion es request.headers.get('NombreEncabezado')
                 email_usuario = obtener_email_usuario()
                 direccion_taller = obtener_direccion_taller(taller_id)
-                #EnvioDeEmail.enviar_correo(tipo, email_usuario, dia_inicio_date, horario_inicio_time, direccion_taller)
+                EnvioDeEmail.enviar_correo(tipo, email_usuario, dia_inicio_date, horario_inicio_time, direccion_taller)
         return Response(serializer.data)
     
     @action(detail=True, methods=['post'])

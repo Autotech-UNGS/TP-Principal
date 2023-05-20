@@ -11,7 +11,7 @@ from email.mime.multipart import MIMEMultipart
 class EjecutarCron(ViewSet):
         @action(detail=False, methods=['get'])
         def ejecutar_cron(self, request):
-                #self.enviar_correo_prueba()
+                self.enviar_correo_prueba()
                 self.modificar_estado_a_ausente()
                 self.modificar_estado_a_terminado()
                 return HttpResponse("cron ejecutado correctamente", status=200)
