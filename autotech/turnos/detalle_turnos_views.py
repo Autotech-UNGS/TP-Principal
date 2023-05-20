@@ -85,7 +85,6 @@ class DetalleTurnosViewSet(ViewSet):
         turnos_data = []
         for turno in turnos:
             nombre_tecnico = ConsumidorApiTecnicos.obtener_nombre_tecnico(turno.tecnico_id)
-            #import pdb; pdb.set_trace()
             estado = turno.estado
             if estado == 'en_proceso':            
                 turno_data = {
