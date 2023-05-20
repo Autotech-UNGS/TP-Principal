@@ -7,23 +7,11 @@ from django.http import QueryDict
 from .obtener_datos_usuario import *
 from .validaciones_views import * 
 from datetime import *
-
-class CrearActualizarTurnosViewSet(ViewSet):
-    @action(detail=True, methods=['get'])
-    def diasHorariosDisponibles(self, request, taller_id: int):
-        try:
-            taller = Taller.objects.get(id_taller= taller_id)
-        except:
-            return HttpResponse("error: el id ingresado no pertenece a ningún taller en el sistema", status=400)
-        else:
-            dias_horarios_data = dias_horarios_disponibles_treinta_dias(taller_id)
-            resultado = [{'dia': dia, 'horarios_disponibles':dias_horarios_data.get(dia)} for dia in dias_horarios_data]
-            return JsonResponse({'dias_y_horarios':resultado})
     
-    # esta vista es para:
-        # para cuando el cliente saca un turno en la página --> saca para service y para evaluación
+class CrearTurnoVendedor(ViewSet):
+    # los papeles son True por defecto, no hay que modificar el estado de los papeles. El email llega como un dato del json
     @action(detail=False, methods=['post'])
-    def crearTurno(self, request):
+    def crear_turno_vendedor(self, request):
         dia = request.data.get("fecha_inicio")
         dia_fin = request.data.get("fecha_fin")
         horario_inicio = request.data.get("hora_inicio")
@@ -31,6 +19,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         taller_id = request.data.get("taller_id")
         tipo = request.data.get("tipo")
         km = request.data.get("frecuencia_km")
+        email = request.data.get("email")
 
         horario_inicio_time = datetime.strptime(horario_inicio, '%H:%M:%S').time()
         horario_fin_time = datetime.strptime(horario_fin, '%H:%M:%S').time()
@@ -52,27 +41,44 @@ class CrearActualizarTurnosViewSet(ViewSet):
         if not taller_esta_disponible(taller_id, dia_inicio_date, horario_inicio_time, dia_fin_date , horario_fin_time):
             return HttpResponse("error: ese dia no esta disponible en ese horario", status=400)
         
-        serializer=TurnoTallerSerializer(data=request.data)
+        datos = request.data.copy()
+        del datos['email']
+        
+        serializer = TurnoTallerSerializer(data=datos)
+        #serializer=TurnoTallerSerializer(data=request.data)
+        
         if serializer.is_valid():
-            if tipo == 'evaluacion':
-                 serializer.validated_data['papeles_en_regla'] = False
-            serializer.save()
+            serializer.validated_data['papeles_en_regla'] = True
             if tipo == 'evaluacion' or tipo == 'service':   
-                #email_usuario = request.META.get('email') # obtenemos 'email' del header. Otra opcion es request.headers.get('NombreEncabezado')
-                email_usuario = obtener_email_usuario()
                 direccion_taller = obtener_direccion_taller(taller_id)
-                #EnvioDeEmail.enviar_correo(tipo, email_usuario, dia_inicio_date, horario_inicio_time, direccion_taller)
+                EnvioDeEmail.enviar_correo(tipo, email, dia_inicio_date, horario_inicio_time, direccion_taller)
         return Response(serializer.data)
     
+class ModificarEstadosVendedor(ViewSet):    
+    # el estado de los papeles del turno pasa a ser True
     @action(detail=True, methods=['post'])
-    def turnoUpdate(self, request, id_turno):
+    def aceptar_papeles(self, request, id_turno):
         try:
-            turno=Turno_taller.objects.get(id_turno=id_turno)
+            turno = Turno_taller.objects.get(id_turno = id_turno)
         except:
             return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
         else:
-            serializer=TurnoTallerSerializer(instance=turno,data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-
+            turno.papeles_en_regla = True
+            turno.save()
+            serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el estado de los papeles True
             return Response(serializer.data)
+    
+    # el estado del turno pasa a ser rechazado
+    @action(detail=True, methods=['post'])
+    def rechazar_papeles(self, request, id_turno):
+        try:
+            turno = Turno_taller.objects.get(id_turno = id_turno)
+        except:
+            return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
+        else:
+            turno.estado = 'rechazado'
+            turno.save()
+            serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el estado del turno rechazado
+            return Response(serializer.data)
+    
+    

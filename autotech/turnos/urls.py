@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import estado_turnos_views, detalle_turnos_views, modificar_estado_cron_view, visualizar_turnos_views, crear_turnos_views, asignar_tecnico_views
+from . import estado_turnos_views, detalle_turnos_views, modificar_estado_cron_view, visualizar_turnos_views, crear_turnos_views, asignar_tecnico_views, vendedor_views
 
 urlpatterns = [
     path('',visualizar_turnos_views.turnosOverview,name='turnos'),
@@ -25,6 +25,11 @@ urlpatterns = [
 
     #--------------------------------------------------------------------------------------------------------------
     path('detalle-turno/<int:id_turno>/', detalle_turnos_views.DetalleTurnosViewSet.as_view({'get': 'detalle_turno'}), name='detalle-turno'),
+    
+    #--------------------------------------------------------------------------------------------------------------
+    path('crear-turno-vendedor/', vendedor_views.CrearTurnoVendedor.as_view({'post': 'crear_turno_vendedor'}), name='crear-turno-vendedor'),
+    path('aceptar-papeles/<int:id_turno>', vendedor_views.ModificarEstadosVendedor.as_view({'post': 'aceptar-papeles'}), name='aceptar-papeles'),
+    path('rechazar-papeles/<int:id_turno>', vendedor_views.ModificarEstadosVendedor.as_view({'post': 'rechazar-papeles'}), name='rechazar-papeles'),
     
     #--------------------------------------------------------------------------------------------------------------
     path('ejecutar-cron/', modificar_estado_cron_view.EjecutarCron.as_view({'get': 'ejecutar_cron'}), name='ejecutar-cron')
