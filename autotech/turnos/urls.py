@@ -27,7 +27,7 @@ urlpatterns = [
     path('detalle-turno/<int:id_turno>/', detalle_turnos_views.DetalleTurnosViewSet.as_view({'get': 'detalle_turno'}), name='detalle-turno'),
     
     #--------------------------------------------------------------------------------------------------------------
-    path('ejecutar-cron/', modificar_estado_cron_view.EjecutarCron.as_view({'get': 'ejecutar_cron'}), name='ejecutar_cron')
+    path('ejecutar-cron/', modificar_estado_cron_view.EjecutarCron.as_view({'get': 'ejecutar_cron'}), name='ejecutar-cron')
 ]
 
 
