@@ -19,7 +19,7 @@ class EjecutarCron(ViewSet):
         # Cambia a 'cancelado' el estado de los turnos que al final del dia todavia tengan estado 'pendiente'
         def modificar_estado_a_cancelado(self):
                 hoy = date.today()
-                turnos_del_dia = Turno_taller.objects.filter(fecha_inicio=hoy, estado='pediente')
+                turnos_del_dia = Turno_taller.objects.filter(fecha_inicio=hoy, estado='pendiente')
                 for turno in turnos_del_dia:
                         turno.estado = 'cancelado'
                         turno.save()
