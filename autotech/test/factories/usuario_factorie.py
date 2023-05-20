@@ -23,7 +23,7 @@ class UsuarioFactory(factory.Factory):
 
     @factory.sequence
     def id_empleado(n):
-        return n + 1
+        return n
 
     @factory.lazy_attribute
     def nombre_completo(self):

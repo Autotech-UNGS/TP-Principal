@@ -22,7 +22,6 @@ class RegistroEvaluacionCreate(APIView):
     
     # id_turno , diccionario ["id_task_puntaje":{"1":20, "2":30}], detalle 
     def post(self, request, *args, **kwargs):
-
         validador = ValidadorChecklist()
         try:
             validador.validar_diccionario(request)
@@ -38,6 +37,10 @@ class RegistroEvaluacionCreate(APIView):
         if not Turno_taller.objects.filter(id_turno=id_turno).exists():
             return Response({'error': 'El turno pasado no existe'}, status=status.HTTP_400_BAD_REQUEST)
         
+        turno = Turno_taller.objects.get(id_turno = id_turno)
+        if not turno.tipo == "evaluacion":
+            return Response({'error': 'El turno pasado no es un turno para Evaluación'}, status=status.HTTP_400_BAD_REQUEST)
+        
         if Registro_evaluacion.objects.filter(id_turno=id_turno).exists():
             return Response({'error': 'El turno pasado ya existe en los registros'}, status=status.HTTP_400_BAD_REQUEST)
         # Tomo el turno que corresponde a ese id
@@ -52,7 +55,6 @@ class RegistroEvaluacionCreate(APIView):
 @receiver(post_save, sender=Registro_evaluacion)
 def generar_reporte_administracion(sender, instance, created, **kwargs):
     if created:
-
         detalle = instance.detalle
         puntaje_total = Checklist_evaluacion._meta.get_field('puntaje_max').default
         costo_total = 0.0
@@ -67,13 +69,17 @@ def generar_reporte_administracion(sender, instance, created, **kwargs):
         
         # calculo duracion total de las reparaciones y costo total
         for id_task in id_task_puntaje.keys():
-    
-            task = Checklist_evaluacion.objects.get(id_task=id_task)
-            duracion_reemplazo = task.duracion_reemplazo
-            costo_reemplazo = task.costo_reemplazo
+            
+            puntaje_seleccionado = id_task_puntaje.get(id_task)
 
-            duracion_total_reparaciones += duracion_reemplazo
-            costo_total += costo_reemplazo
+            if puntaje_seleccionado > 0:
+
+                task = Checklist_evaluacion.objects.get(id_task=id_task)
+                duracion_reemplazo = task.duracion_reemplazo
+                costo_reemplazo = task.costo_reemplazo
+
+                duracion_total_reparaciones += duracion_reemplazo
+                costo_total += costo_reemplazo
     
         reporte = Registro_evaluacion_para_admin(id_turno=turno, detalle=detalle,costo_total=costo_total,
                                                  duracion_total_reparaciones=duracion_total_reparaciones, puntaje_total=puntaje_total)

@@ -31,11 +31,6 @@ class Turno_taller(models.Model):
                                         , choices=Frecuencia_km.choices, null=True, blank=True)
     papeles_en_regla = models.BooleanField(default=True)
 
-    def save(self, *args, **kwargs):
-        if self.tipo != TiposTurno.SERVICE:
-            self.frecuencia_km = 0
-        super().save(*args, **kwargs)
-
 # ----------------------------------------------------------------------------------------------------#
 
 class Checklist_reparacion(models.Model):
