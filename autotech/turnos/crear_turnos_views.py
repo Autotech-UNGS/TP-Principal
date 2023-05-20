@@ -19,8 +19,8 @@ class CrearActualizarTurnosViewSet(ViewSet):
             resultado = [{'dia': dia, 'horarios_disponibles':dias_horarios_data.get(dia)} for dia in dias_horarios_data]
             return JsonResponse({'dias_y_horarios':resultado})
     
-    # en esta vista, el email del usuario nos llegaría en un header.
-    # en esta vista, el email del usuario nos llegaría como un dato en el json.
+    # esta vista es para:
+        # para cuando el cliente saca un turno en la página --> saca para service y para evaluación
     @action(detail=False, methods=['post'])
     def crearTurno(self, request):
         dia = request.data.get("fecha_inicio")
@@ -60,6 +60,8 @@ class CrearActualizarTurnosViewSet(ViewSet):
                 direccion_taller = obtener_direccion_taller(taller_id)
                 EnvioDeEmail.enviar_correo(tipo, email_usuario, dia_inicio_date, horario_inicio_time, direccion_taller)
         return Response(serializer.data)
+    
+    
     
     @action(detail=True, methods=['post'])
     def turnoUpdate(self, request, id_turno):
