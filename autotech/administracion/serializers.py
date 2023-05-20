@@ -37,3 +37,7 @@ class ChecklistEvaluacionSerializer(serializers.ModelSerializer):
         model = Checklist_evaluacion
         fields = '__all__'
 
+class CobroXHoraSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cobro_x_hora
+        fields = '__all__'

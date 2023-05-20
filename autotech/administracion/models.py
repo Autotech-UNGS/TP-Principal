@@ -66,11 +66,40 @@ class Checklist_evaluacion(models.Model):
     elemento = models.TextField()
     tarea = models.TextField()
     costo_reemplazo = models.FloatField(validators=[MinValueValidator(0)])
-    duracion_reemplazo = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator])
+    duracion_reemplazo = models.IntegerField(validators=[MinValueValidator(0)])
     puntaje_max = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(2500)], default = 2500)
 
 class Registro_evaluacion(models.Model):
     id_turno = models.OneToOneField(Turno_taller, on_delete=models.PROTECT)
     id_task_puntaje = models.JSONField(null=True, blank=True)
     detalle = models.TextField(blank=True, null=True)
+
+# ----------------------------------------------------------------------------------------------------#
+class Cobro_x_hora(models.Model):
+    puesto = models.CharField(max_length=30)
+    categoria = models.CharField(max_length=1, blank=True, null= True)
+    cobro_x_hora = models.FloatField(validators=[MinValueValidator(0.0),MaxValueValidator(3800.0)])
+
+# ----------------------------------------------------------------------------------------------------#
+class Service(models.Model):
+    id_service = models.AutoField(primary_key=True)
+    marca = models.CharField(max_length=50)
+    modelo = models.CharField(max_length=50)
+    frecuencia_km = models.IntegerField(choices=Frecuencia_km.choices)
+    costo_base = models.FloatField(validators=[MinValueValidator(0)])
+    costo_total = models.FloatField(validators=[MinValueValidator(costo_base)], default=costo_base)
+    duracion_total = models.PositiveIntegerField()
+    fecha_creacion = models.DateField(auto_now_add=True)
+    id_supervisor = models.PositiveIntegerField()
+    activo = models.BooleanField(default=False)
+
+class Registro_service(models.Model):
+    id_registro = models.AutoField(primary_key=True)
+    id_turno = models.ForeignKey(Turno_taller, on_delete=models.PROTECT)
+    id_service = models.ForeignKey(Service, on_delete=models.PROTECT)
+    costo_total = models.FloatField(validators=[MinValueValidator(0)])
+    duracion_total = models.PositiveIntegerField()
+    fecha_registro =  models.DateField(auto_now_add=True)
+
+# ----------------------------------------------------------------------------------------------------#
 
