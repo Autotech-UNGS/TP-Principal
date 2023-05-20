@@ -66,7 +66,7 @@ class Checklist_evaluacion(models.Model):
     elemento = models.TextField()
     tarea = models.TextField()
     costo_reemplazo = models.FloatField(validators=[MinValueValidator(0)])
-    duracion_reemplazo = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator])
+    duracion_reemplazo = models.IntegerField(validators=[MinValueValidator(0)])
     puntaje_max = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(2500)], default = 2500)
 
 class Registro_evaluacion(models.Model):
@@ -82,9 +82,11 @@ class Cobro_x_hora(models.Model):
 
 # ----------------------------------------------------------------------------------------------------#
 class Registro_services(models.model):
-    id_registro = 
-    id_turno = 
-    id_service = 
-    costo_total = 
-    duracion_total = 
-    fecha_registro =
+    id_registro = models.AutoField(primary_key=True)
+    id_turno = models.ForeignKey(Turno_taller, on_delete=models.PROTECT)
+    id_service = models.ForeignKey()
+    costo_total = models.FloatField(validators=[MinValueValidator(0)])
+    duracion_total = models.PositiveIntegerField()
+    fecha_registro =  models.DateField(auto_now_add=True)
+
+
