@@ -1,8 +1,9 @@
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpRequest
 from administracion.models import *
 from administracion.serializers import TurnoTallerSerializer
 from rest_framework.response import Response
 from .enviar_turno_email import EnvioDeEmail
+from django.http import QueryDict
 from .obtener_datos_usuario import *
 from .validaciones_views import * 
 from datetime import *
@@ -53,15 +54,19 @@ class CrearActualizarTurnosViewSet(ViewSet):
         
         serializer=TurnoTallerSerializer(data=request.data)
         if serializer.is_valid():
+            if tipo == 'evaluacion':
+                 serializer.validated_data['papeles_en_regla'] = False
             serializer.save()
             if tipo == 'evaluacion' or tipo == 'service':   
-                #email_usuario = request.META.get('email') # obtenemos 'email' del header
+                #email_usuario = request.META.get('email') # obtenemos 'email' del header. Otra opcion es request.headers.get('NombreEncabezado')
                 email_usuario = obtener_email_usuario()
                 direccion_taller = obtener_direccion_taller(taller_id)
                 EnvioDeEmail.enviar_correo(tipo, email_usuario, dia_inicio_date, horario_inicio_time, direccion_taller)
         return Response(serializer.data)
     
-    
+    # TODO: endpoint para que el vendedor cree el turno --> papeles_en_regla es True
+    # TODO: endpoint para modificar el estado de los papeles a True
+    # TODO: endpoint para modificar el estado del turno a 'rechazado'
     
     @action(detail=True, methods=['post'])
     def turnoUpdate(self, request, id_turno):
