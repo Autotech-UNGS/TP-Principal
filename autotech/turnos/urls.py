@@ -32,7 +32,7 @@ urlpatterns = [
     path('rechazar-papeles/<int:id_turno>', vendedor_views.ModificarEstadosVendedor.as_view({'post': 'rechazar-papeles'}), name='rechazar-papeles'),
     
     #--------------------------------------------------------------------------------------------------------------
-    path('ejecutar-cron/', modificar_estado_cron_view.EjecutarCron.as_view({'get': 'ejecutar_cron'}), name='ejecutar-cron')
+    path('ejecutar-cron/', modificar_estado_cron_view.EjecutarCron.as_view({'post': 'ejecutar_cron'}), name='ejecutar-cron')
 ]
 
 
