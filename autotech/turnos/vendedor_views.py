@@ -43,9 +43,7 @@ class CrearTurnoVendedor(ViewSet):
         
         datos = request.data.copy()
         del datos['email']
-        
         serializer = TurnoTallerSerializer(data=datos)
-        #serializer=TurnoTallerSerializer(data=request.data)
         
         if serializer.is_valid():
             serializer.validated_data['papeles_en_regla'] = True
@@ -63,6 +61,13 @@ class ModificarEstadosVendedor(ViewSet):
         except:
             return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
         else:
+            if turno.tipo != 'evaluacion':
+                return HttpResponse("error: el id ingresado no pertenece a un turno de tipo evaluacion, por lo que no tiene estado de papeles", status=400)
+            if turno.estado == 'rechazado':
+                return HttpResponse("error: el id ingresado pertenece a un turno que ya fue rechazado", status=400)
+            elif turno.estado != 'pendiente':
+                return HttpResponse(f"error: el id ingresado pertenece a un turno que ya no esta pendiente: {turno.estado}", status=400)
+            
             turno.papeles_en_regla = True
             turno.save()
             serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el estado de los papeles True
@@ -76,6 +81,13 @@ class ModificarEstadosVendedor(ViewSet):
         except:
             return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
         else:
+            if turno.tipo != 'evaluacion':
+                return HttpResponse("error: el id ingresado no pertenece a un turno de tipo evaluacion, por lo que no tiene estado de papeles", status=400)
+            if turno.estado != 'pendiente':
+                return HttpResponse(f"error: el id ingresado pertenece a un turno que ya no esta pendiente: {turno.estado}", status=400)
+            
+            turno.papeles_en_regla = False
+            turno.save()
             turno.estado = 'rechazado'
             turno.save()
             serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el estado del turno rechazado

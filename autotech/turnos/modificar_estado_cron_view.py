@@ -11,7 +11,7 @@ from email.mime.multipart import MIMEMultipart
 class EjecutarCron(ViewSet):
         @action(detail=False, methods=['get'])
         def ejecutar_cron(self, request):
-                self.enviar_correo_prueba()
+                #self.enviar_correo_prueba()
                 self.modificar_estado_a_ausente()
                 self.modificar_estado_a_terminado()
                 return HttpResponse("cron ejecutado correctamente", status=200)
@@ -47,11 +47,3 @@ class EjecutarCron(ViewSet):
                 with smtplib.SMTP_SSL('smtp.gmail.com', 465) as servidor:
                         servidor.login(username, password)
                         servidor.send_message(mensaje)
-                        
-                        
-"""
-1) Ejecuta el siguiente comando para generar el archivo cron y configurar la tarea programada:
-        python manage.py crontab add
-2) Reinicia el servicio de cron para asegurarte de que los cambios se apliquen:
-        sudo service cron restart
-"""                        
