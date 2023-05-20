@@ -27,7 +27,10 @@ class EstadoTurnosViewSet(ViewSet):
         id_sucursal = self.obtener_id_sucursal(sucursal_supervisor)
         pendientes = []
         if papeles_en_regla.lower() == 'true':
-            pendientes = self.obtener_turnos_por_estado(self.ESTADO_PENDIENTE, id_sucursal, papeles_en_regla=True)
+            pendientes += self.obtener_turnos_por_estado(self.ESTADO_PENDIENTE, id_sucursal, tipo='service')
+            pendientes += self.obtener_turnos_por_estado(self.ESTADO_PENDIENTE, id_sucursal, tipo='extraordinario')
+            pendientes += self.obtener_turnos_por_estado(self.ESTADO_PENDIENTE, id_sucursal, tipo='reparacion')
+            pendientes += self.obtener_turnos_por_estado(self.ESTADO_PENDIENTE, id_sucursal, papeles_en_regla=True, tipo='evaluacion')
         elif papeles_en_regla.lower() == 'false':
             pendientes = self.obtener_turnos_por_estado(self.ESTADO_PENDIENTE, id_sucursal, papeles_en_regla=False, tipo='evaluacion')
         turnos_data = self.detalle.obtener_data_turnos_pendientes(pendientes)

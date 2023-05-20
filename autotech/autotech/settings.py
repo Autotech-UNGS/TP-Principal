@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     'turnos',
     'evaluaciones',
     'tecnicos',
+    'talleres',
+    #'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -197,3 +199,10 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https:\/\/",
     r"^http:\/\/"
 ]
+
+"""
+# para la automatización de los cambios de estado a 'Cancelado' de los turnos
+CRONJOBS = [
+    ('0 18 * * *', 'turnos.modificar_estado_cron.modificar_estado'),
+]
+"""

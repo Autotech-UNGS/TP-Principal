@@ -2,7 +2,7 @@ from unittest.mock import patch, Mock
 from django.urls import reverse
 from .test_setup import TestSetUp
 from administracion.models import Turno_taller
-from turnos.views import *
+from turnos.asignar_tecnico_views import *
 from test.factories.usuario_factorie import *
 
 class AsignarTecnicoTestCase(TestSetUp):
@@ -29,7 +29,7 @@ class AsignarTecnicoTestCase(TestSetUp):
             'hora_inicio': turno.hora_inicio.strftime("%H:%M:%S"),
             'fecha_fin': turno.fecha_fin.strftime("%Y-%m-%d"),
             'hora_fin': turno.hora_fin.strftime("%H:%M:%S"),
-            'frecuencia_km': 0,
+            'frecuencia_km': turno.frecuencia_km,
             'papeles_en_regla': True 
             }
         return response_esperado

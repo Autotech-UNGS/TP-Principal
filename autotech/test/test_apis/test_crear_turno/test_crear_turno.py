@@ -1,7 +1,7 @@
 from django.urls import reverse
 from .test_setup import TestSetUp
 from administracion.models import Turno_taller
-from turnos.views import *
+from turnos.crear_turnos_views import *
 from test.factories.usuario_factorie import *
 
 class CrearTurnoTestCase(TestSetUp):
@@ -18,7 +18,20 @@ class CrearTurnoTestCase(TestSetUp):
         return self.client.get(url)
     
     def test_cargar_turno_correcto_evaluacion(self):
-        turno_correcto = {"id_turno": 20,
+        turno_correcto = {"id_turno": 6,
+        "tipo": "evaluacion",
+        "estado": "pendiente",
+        "tecnico_id": None,
+        "patente": "AS123FD",
+        "fecha_inicio": "2023-10-23",
+        "hora_inicio": "12:00:00",
+        "fecha_fin": "2023-10-23",
+        "hora_fin": "13:00:00",
+        "frecuencia_km": None,
+        "papeles_en_regla": True,
+        "taller_id": 10}
+        
+        response_esperado = {"id_turno": 6,
         "tipo": "evaluacion",
         "estado": "pendiente",
         "tecnico_id": None,
@@ -32,6 +45,7 @@ class CrearTurnoTestCase(TestSetUp):
         "taller_id": 10}
     
         self.assertEqual(self.post_response_crear_turno(turno_correcto).status_code, 200)
+        self.assertDictEqual(self.post_response_crear_turno(turno_correcto).json(), response_esperado)
         
     def test_cargar_turno_correcto_service(self):
         turno_correcto = {"id_turno": 8,
@@ -44,7 +58,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": "2023-10-23",
         "hora_fin": "13:00:00",
         "frecuencia_km": 5000,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno(turno_correcto).status_code, 200)
@@ -59,8 +73,8 @@ class CrearTurnoTestCase(TestSetUp):
         "hora_inicio": "12:00:00",
         "fecha_fin": "2023-10-23",
         "hora_fin": "13:00:00",
-        "frecuencia_km": 0,
-        "papeles_en_regla": False,
+        "frecuencia_km": None,
+        "papeles_en_regla": True,
         "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno(turno_correcto).status_code, 200)
@@ -76,7 +90,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": "2023-10-23",
         "hora_fin": "13:00:00",
         "frecuencia_km": 0,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno(turno_correcto).status_code, 200)
@@ -93,7 +107,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": ayer.strftime("%Y-%m-%d"),
         "hora_fin": "11:00:00",
         "frecuencia_km": None,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)
@@ -110,7 +124,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": hoy.strftime("%Y-%m-%d"),
         "hora_fin": "11:00:00",
         "frecuencia_km": None,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)
@@ -127,10 +141,24 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": mañana.strftime("%Y-%m-%d"),
         "hora_fin": "11:00:00",
         "frecuencia_km": None,
+        "papeles_en_regla": True,
+        "taller_id": 10}
+        
+        response_esperado = {"id_turno": 6,
+        "tipo": "evaluacion",
+        "estado": "pendiente",
+        "tecnico_id": None,
+        "patente": "AS123FD",
+        "fecha_inicio": mañana.strftime("%Y-%m-%d"),
+        "hora_inicio": "10:00:00",
+        "fecha_fin": mañana.strftime("%Y-%m-%d"),
+        "hora_fin": "11:00:00",
+        "frecuencia_km": None,
         "papeles_en_regla": False,
         "taller_id": 10}
         
-        self.assertEqual(self.post_response_crear_turno(turno_correcto).status_code, 200)       
+        self.assertEqual(self.post_response_crear_turno(turno_correcto).status_code, 200)
+        self.assertDictEqual(self.post_response_crear_turno(turno_correcto).json(), response_esperado)       
     
     def test_service_sin_km(self):
         turno_incorrecto = {"id_turno": 6,
@@ -143,7 +171,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": "2023-10-23",
         "hora_fin": "13:00:00",
         "frecuencia_km": None,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)  
@@ -159,7 +187,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": "2023-10-23",
         "hora_fin": "13:00:00",
         "frecuencia_km": 0,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 108}
         
         self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)         
@@ -175,7 +203,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": "2023-10-23",
         "hora_fin": "13:40:00",
         "frecuencia_km": None,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)  
@@ -191,7 +219,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": "2023-10-23",
         "hora_fin": "18:00:00",
         "frecuencia_km": None,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400) 
@@ -207,7 +235,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": "2023-10-23",
         "hora_fin": "10:00:00",
         "frecuencia_km": None,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400) 
@@ -224,7 +252,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": "2023-10-22",
         "hora_fin": "13:00:00",
         "frecuencia_km": None,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)        
@@ -240,7 +268,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": "2023-10-22",
         "hora_fin": "7:00:00",
         "frecuencia_km": None,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)        
@@ -256,7 +284,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": "2023-10-23",
         "hora_fin": "11:00:00",
         "frecuencia_km": None,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)
@@ -272,7 +300,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": "2023-10-23",
         "hora_fin": "11:00:00",
         "frecuencia_km": None,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)
@@ -288,7 +316,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": "2023-10-22",
         "hora_fin": "11:00:00",
         "frecuencia_km": None,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)        
@@ -304,7 +332,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": "2023-9-21",
         "hora_fin": "12:00:00",
         "frecuencia_km": None,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 11}
         
         self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)        
@@ -320,7 +348,7 @@ class CrearTurnoTestCase(TestSetUp):
         "fecha_fin": "2023-9-21",
         "hora_fin": "11:00:00",
         "frecuencia_km": 0,
-        "papeles_en_regla": False,
+        "papeles_en_regla": True,
         "taller_id": 11}
         
         self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)       
