@@ -7,6 +7,7 @@ from administracion.serializers import TurnoTallerSerializer
 from administracion.models import Turno_taller
 from .validadores_views import ValidadorDatosTecnico, ValidadorDatosSupervisor
 from .consumidor_api_externa import ConsumidorApiTecnicos
+from django.db.models import Q
 
 
 class TecnicoViewSet(ViewSet):
@@ -53,7 +54,32 @@ class TecnicoViewSet(ViewSet):
         turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='terminado')
         serializer= TurnoTallerSerializer(turnos, many=True)
         return Response(serializer.data)
+    # -------------------------------------------------------------------------------------------------------
+    @action(detail=True, methods=['get'])   
+    def trabajos_en_proceso_evaluacion_tecnico(self, request, id_tecnico):
+        turnos = Turno_taller.objects.filter(Q(tecnico_id=id_tecnico) & Q(estado='en_proceso') & Q(tipo='evaluacion'))
+        serializer= TurnoTallerSerializer(turnos, many=True)
+        return Response(serializer.data)
     
+    @action(detail=True, methods=['get'])   
+    def trabajos_en_proceso_service_tecnico(self, request, id_tecnico):
+        turnos = Turno_taller.objects.filter(Q(tecnico_id=id_tecnico) & Q(estado='en_proceso') & Q(tipo='service'))
+        serializer= TurnoTallerSerializer(turnos, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['get'])   
+    def trabajos_en_proceso_reparacion_tecnico(self, request, id_tecnico):
+        turnos = Turno_taller.objects.filter(Q(tecnico_id=id_tecnico) & Q(estado='en_proceso') & Q(tipo='reparacion'))
+        serializer= TurnoTallerSerializer(turnos, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['get'])   
+    def trabajos_en_proceso_extraordinario_tecnico(self, request, id_tecnico):
+        turnos = Turno_taller.objects.filter(Q(tecnico_id=id_tecnico) & Q(estado='en_proceso') & Q(tipo='extraordinario'))
+        serializer= TurnoTallerSerializer(turnos, many=True)
+        return Response(serializer.data)
+    
+    # -------------------------------------------------------------------------------------------------------
     @action(detail=False, methods=['get'])
     def categorias(self, request):
         """Devuelve una lista de todas las categorías de técnico disponibles.
@@ -90,3 +116,5 @@ class TecnicoViewSet(ViewSet):
         if not tecnicos:
             return []
         return tecnicos
+    
+
