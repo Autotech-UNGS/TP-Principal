@@ -14,7 +14,7 @@ class EjecutarCron(ViewSet):
                 self.enviar_correo_prueba()
                 #self.modificar_estado_a_cancelado()
                 #self.modificar_estado_a_finalizado()
-                return HttpResponse("cron ejecutado correctamente", status=400)
+                return HttpResponse("cron ejecutado correctamente", status=200)
                 
         # Cambia a 'cancelado' el estado de los turnos que al final del dia todavia tengan estado 'pendiente'
         def modificar_estado_a_cancelado(self):
