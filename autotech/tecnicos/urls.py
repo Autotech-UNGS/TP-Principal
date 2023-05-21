@@ -12,6 +12,6 @@ urlpatterns = [
     path('trabajos-en-proceso-evaluacion/<int:id_tecnico>/', views.TecnicoViewSet.as_view({'get': 'trabajos_en_proceso_evaluacion_tecnico'}), name='trabajos-en-proceso-evaluacion'),
     path('trabajos-en-proceso-service/<int:id_tecnico>/', views.TecnicoViewSet.as_view({'get': 'trabajos_en_proceso_service_tecnico'}), name='trabajos-en-proceso-service'),
     path('trabajos-en-proceso-reparacion/<int:id_tecnico>/', views.TecnicoViewSet.as_view({'get': 'trabajos_en_proceso_reparacion_tecnico'}), name='trabajos-en-proceso-reparacion'),
-    path('trabajos-en-proceso-extraordinario/<int:id_tecnico>/', views.TecnicoViewSet.as_view({'get': 'trabajos_en_proceso_extraordinario_tecnico'}), name='trabajos-en-proceso-evaluacion'),
+    path('trabajos-en-proceso-extraordinario/<int:id_tecnico>/', views.TecnicoViewSet.as_view({'get': 'trabajos_en_proceso_extraordinario_tecnico'}), name='trabajos-en-proceso-extraordinario'),
 
 ]

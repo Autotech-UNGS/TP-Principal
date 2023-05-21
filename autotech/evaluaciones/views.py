@@ -37,10 +37,13 @@ class RegistroEvaluacionCreate(APIView):
         if not Turno_taller.objects.filter(id_turno=id_turno).exists():
             return Response({'error': 'El turno pasado no existe'}, status=status.HTTP_400_BAD_REQUEST)
         
-        turno = Turno_taller.objects.get(id_turno = id_turno)
+        turno = Turno_taller.objects.get(id_turno=id_turno)
         if not turno.tipo == "evaluacion":
             return Response({'error': 'El turno pasado no es un turno para Evaluación'}, status=status.HTTP_400_BAD_REQUEST)
-        
+    
+        if not turno.estado == "en_proceso":
+            return Response({'error': 'El turno pasado no está en estado en proceso'}, status=status.HTTP_400_BAD_REQUEST)
+
         if Registro_evaluacion.objects.filter(id_turno=id_turno).exists():
             return Response({'error': 'El turno pasado ya existe en los registros'}, status=status.HTTP_400_BAD_REQUEST)
         # Tomo el turno que corresponde a ese id
@@ -52,9 +55,9 @@ class RegistroEvaluacionCreate(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@receiver(post_save, sender=Registro_evaluacion)
+@receiver(post_save, sender=Registro_evaluacion) # instance -> el registro de evaluacion que se crea
 def generar_reporte_administracion(sender, instance, created, **kwargs):
-    if created:
+    if created: # si se creo algo
         detalle = instance.detalle
         puntaje_total = Checklist_evaluacion._meta.get_field('puntaje_max').default
         costo_total = 0.0
@@ -93,7 +96,7 @@ class RegistroEvaluacionList(APIView):
 
     def get(self, request, format=None):
         if not Registro_evaluacion.objects.exists():
-            return Response({'error': 'No hay registros actualmente'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'message': 'No hay registros actualmente'}, status=status.HTTP_204_NO_CONTENT)
         else:
             registros = Registro_evaluacion.objects.all()
             serializer = RegistroEvaluacionSerializer(registros, many=True)
@@ -121,7 +124,7 @@ class RegistroEvaluacionXAdminReadOnly(APIView):
 
     def get(self, request, format=None):
         if not Registro_evaluacion_para_admin.objects.exists():
-            return Response({'error': 'No hay registros actualmente'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'No hay registros actualmente'}, status=status.HTTP_204_BAD_REQUEST)
         else:
             registros = Registro_evaluacion_para_admin.objects.all()
             serializer = RegistroEvaluacionXAdminSerializerGET(registros, many=True)

@@ -24,15 +24,18 @@ class TestSetUp(APITestCase):
 
 
         self.assertEqual(self.taller, self.turno_taller1.taller_id)
+        
         self.assertEqual(Turno_taller.objects.count(), 11)
+
         self.assertEqual(Turno_taller.objects.filter(estado='pendiente').count(), 5)
         self.assertEqual(Turno_taller.objects.filter(estado='en_proceso').count(), 4)
         self.assertEqual(Turno_taller.objects.filter(estado='terminado').count(), 1)
         self.assertEqual(Turno_taller.objects.filter(estado='cancelado').count(), 1)
-        self.assertEqual(self.turno_taller1.estado, "pendiente")
-        self.assertEqual(self.turno_taller7.estado, "en_proceso")
-        self.assertEqual(self.turno_taller10.estado, "terminado")
-        self.assertEqual(self.turno_taller11.estado, "cancelado")
+
+        self.assertEqual(self.turno_taller1.estado, 'pendiente')
+        self.assertEqual(self.turno_taller7.estado, 'en_proceso')
+        self.assertEqual(self.turno_taller10.estado, 'terminado')
+        self.assertEqual(self.turno_taller11.estado, 'cancelado')
 
         return super().setUp()
     
