@@ -5,8 +5,10 @@ from administracion.models import Checklist_evaluacion
 class ValidadorChecklist:
 
     def validar_diccionario(self, request):
-
         id_task_puntaje = request.data.get('id_task_puntaje')
+        if not id_task_puntaje:
+            return Response({'error': 'El campo "id_task_puntaje" es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+        
         filas_checklist = Checklist_evaluacion.objects.count()
         if filas_checklist == len(id_task_puntaje):  # comparo que la lista que me llega de tasks sea igual a las filas_checklist de la tabla checklist_Evaluación predefinida en la BD
            

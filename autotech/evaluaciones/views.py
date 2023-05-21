@@ -26,26 +26,33 @@ class RegistroEvaluacionCreate(APIView):
     # id_turno , diccionario ["id_task_puntaje":{"1":20, "2":30}], detalle 
     def post(self, request, *args, **kwargs):
         validador = ValidadorChecklist()
+        detalle = request.data.get('detalle')
+
+        id_turno = request.data.get('id_turno')
+        if not id_turno:
+            return Response({'error': 'El campo "id_turno" es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not Turno_taller.objects.filter(id_turno=id_turno).exists():
+            return Response({'error': 'El turno pasado no existe'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        turno = Turno_taller.objects.get(id_turno=id_turno)
+
+        if not turno.tipo == "evaluacion":
+            return Response({'error': 'El turno pasado no es un turno para Evaluación'}, status=status.HTTP_400_BAD_REQUEST)
+    
+        if not turno.estado == "en_proceso":
+            return Response({'error': 'El turno pasado no está en estado en proceso'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             validador.validar_diccionario(request)
         except ValidationError as e:
             error_messages = [str(error) for error in e.detail]
             return Response({'error': error_messages}, status=status.HTTP_400_BAD_REQUEST)
         
-        id_turno = request.data.get('id_turno')
+        
         id_task_puntaje = request.data.get('id_task_puntaje')
 
-        detalle = request.data.get('detalle')
         
-        if not Turno_taller.objects.filter(id_turno=id_turno).exists():
-            return Response({'error': 'El turno pasado no existe'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        turno = Turno_taller.objects.get(id_turno=id_turno)
-        if not turno.tipo == "evaluacion":
-            return Response({'error': 'El turno pasado no es un turno para Evaluación'}, status=status.HTTP_400_BAD_REQUEST)
-    
-        if not turno.estado == "en_proceso":
-            return Response({'error': 'El turno pasado no está en estado en proceso'}, status=status.HTTP_400_BAD_REQUEST)
 
         if Registro_evaluacion.objects.filter(id_turno=id_turno).exists():
             return Response({'error': 'El turno pasado ya existe en los registros'}, status=status.HTTP_400_BAD_REQUEST)
