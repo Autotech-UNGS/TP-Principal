@@ -89,7 +89,6 @@ def obtener_taller_del_tecnico(id_tecnico):
     return ConsumidorApiTecnicos.obtener_taller_tecnico(id_tecnico)
 
 class ValidadorSupervisor():
-
     def sucursal(self, sucursal_supervisor):
         if sucursal_supervisor is None:
             return False
