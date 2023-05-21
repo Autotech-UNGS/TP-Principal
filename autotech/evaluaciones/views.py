@@ -2,6 +2,7 @@ import json
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from rest_framework.decorators import action
 
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -11,8 +12,11 @@ from rest_framework.exceptions import ValidationError
 
 
 from administracion.models import  Turno_taller, Registro_evaluacion_para_admin, Registro_evaluacion, Checklist_evaluacion
-from administracion.serializers import  RegistroEvaluacionXAdminSerializerGET, RegistroEvaluacionSerializer, ChecklistEvaluacionSerializer
+from administracion.serializers import  RegistroEvaluacionXAdminSerializer, RegistroEvaluacionSerializer, ChecklistEvaluacionSerializer, TurnoTallerSerializer
 from .validadores import ValidadorChecklist
+
+from tecnicos.views import TecnicoViewSet
+
 
 # -----------------------------------------------------------------------------------------------------
 #------------------------------------REGISTRO EVALUACION CREAR-----------------------------------------------
@@ -127,7 +131,7 @@ class RegistroEvaluacionXAdminReadOnly(APIView):
             return Response({'message': 'No hay registros actualmente'}, status=status.HTTP_204_BAD_REQUEST)
         else:
             registros = Registro_evaluacion_para_admin.objects.all()
-            serializer = RegistroEvaluacionXAdminSerializerGET(registros, many=True)
+            serializer = RegistroEvaluacionXAdminSerializer(registros, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 # -----------------------------------------------------------------------------------------------------
 #------------------------------------CHECKLIST EVALUACION LEER-----------------------------------------
@@ -144,4 +148,67 @@ class ChecklistEvaluacionList(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+# -----------------------------------------------------------------------------------------------------
+#------------------------REGISTRO EVALUACION LEER PARA UN TECNICO CON DETALLES-------------------------
+# -----------------------------------------------------------------------------------------------------
+class RegistroEvaluacionXAdminReadOnlyTecnico(APIView):
+    permission_classes = [permissions.AllowAny]
 
+    def get(self, request, id_tecnico, format=None):
+
+        # No hay registros de evaluación
+        if not Registro_evaluacion_para_admin.objects.exists():
+            return Response({'error': 'No hay registros actualmente'}, status=status.HTTP_204_NO_CONTENT)
+        
+        # El técnico pasado no tiene turnos de evaluacionen proceso actualmente 
+        if not Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='evaluacion'):
+            return Response({'error': 'El ID del técnico no es válido con un turno de evaluación vigente'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='evaluacion')
+        id_turnos = list(turnos.values_list('id_turno', flat=True))
+
+        # El técnico no tiene registros de evaluación guardados
+        if not Registro_evaluacion_para_admin.objects.filter(id_turno__in = id_turnos):
+            return Response({'error': 'El Técnico no posee registros de evaluación guardados'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        registros = Registro_evaluacion_para_admin.objects.filter(id_turno__in = id_turnos)    
+        serializer = RegistroEvaluacionXAdminSerializer(registros, many=True)
+
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+# -----------------------------------------------------------------------------------------------------
+#------------------------------------REGISTRO EVALUACION LEER PARA UN TECNICO -------------------------
+# -----------------------------------------------------------------------------------------------------
+class RegistroEvaluacionListTecnico(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, id_tecnico, format=None):
+        
+        # El técnico pasado no tiene turnos de evaluacionen proceso actualmente 
+        if not Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='evaluacion'):
+            return Response({'error': 'El ID del técnico no es válido con un turno de evaluación vigente'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='evaluacion')
+        id_turnos = list(turnos.values_list('id_turno', flat=True))
+        print (id_turnos)
+
+        # El técnico no tiene registros de evaluación guardados
+        if not Registro_evaluacion.objects.filter(id_turno__in = id_turnos):
+            serializer = TurnoTallerSerializer(turnos, many=True)
+            # Si no tiene turnos registrados de evalaucion entonces devuelvo todos los turnos que tenga 
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        
+        registros = Registro_evaluacion.objects.filter(id_turno__in = id_turnos) 
+        id_turnos_registros = list(registros.values_list('id_turno', flat=True))
+        print(id_turnos_registros)
+
+        turnos_pendientes_de_registro = Turno_taller.objects.filter(id_turno__in = id_turnos).exclude(id_turno__in = id_turnos_registros)
+        serializer = TurnoTallerSerializer(turnos_pendientes_de_registro, many=True)
+
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+
+
+
+
+    
