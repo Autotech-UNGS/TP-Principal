@@ -22,7 +22,7 @@ class RegistroReparacionSerializer(serializers.ModelSerializer):
         model = Registro_reparacion
         fields = '__all__'
 
-class RegistroEvaluacionXAdminSerializerGET(serializers.ModelSerializer):
+class RegistroEvaluacionXAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = Registro_evaluacion_para_admin
         fields = '__all__'
