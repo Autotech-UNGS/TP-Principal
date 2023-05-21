@@ -180,10 +180,6 @@ class RegistroEvaluacionListTecnico(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, id_tecnico, format=None):
-
-        # No hay registros de evaluación
-        if not Registro_evaluacion.objects.exists():
-            return Response({'error': 'No hay registros actualmente'}, status=status.HTTP_204_NO_CONTENT)
         
         # El técnico pasado no tiene turnos de evaluacionen proceso actualmente 
         if not Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='evaluacion'):
@@ -195,7 +191,9 @@ class RegistroEvaluacionListTecnico(APIView):
 
         # El técnico no tiene registros de evaluación guardados
         if not Registro_evaluacion.objects.filter(id_turno__in = id_turnos):
-            return Response({'error': 'El Técnico no posee registros de evaluación guardados'}, status=status.HTTP_400_BAD_REQUEST)
+            serializer = TurnoTallerSerializer(turnos, many=True)
+            # Si no tiene turnos registrados de evalaucion entonces devuelvo todos los turnos que tenga 
+            return Response(serializer.data,status=status.HTTP_200_OK)
         
         registros = Registro_evaluacion.objects.filter(id_turno__in = id_turnos) 
         id_turnos_registros = list(registros.values_list('id_turno', flat=True))
