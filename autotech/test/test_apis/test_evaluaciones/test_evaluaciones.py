@@ -2,7 +2,7 @@ import json
 from django.urls import reverse
 from .test_setup import TestSetUp
 from administracion.models import Registro_evaluacion_para_admin, Registro_evaluacion, Checklist_evaluacion, Turno_taller
-from administracion.serializers import ChecklistEvaluacionSerializer, RegistroEvaluacionSerializer,  RegistroEvaluacionXAdminSerializerGET
+from administracion.serializers import ChecklistEvaluacionSerializer, RegistroEvaluacionSerializer,  RegistroEvaluacionXAdminSerializer
 
 class RegistroEvaluacionCreateTestCase(TestSetUp):
 
@@ -139,22 +139,6 @@ class RegistroEvaluacionListTestCase(TestSetUp):
         self.assertEqual(self.get_response_registro_evaluacion_list().status_code, 200)
         self.assertEqual(len(self.get_response_registro_evaluacion_list().data), 1)
 
-class RegistroEvaluacionUnoTestCase(TestSetUp):  
-    def get_response_registro_evaluacion_uno(self, id_turno):
-        url = reverse('listar_registros_evaluacion_por_id', args=[id_turno])
-        return self.client.get(url)
-
-    def test_registro_evaluaciones_no_existe_error_404(self):
-        id_turno = 10 # no existe registro evaluacion con este id de turno
-        self.assertEqual(self.get_response_registro_evaluacion_uno(id_turno=id_turno).status_code, 404)
-      
-    def test_registro_evaluacion_ok(self):
-        id_turno = 9 # existe registro evaluacion con el id de turno
-        registros = Registro_evaluacion.objects.filter(id_turno=id_turno)
-        serializer = RegistroEvaluacionSerializer(registros, many=True)
-        self.assertEqual(self.get_response_registro_evaluacion_uno(id_turno=id_turno).status_code, 200)
-        self.assertEqual(self.get_response_registro_evaluacion_uno(id_turno=id_turno).data, serializer.data)
-
 
 class RegistroEvaluacionXAdminReadOnlyTestCase(TestSetUp):   
     def get_response_registro_evaluacion_x_admin_read_only(self):
@@ -167,7 +151,7 @@ class RegistroEvaluacionXAdminReadOnlyTestCase(TestSetUp):
 
     def test_listar_registro_evaluacion_para_admin(self):
         registros = Registro_evaluacion_para_admin.objects.all()
-        serializer = RegistroEvaluacionXAdminSerializerGET(registros, many=True)
+        serializer = RegistroEvaluacionXAdminSerializer(registros, many=True)
         self.assertEqual(self.get_response_registro_evaluacion_x_admin_read_only().status_code, 200)
         self.assertEqual(self.get_response_registro_evaluacion_x_admin_read_only().data, serializer.data) 
 

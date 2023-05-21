@@ -10,7 +10,6 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
 
-
 from administracion.models import  Turno_taller, Registro_evaluacion_para_admin, Registro_evaluacion, Checklist_evaluacion
 from administracion.serializers import  RegistroEvaluacionXAdminSerializer, RegistroEvaluacionSerializer, ChecklistEvaluacionSerializer, TurnoTallerSerializer
 from .validadores import ValidadorChecklist
@@ -59,9 +58,9 @@ class RegistroEvaluacionCreate(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@receiver(post_save, sender=Registro_evaluacion) # instance -> el registro de evaluacion que se crea
+@receiver(post_save, sender=Registro_evaluacion)
 def generar_reporte_administracion(sender, instance, created, **kwargs):
-    if created: # si se creo algo
+    if created: 
         detalle = instance.detalle
         puntaje_total = Checklist_evaluacion._meta.get_field('puntaje_max').default
         costo_total = 0.0
@@ -109,17 +108,18 @@ class RegistroEvaluacionList(APIView):
 # -----------------------------------------------------------------------------------------------------
 #------------------------------------REGISTRO EVALUACION LEER UNO--------------------------------------
 # -----------------------------------------------------------------------------------------------------
-class RegistroEvaluacionUno(APIView):
+""" class RegistroEvaluacionUno(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, id_turno, format=None):
+        import pdb; pdb.set_trace()
         if not Registro_evaluacion.objects.filter(id_turno=id_turno).exists():
              return Response({'error': 'No existen registros para el turno proporcionado'}, status=status.HTTP_404_NOT_FOUND)
         else:
             registros = Registro_evaluacion.objects.filter(id_turno=id_turno)
             serializer = RegistroEvaluacionSerializer(registros, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-
+ """
 # -----------------------------------------------------------------------------------------------------
 #------------------------------------REGISTRO EVALUACION LEER CON DETALLES-----------------------------
 # -----------------------------------------------------------------------------------------------------
@@ -190,7 +190,6 @@ class RegistroEvaluacionListTecnico(APIView):
         
         turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='evaluacion')
         id_turnos = list(turnos.values_list('id_turno', flat=True))
-        print (id_turnos)
 
         # El técnico no tiene registros de evaluación guardados
         if not Registro_evaluacion.objects.filter(id_turno__in = id_turnos):
@@ -200,7 +199,6 @@ class RegistroEvaluacionListTecnico(APIView):
         
         registros = Registro_evaluacion.objects.filter(id_turno__in = id_turnos) 
         id_turnos_registros = list(registros.values_list('id_turno', flat=True))
-        print(id_turnos_registros)
 
         turnos_pendientes_de_registro = Turno_taller.objects.filter(id_turno__in = id_turnos).exclude(id_turno__in = id_turnos_registros)
         serializer = TurnoTallerSerializer(turnos_pendientes_de_registro, many=True)
