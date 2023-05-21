@@ -33,7 +33,7 @@ class RegistroEvaluacionCreate(APIView):
         id_task_puntaje = request.data.get('id_task_puntaje')
 
         detalle = request.data.get('detalle')
-
+        
         if not Turno_taller.objects.filter(id_turno=id_turno).exists():
             return Response({'error': 'El turno pasado no existe'}, status=status.HTTP_400_BAD_REQUEST)
         
