@@ -54,8 +54,6 @@ class TecnicoViewSet(ViewSet):
         turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso')
         serializer= TurnoTallerSerializer(turnos, many=True)
         return Response(serializer.data)
-
-    
     
     @action(detail=True, methods=['get'])   
     def trabajos_terminados_tecnico(self, request, id_tecnico):

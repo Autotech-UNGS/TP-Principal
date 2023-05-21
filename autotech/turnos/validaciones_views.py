@@ -42,7 +42,7 @@ def dia_hora_coherentes(dia_inicio: date, horario_inicio: time, dia_fin: date , 
     return es_valido
     
 def dia_valido(dia: date):
-    return dia > date.today()
+    return dia >= date.today()
 
 def taller_esta_disponible(id_taller: int, fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time):
     return taller_esta_disponible_agenda(fecha_inicio, hora_inicio, fecha_fin, hora_fin, id_taller)
@@ -72,7 +72,7 @@ def obtener_id_tecnicos(id_taller: int) -> list:
 def se_puede_asignar_tecnico(tipo_turno: str, papeles_en_regla_turno: bool):
     if tipo_turno != "evaluacion":
         es_valido = True
-    elif papeles_en_regla_turno == True:
+    elif papeles_en_regla_turno == True: # si el estado es rechazado, los papeles estan en False
         es_valido = True
     else:
         es_valido = False
