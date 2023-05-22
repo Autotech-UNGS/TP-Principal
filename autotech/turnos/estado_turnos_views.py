@@ -6,6 +6,7 @@ from rest_framework.viewsets import ViewSet
 from administracion.models import Turno_taller
 from .detalle_turnos_views import DetalleTurnosViewSet
 from .validaciones_views import ValidadorSupervisor
+import datetime
 
 
 class EstadoTurnosViewSet(ViewSet):
@@ -94,7 +95,14 @@ class EstadoTurnosViewSet(ViewSet):
         try:
             turno = Turno_taller.objects.get(id_turno=id_turno, estado=self.ESTADO_EN_PROCESO)
         except Turno_taller.DoesNotExist:
-            return HttpResponse('error: el turno no existe o no esta en proceso', status=400)      
+            return HttpResponse('error: el turno no existe o no esta en proceso', status=400)
+        hoy = datetime.date.today()
+        ahora = datetime.datetime.now().time()
+        
+        if hoy < turno.fecha_inicio:
+            return HttpResponse('error: el turno no puede ser finalizado antes del día de inicio del mismo', status=400)
+        elif ahora < turno.hora_inicio:
+            return HttpResponse('error: el turno no puede ser finalizado antes del día de inicio del mismo', status=400)
         
         turno.estado = self.ESTADO_TERMINADO
         
