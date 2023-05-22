@@ -56,7 +56,7 @@ def obtener_tecnicos_disponibles(id_turno: int, id_taller: int) -> list:
     turno = Turno_taller.objects.get(id_turno=id_turno) # obtenemos el turno en cuestion, porque necesitamos sus horarios
     for id_tecnico in id_tecnicos:
         # esta disponible ==  tiene ese espacio disponible en su agenda, sin contar turnos terminados/cancelados/rechazados
-        if tecnico_esta_disponible_agenda(id_tecnico, turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin):
+        if tecnico_esta_disponible_agenda(turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin, id_tecnico):
             tecnicos_disponibles.append(id_tecnico)
     return tecnicos_disponibles
 
