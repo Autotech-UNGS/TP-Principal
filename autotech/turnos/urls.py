@@ -21,6 +21,7 @@ urlpatterns = [
     path('en-procesos/',  estado_turnos_views.EstadoTurnosViewSet.as_view({'get': 'turnos_en_proceso'}), name='turnos-en-procesos'),
     path('terminados/',  estado_turnos_views.EstadoTurnosViewSet.as_view({'get': 'turnos_terminados'}), name='turnos-terminados'),
     path('cancelados/',  estado_turnos_views.EstadoTurnosViewSet.as_view({'get': 'turnos_cancelados'}), name='turnos-cancelados'),
+    path('no-validos/',  estado_turnos_views.EstadoTurnosViewSet.as_view({'get': 'turnos_no_validos'}), name='no-validos'),
     path('actualizar-estado/<int:id_turno>/',  estado_turnos_views.EstadoTurnosViewSet.as_view({'patch': 'actualizar_estado_turno_en_proceso'}), name='actualizar-estado-turno'),
     path('cancelar-turno/<int:id_turno>/', estado_turnos_views.EstadoTurnosViewSet.as_view({'patch': 'cancelar_turno_pendiente'}), name='cancelar-turno-pendiente'),
 

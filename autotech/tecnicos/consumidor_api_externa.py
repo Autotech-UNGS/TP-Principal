@@ -27,7 +27,8 @@ class ConsumidorApiTecnicos():
         tecnico_data = tecnico_data.json()
         #import pdb; pdb.set_trace()
         if tecnico_data.get('tipo') != 'Tecnico':
-            raise requests.HTTPError({'message error' : tecnico_data.status_code})
+             raise requests.HTTPError({'message error' : tecnico_data.status_code})
+        
         return tecnico_data
 
     @classmethod
