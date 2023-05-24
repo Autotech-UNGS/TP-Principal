@@ -44,8 +44,8 @@ class EjecutarCron(ViewSet):
                 password = 'tlrgdovrwrsacygp'
                 mensaje = MIMEMultipart('alternative')
                 mensaje['From'] = username
-                #mensaje['To'] = 'luciacsoria5@gmail.com'
-                mensaje['To'] = 'forozco@campus.ungs.edu.ar'
+                mensaje['To'] = 'luciacsoria5@gmail.com'
+                #mensaje['To'] = 'forozco@campus.ungs.edu.ar'
                 mensaje['Subject'] = 'CRON'
                 hora = datetime.now()
                 html = f""" <p> mensaje enviado a las {hora} con cron. {cantidad} turnos modificados </p>"""
