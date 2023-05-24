@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 class Agenda:
     
@@ -32,9 +32,16 @@ class Agenda:
     def horarios_disponibles(self, dia:date) -> list:   # [horarios disponibles]
         horarios_del_dia = self.obtener_horarios_del_dia(dia)
         horarios_disponibles = []
+        hoy = date.today()
+        ahora = datetime.now().time()
         for hora in horarios_del_dia: #[8,capacidad], [9, capacidad], ...
-            if hora[1] > 0: #[capacidad]
-                horarios_disponibles.append(hora[0]) # [8, capacidad] --> [8]
+            if dia != hoy:
+                if hora[1] > 0: #[capacidad]
+                    horarios_disponibles.append(hora[0]) # [8, capacidad] --> [8]
+            else:
+                if hora[0] > ahora.hour and hora[1] > 0:
+                    horarios_disponibles.append(hora[0]) # [8, capacidad] --> [8]
+                     
         return horarios_disponibles
     
     def horarios_capacidad(self, dia:date) -> list:   # [horarios disponibles]
@@ -47,7 +54,7 @@ class Agenda:
     def dias_horarios_disponibles_de_treinta_dias(self, dia:date) -> dict:  #{date -> [horarios disponibles]}
         dias_horarios_disponibles = {}
         dia_a_revisar = dia
-        for i in range(31):
+        for i in range(32):
             horarios_disponibles = self.horarios_disponibles(dia_a_revisar)
             dias_horarios_disponibles[dia_a_revisar]= horarios_disponibles
             dia_a_revisar = dia_a_revisar + timedelta(days=1)

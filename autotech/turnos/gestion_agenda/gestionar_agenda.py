@@ -21,7 +21,7 @@ def dias_disponibles_desde_hoy_a_treinta_dias(id_taller: int):
     agenda = crear_agenda_taller(id_taller)
     cargar_turnos_desde_hoy_a_treinta_dias(agenda, id_taller)
     dias_horarios_disponibles = {}
-    dias_horarios_disponibles = agenda.dias_horarios_disponibles_de_treinta_dias(date.today() + timedelta(days=1))
+    dias_horarios_disponibles = agenda.dias_horarios_disponibles_de_treinta_dias(date.today())
     return dias_horarios_disponibles    
 
 def crear_agenda_taller(_id_taller: int):
@@ -31,7 +31,7 @@ def crear_agenda_taller(_id_taller: int):
 
 def cargar_turnos_desde_hoy_a_treinta_dias(agenda:Agenda, id_taller:int):
     dia = date.today()
-    for i in range(31):
+    for i in range(32):
         cargar_turnos_taller(dia, agenda, id_taller)
         dia = dia + timedelta(days=1) 
 
