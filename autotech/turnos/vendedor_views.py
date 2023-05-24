@@ -10,6 +10,7 @@ from datetime import *
     
 class CrearTurnoVendedor(ViewSet):
     # los papeles son True por defecto, no hay que modificar el estado de los papeles. El email llega como un dato del json
+    # solo admite evaluacion y service.
     @action(detail=False, methods=['post'])
     def crear_turno_vendedor(self, request):
         dia = request.data.get("fecha_inicio")
@@ -26,6 +27,8 @@ class CrearTurnoVendedor(ViewSet):
         dia_inicio_date = datetime.strptime(dia, '%Y-%m-%d').date()
         dia_fin_date = datetime.strptime(dia_fin, '%Y-%m-%d').date()
 
+        if tipo != 'service' and tipo != 'evaluacion':
+            return HttpResponse("error: el vendedor sólo puede sacar turnos de evaluación y service", status=400)
         if tipo == "service" and km == None:
             return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
         if not existe_taller(taller_id):

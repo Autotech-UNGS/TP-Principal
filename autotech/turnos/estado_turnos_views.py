@@ -101,7 +101,7 @@ class EstadoTurnosViewSet(ViewSet):
         
         if hoy < turno.fecha_inicio:
             return HttpResponse('error: el turno no puede ser finalizado antes del día de inicio del mismo', status=400)
-        elif ahora < turno.hora_inicio:
+        elif hoy == turno.fecha_inicio and ahora < turno.hora_inicio:
             return HttpResponse('error: el turno no puede ser finalizado antes del horario de inicio del mismo', status=400)
         
         turno.estado = self.ESTADO_TERMINADO

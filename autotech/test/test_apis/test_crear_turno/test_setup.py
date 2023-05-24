@@ -13,7 +13,7 @@ class TestSetUp(APITestCase):
         self.taller2 = G(Taller,id_taller=11, capacidad=2)
         
         # en el taller 10, no hay mas espacio a las 10 y 11 el dia 2023/9/21
-        self.turno_test_1 = G(Turno_taller, id_turno= 1, taller_id=11, tipo='evaluacion', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(12,0,0), papeles_en_regla=True)
+        self.turno_test_1 = G(Turno_taller, patente = 'AS123FD', id_turno= 1, taller_id=11, tipo='evaluacion', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(12,0,0), papeles_en_regla=True)
         self.turno_test_2 = G(Turno_taller, id_turno= 2, taller_id=11, tipo='evaluacion', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(12,0,0), papeles_en_regla=True)
         
         # este turno dura dos dias, viernes y sabado
