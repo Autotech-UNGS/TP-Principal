@@ -90,37 +90,16 @@ class DetalleTurnosViewSet(ViewSet):
         
         return turnos_data
 
-    def obtener_data_turnos_en_proceso_terminado(self, turnos, estado):
-        turnos_data = []
-        
-        for turno in turnos:
-            nombre_tecnico = ConsumidorApiTecnicos.obtener_nombre_tecnico(turno.tecnico_id)
-            estado = turno.estado
-            if estado == 'en_proceso':            
-                turno_data = {
-                    'id_turno': turno.id_turno,
-                    'patente': turno.patente,
-                    'estado': 'en proceso',
-                    'tipo': turno.tipo,
-                    'fecha_inicio': turno.fecha_inicio,
-                    'hora_inicio': turno.hora_inicio,
-                    'tecnico_id': turno.tecnico_id,
-                    'nombre_completo': nombre_tecnico,
-                }
-            else:
-                turno_data = {
-                    'id_turno': turno.id_turno,
-                    'patente': turno.patente,
-                    'estado': turno.estado,
-                    'tipo': turno.tipo,
-                    'fecha_inicio': turno.fecha_inicio,
-                    'hora_inicio': turno.hora_inicio,
-                    'fecha_fin': turno.fecha_fin,
-                    'hora_fin': turno.hora_fin,
-                    'tecnico_id': turno.tecnico_id,
-                    'nombre_completo': nombre_tecnico,          
-                }
-            turnos_data.append(turno_data)
-        
-        return turnos_data
+    def obtener_data_turnos(self, serializer):
+        for turno_serializer in serializer.data:
+            if turno_serializer['tecnico_id'] is not None:
+                tecnico_nombre = ConsumidorApiTecnicos.obtener_nombre_tecnico(turno_serializer['tecnico_id'])
+                tecnico_categoria = ConsumidorApiTecnicos.obtener_categoria_tecnico(turno_serializer['tecnico_id'])
+
+                turno_serializer['nombre_tecnico'] = tecnico_nombre
+                turno_serializer['categoria_tecnico'] = tecnico_categoria
+                if turno_serializer['estado'] == 'en_proceso':
+                    turno_serializer['estado'] = 'en proceso'
+             
+        return serializer
             

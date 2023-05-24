@@ -1,9 +1,11 @@
 import requests
 from django.http import HttpResponse
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from administracion.models import Turno_taller
+from administracion.serializers import TurnoTallerSerializer
 from .detalle_turnos_views import DetalleTurnosViewSet
 from .validaciones_views import ValidadorSupervisor
 import datetime
@@ -14,6 +16,8 @@ class EstadoTurnosViewSet(ViewSet):
     ESTADO_EN_PROCESO = 'en_proceso'
     ESTADO_TERMINADO = 'terminado'
     ESTADO_CANCELADO = 'cancelado'
+    ESTADO_RECHAZADO = 'rechazado'
+    ESTADO_AUSENTE = 'ausente'
     validador_sup = ValidadorSupervisor()
     detalle = DetalleTurnosViewSet()
 
@@ -38,8 +42,8 @@ class EstadoTurnosViewSet(ViewSet):
         elif papeles_en_regla.lower() == 'false':
             pendientes = self.obtener_turnos_por_estado(self.ESTADO_PENDIENTE, id_sucursal, papeles_en_regla=False, tipo='evaluacion')
        
-        turnos_data = self.detalle.obtener_data_turnos_pendientes_cancelados(pendientes)
-        return Response(turnos_data)
+        serializer = TurnoTallerSerializer(pendientes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['get'])
     def turnos_en_proceso(self, request):
@@ -50,10 +54,11 @@ class EstadoTurnosViewSet(ViewSet):
         
         id_sucursal = self.obtener_id_sucursal(sucursal_supervisor)
         en_procesos = self.obtener_turnos_por_estado(self.ESTADO_EN_PROCESO, id_sucursal)
+        serializer = TurnoTallerSerializer( en_procesos, many=True)
         
         try:
-            turnos_data = self.detalle.obtener_data_turnos_en_proceso_terminado(en_procesos, self.ESTADO_EN_PROCESO)
-            return Response(turnos_data)   
+            self.detalle.obtener_data_turnos(serializer)
+            return Response(serializer.data, status=status.HTTP_200_OK)   
         except requests.HTTPError as e:
             return HttpResponse(str(e), status=e.response.status_code)   
         except Exception as e:
@@ -68,10 +73,11 @@ class EstadoTurnosViewSet(ViewSet):
         
         id_sucursal = self.obtener_id_sucursal(sucursal_supervisor)
         terminados = self.obtener_turnos_por_estado(self.ESTADO_TERMINADO, id_sucursal)
+        serializer = TurnoTallerSerializer(terminados, many=True)
         
         try:
-            turnos_data = self.detalle.obtener_data_turnos_en_proceso_terminado(terminados, self.ESTADO_TERMINADO)  
-            return Response(turnos_data)   
+            self.detalle.obtener_data_turnos(serializer)
+            return Response(serializer.data, status=status.HTTP_200_OK)     
         except requests.HTTPError as e:
             return HttpResponse(str(e), status=e.response.status_code)  
         except Exception as e:
@@ -85,11 +91,24 @@ class EstadoTurnosViewSet(ViewSet):
             return HttpResponse('error: numero de sucursal no valido', status=400)     
         
         id_sucursal = self.obtener_id_sucursal(sucursal_supervisor)
-        cancelados = self.obtener_turnos_por_estado(self.ESTADO_CANCELADO, id_sucursal)
-        
-        turnos_data = self.detalle.obtener_data_turnos_pendientes_cancelados(cancelados)
-        return Response(turnos_data)
+        cancelados = self.obtener_turnos_por_estado(self.ESTADO_CANCELADO, id_sucursal)     
+        serializer = TurnoTallerSerializer(cancelados, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
+    @action(detail=False, methods=['get'])
+    def turnos_no_validos(self, request):
+        sucursal_supervisor = request.GET.get('branch')
+        
+        if not self.validador_sup.sucursal(sucursal_supervisor):
+            return HttpResponse('error: numero de sucursal no valido', status=400)     
+        
+        id_sucursal = self.obtener_id_sucursal(sucursal_supervisor)
+        rechazados = self.obtener_turnos_por_estado(self.ESTADO_RECHAZADO, id_sucursal)
+        ausentes = self.obtener_turnos_por_estado(self.ESTADO_AUSENTE, id_sucursal)
+        no_validos = rechazados.union(ausentes)
+        serializer = TurnoTallerSerializer(no_validos, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)     
+   
     @action(detail=True, methods=['patch'])
     def actualizar_estado_turno_en_proceso(self, request, id_turno):  
         try:
