@@ -39,7 +39,7 @@ class Agenda:
                 if hora[1] > 0: #[capacidad]
                     horarios_disponibles.append(hora[0]) # [8, capacidad] --> [8]
             else:
-                if hora[0] > ahora.hour and hora[1] > 0:
+                if (hora[0] > ahora.hour - 3) and hora[1] > 0:
                     horarios_disponibles.append(hora[0]) # [8, capacidad] --> [8]
                      
         return horarios_disponibles
