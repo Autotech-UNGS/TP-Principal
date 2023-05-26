@@ -1,8 +1,4 @@
-from django.urls import path, reverse, include
-
-from rest_framework.urlpatterns import format_suffix_patterns
-from rest_framework import routers
-from rest_framework.views import APIView
+from django.urls import path
 
 from .views import *
 

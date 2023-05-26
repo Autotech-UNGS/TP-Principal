@@ -19,13 +19,13 @@ class TestSetUp(APITestCase):
         self.turno2 = G(Turno_taller, id_turno= 12, taller_id=1, tipo= 'evaluacion', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(9,0,0), fecha_fin=date(2023,9,21), hora_fin=time(10,0,0), papeles_en_regla=True)
         
         # asignado al 1 --> 10-11. No se puede reasignar
-        self.turno3 = G(Turno_taller, id_turno= 13, taller_id=1, tipo= 'evaluacion', estado="pendiente", tecnico_id= 2, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(11,0,0), papeles_en_regla=True)
+        self.turno3 = G(Turno_taller, id_turno= 13, taller_id=1, tipo= 'evaluacion', estado="pendiente", tecnico_id= 40, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(11,0,0), papeles_en_regla=True)
         
         # 11-12, papeles no en regla
         self.turno4 = G(Turno_taller, id_turno= 14, taller_id=1, tipo= 'evaluacion', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(11,0,0), fecha_fin=date(2023,9,21), hora_fin=time(12,0,0), papeles_en_regla=False)
         
         # asignado al 1 --> 12-14. No podemos asignarle al 1 un turno de 12-13
-        self.turno5 = G(Turno_taller, id_turno= 15, taller_id=1, tipo= 'evaluacion', estado="pendiente", tecnico_id= 2, fecha_inicio=date(2023,9,21), hora_inicio=time(12,0,0), fecha_fin=date(2023,9,21), hora_fin=time(14,0,0), papeles_en_regla=True)
+        self.turno5 = G(Turno_taller, id_turno= 15, taller_id=1, tipo= 'evaluacion', estado="pendiente", tecnico_id= 40, fecha_inicio=date(2023,9,21), hora_inicio=time(12,0,0), fecha_fin=date(2023,9,21), hora_fin=time(14,0,0), papeles_en_regla=True)
         self.turno6 = G(Turno_taller, id_turno= 16, taller_id=1, tipo= 'evaluacion', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(12,0,0), fecha_fin=date(2023,9,21), hora_fin=time(13,0,0), papeles_en_regla=True)
         self.turno7 = G(Turno_taller, id_turno= 17, taller_id=1, tipo= 'evaluacion', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(12,0,0), fecha_fin=date(2023,9,21), hora_fin=time(14,0,0), papeles_en_regla=True)
         self.turno8 = G(Turno_taller, id_turno= 18, taller_id=1, tipo= 'evaluacion', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(13,0,0), fecha_fin=date(2023,9,21), hora_fin=time(14,0,0), papeles_en_regla=True)

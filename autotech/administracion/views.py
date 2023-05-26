@@ -11,16 +11,6 @@ class TallerViewSet(viewsets.ModelViewSet):
     serializer_class = TallerSerializer
     permission_classes = [permissions.AllowAny]
 
-class TurnoTallerViewSet(viewsets.ModelViewSet):
-    queryset = Turno_taller.objects.all()
-    serializer_class = TurnoTallerSerializer
-    permission_classes = [permissions.AllowAny]
-
-class ChecklistReparacionViewSet(viewsets.ModelViewSet):
-    queryset = Checklist_reparacion.objects.all()
-    serializer_class = ChecklistReparacionSerializer
-    permission_classes = [permissions.AllowAny]
-
 class RegistroReparacionViewSet(viewsets.ModelViewSet):
     queryset = Registro_reparacion.objects.all()
     serializer_class = RegistroReparacionSerializer
