@@ -23,7 +23,7 @@ class EstadoTurnosViewSet(ViewSet):
         taller_sup = request.GET.get('branch')
         
         if not ValidadorTaller.es_valido(taller_sup):
-            return HttpResponse('error: numero de sucursal no valido', status=400)  
+            return HttpResponse('error: numero de taller no valido', status=400)  
         if papeles_en_regla is None or (papeles_en_regla.lower() != 'true' and papeles_en_regla.lower() != 'false'):
             return HttpResponse('error: se requiere información sobre si los papeles están en regla o no', status=400)       
        
@@ -46,7 +46,7 @@ class EstadoTurnosViewSet(ViewSet):
         taller_sup = request.GET.get('branch')
         
         if not ValidadorTaller.es_valido(taller_sup):
-            return HttpResponse({'error': 'Numero de sucursal no valido'}, status=400)     
+            return HttpResponse('error: numero de taller no valido', status=400)     
         
         id_sucursal = self.obtener_id_taller(taller_sup)
         en_procesos = self.obtener_turnos_por_estado(self.ESTADO_EN_PROCESO, id_sucursal)
@@ -59,7 +59,7 @@ class EstadoTurnosViewSet(ViewSet):
         taller_sup = request.GET.get('branch')
         
         if not ValidadorTaller.es_valido(taller_sup):
-            return HttpResponse('error: numero de sucursal no valido', status=400)     
+            return HttpResponse('error: numero de taller no valido', status=400)     
         
         id_sucursal = self.obtener_id_taller(taller_sup)
         terminados = self.obtener_turnos_por_estado(self.ESTADO_TERMINADO, id_sucursal)
@@ -73,7 +73,7 @@ class EstadoTurnosViewSet(ViewSet):
         taller_sup = request.GET.get('branch')
         
         if not ValidadorTaller.es_valido(taller_sup):
-            return HttpResponse('error: numero de sucursal no valido', status=400)     
+            return HttpResponse('error: numero de taller no valido', status=400)    
         
         id_sucursal = self.obtener_id_taller(taller_sup)
         cancelados = self.obtener_turnos_por_estado(self.ESTADO_CANCELADO, id_sucursal)     
@@ -85,7 +85,7 @@ class EstadoTurnosViewSet(ViewSet):
         taller_sup = request.GET.get('branch')
         
         if not ValidadorTaller.es_valido(taller_sup):
-            return HttpResponse('error: numero de sucursal no valido', status=400)     
+            return HttpResponse('error: numero de taller no valido', status=400)     
         
         id_sucursal = self.obtener_id_taller(taller_sup)
         rechazados = self.obtener_turnos_por_estado(self.ESTADO_RECHAZADO, id_sucursal)
