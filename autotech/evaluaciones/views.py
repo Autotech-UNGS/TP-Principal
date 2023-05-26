@@ -14,7 +14,6 @@ from administracion.models import  Turno_taller, Registro_evaluacion_para_admin,
 from administracion.serializers import  RegistroEvaluacionXAdminSerializer, RegistroEvaluacionSerializer, ChecklistEvaluacionSerializer, TurnoTallerSerializer
 from .validadores import ValidadorChecklist
 
-from tecnicos.views import TecnicoViewSet
 
 
 # -----------------------------------------------------------------------------------------------------

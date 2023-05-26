@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import estado_turnos_views, detalle_turnos_views, modificar_estado_cron_view, visualizar_turnos_views, crear_turnos_views, asignar_tecnico_views, vendedor_views
+from . import estado_turnos_views, modificar_estado_cron_view, visualizar_turnos_views, crear_turnos_views, asignar_tecnico_views, vendedor_views
 
 urlpatterns = [
     path('',visualizar_turnos_views.turnosOverview,name='turnos'),
@@ -26,7 +26,6 @@ urlpatterns = [
     path('cancelar-turno/<int:id_turno>/', estado_turnos_views.EstadoTurnosViewSet.as_view({'patch': 'cancelar_turno_pendiente'}), name='cancelar-turno-pendiente'),
 
     #--------------------------------------------------------------------------------------------------------------
-    path('detalle-turno/<int:id_turno>/', detalle_turnos_views.DetalleTurnosViewSet.as_view({'get': 'detalle_turno'}), name='detalle-turno'),
     
     #--------------------------------------------------------------------------------------------------------------
     path('crear-turno-vendedor/', vendedor_views.CrearTurnoVendedor.as_view({'post': 'crear_turno_vendedor'}), name='crear-turno-vendedor'),
