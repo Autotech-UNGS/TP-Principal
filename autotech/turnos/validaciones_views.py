@@ -17,7 +17,7 @@ def dias_horarios_disponibles_treinta_dias(id_taller:int, cant_horas:int):
 # -------- crear turno -------- #
 
 def existe_turno_evaluacion(patente):
-    turnos = Turno_taller.objects.filter(patente=patente, tipo = 'evaluacion')
+    turnos = Turno_taller.objects.filter(patente=patente, tipo = 'evaluacion', estado='terminado')
     return turnos.count() != 0
 
 #TODO
