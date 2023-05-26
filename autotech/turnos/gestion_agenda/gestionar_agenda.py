@@ -25,7 +25,7 @@ def dias_disponibles_desde_hoy_a_treinta_dias(id_taller: int):
     return dias_horarios_disponibles    
     """
 
-def dias_disponibles_desde_hoy_a_treinta_dias_varias_horas(id_taller: int, cant_horas:int):
+def dias_disponibles_desde_hoy_a_treinta_dias(id_taller: int, cant_horas:int):
     agenda = crear_agenda_taller(id_taller)
     cargar_turnos_desde_hoy_a_treinta_dias(agenda, id_taller)
     dias_horarios_disponibles = {}

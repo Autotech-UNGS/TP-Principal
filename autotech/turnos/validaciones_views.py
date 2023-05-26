@@ -11,7 +11,7 @@ def dias_horarios_disponibles_treinta_dias(id_taller:int):
     return dias_disponibles_desde_hoy_a_treinta_dias(id_taller)
 """
 def dias_horarios_disponibles_treinta_dias(id_taller:int, cant_horas:int):
-    return dias_disponibles_desde_hoy_a_treinta_dias_varias_horas(id_taller, cant_horas)
+    return dias_disponibles_desde_hoy_a_treinta_dias(id_taller, cant_horas)
 
 
 # -------- crear turno -------- #
