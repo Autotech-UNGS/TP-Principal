@@ -6,8 +6,8 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
 
-from administracion.models import  Service, Service_tasks, Checklist_evaluacion, Checklist_service
-from administracion.serializers import ServiceSerializer, ServiceTasksSerializer, ChecklistServiceSerializer
+from administracion.models import Checklist_evaluacion, Checklist_service
+from administracion.serializers import ChecklistServiceSerializer
 
 from services.validadores import *
 
@@ -33,3 +33,13 @@ class CopiarChecklistEvaluacion(APIView):
         serializer = ChecklistServiceSerializer(checklist_evaluacion, many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
     
+class ChecklistEvaluacionListar(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, format=None):
+        if not Checklist_evaluacion.objects.exists():
+            return Response({'error': 'La checklist está vacía'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            checklist = Checklist_evaluacion.objects.all()
+            serializer = ChecklistServiceSerializer(checklist, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
