@@ -12,14 +12,14 @@ class TurnoTallerSerializer(serializers.ModelSerializer):
         model = Turno_taller
         fields = '__all__'
 # ----------------------------------------------------------------------------------------------------#
-class ChecklistReparacionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Checklist_reparacion
-        fields = '__all__'
-
 class RegistroReparacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Registro_reparacion
+        fields = '__all__'
+
+class RegistroExtraordinarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Registro_extraordinario
         fields = '__all__'
 # ----------------------------------------------------------------------------------------------------#
 class RegistroEvaluacionXAdminSerializer(serializers.ModelSerializer):

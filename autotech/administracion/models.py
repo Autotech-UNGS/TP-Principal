@@ -32,24 +32,19 @@ class Turno_taller(models.Model):
     papeles_en_regla = models.BooleanField(default=True)
 
 # ----------------------------------------------------------------------------------------------------#
-
-class Checklist_reparacion(models.Model):
-    id_task = models.IntegerField(validators = [MinValueValidator(0), MaxValueValidator(500)])
-    elemento = models.CharField(max_length=100)
-    costo = models.FloatField(validators = [MinValueValidator(0),MaxValueValidator(1000000)], default= 0.0)
-    duracion = models.IntegerField(validators = [MinValueValidator(0)])
-
 class Registro_reparacion(models.Model):
-    id_registro = models.AutoField(primary_key=True)
-    id_turno = models.ForeignKey(Turno_taller, on_delete=models.PROTECT)
-    tasks = models.ManyToManyField(Checklist_reparacion)
+    id_turno = models.OneToOneField(Turno_taller, on_delete=models.PROTECT, primary_key=True)
+    tasks_hechas = models.JSONField(null=True, blank=True)
+    tasks_pendientes = models.JSONField(null=True, blank=True)
     costo_total = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1000000)], default=0.0)
     duracion_total = models.IntegerField(validators=[MinValueValidator(0)])
-    detalle = models.TextField(blank=True, null=True)
     fecha_registro = models.DateField(auto_now_add=True)
-
-    def tasks_list(self):
-        return list(self.tasks.all())
+    detalle = models.TextField(blank=True, null=True)
+    origen = models.TextField(choices=OrigenReparacion.choices, null=True, blank=True)
+# ----------------------------------------------------------------------------------------------------#
+class Registro_extraordinario(models.Model): 
+    id_turno = models.OneToOneField(Turno_taller, on_delete=models.PROTECT)
+    id_tasks = models.JSONField()
     
 # ----------------------------------------------------------------------------------------------------#
 class Registro_evaluacion_para_admin(models.Model):

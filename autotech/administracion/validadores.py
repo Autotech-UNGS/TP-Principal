@@ -72,3 +72,7 @@ class Frecuencia_km(models.IntegerChoices):
         FREQ_190000 = 190000, '190.000 KM'
         FREQ_195000 = 195000, '195.000 KM'
         FREQ_200000 = 200000, '200.000 KM'
+
+class OrigenReparacion(models.TextChoices):
+    EVALUACION ="evaluacion",("Evaluacion")
+    EXTRAORDINARIO = "extraordinario",("Extraordinario")
