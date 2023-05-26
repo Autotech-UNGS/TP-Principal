@@ -2,8 +2,10 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from administracion.models import  Service
-from administracion.serializers import ServiceSerializer
+from administracion.models import  Service, Checklist_service, Service_tasks
+from administracion.serializers import ServiceSerializer, ChecklistServiceSerializer
+
+import json
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -34,3 +36,19 @@ class VisualizarServiceUno(APIView):
             service = Service.objects.filter(id_service=id_service)
             serializer = ServiceSerializer(service, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        
+
+class VisualizarTareasService(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, id_service, format=None):
+        if not Service.objects.filter(id_service=id_service).exists():
+             return Response({'error': 'No existen service para el id proporcionado'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            id_tasks = Service_tasks.objects.get(id_service = id_service).id_tasks
+            id_tasks_lista = json.loads(id_tasks)
+            tasks = Checklist_service.objects.filter(id_task__in=id_tasks_lista)
+
+            serializer = ChecklistServiceSerializer(tasks, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
