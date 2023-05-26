@@ -85,7 +85,7 @@ class Service(models.Model):
     id_service = models.AutoField(primary_key=True)
     marca = models.CharField(max_length=50)
     modelo = models.CharField(max_length=50)
-    frecuencia_km = models.IntegerField(choices=Frecuencia_km.choices)
+    frecuencia_km = models.IntegerField(validators=[MinValueValidator(0)])
     costo_base = models.FloatField(validators=[MinValueValidator(0)])
     costo_total = models.FloatField(validators=[MinValueValidator(costo_base)], default=costo_base)
     duracion_total = models.PositiveIntegerField()
