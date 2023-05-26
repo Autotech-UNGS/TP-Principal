@@ -7,6 +7,8 @@ from django.http import QueryDict
 from .obtener_datos_usuario import *
 from .validaciones_views import * 
 from datetime import *
+from rest_framework.decorators import action
+from rest_framework.viewsets import ViewSet
 
 class CrearActualizarTurnosViewSet(ViewSet):
     @action(detail=True, methods=['get'])
@@ -31,12 +33,17 @@ class CrearActualizarTurnosViewSet(ViewSet):
         taller_id = request.data.get("taller_id")
         tipo = request.data.get("tipo")
         km = request.data.get("frecuencia_km")
+        patente = request.data.get("patente")
 
         horario_inicio_time = datetime.strptime(horario_inicio, '%H:%M:%S').time()
         horario_fin_time = datetime.strptime(horario_fin, '%H:%M:%S').time()
         dia_inicio_date = datetime.strptime(dia, '%Y-%m-%d').date()
         dia_fin_date = datetime.strptime(dia_fin, '%Y-%m-%d').date()
 
+        if tipo == 'reparacion' and not existe_turno_evaluacion(patente):
+            return HttpResponse("error: la patente no pertenece a la de un auto evaluado en el taller.", status=400)
+        if (tipo == 'service' or tipo == 'extraordinario') and not patente_registrada(patente): # necesitamos un endpoint que nos de todas las patentes de vehículos
+            return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
         if tipo == "service" and km == None:
             return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
         if not existe_taller(taller_id):

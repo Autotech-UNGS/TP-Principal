@@ -11,9 +11,11 @@ class TestSetUp(APITestCase):
         self.turno_taller2 = G(Turno_taller, tecnico_id=1, estado='terminado', taller_id=self.taller) # con id 2
         
         self.assertEqual(self.taller, self.turno_taller.taller_id)
+        
         self.assertEqual(Turno_taller.objects.count(), 2)
-        self.assertEqual(self.turno_taller.estado, "en_proceso")
-        self.assertEqual(self.turno_taller2.estado, "terminado")
+
+        self.assertEqual(self.turno_taller.estado, 'en_proceso')
+        self.assertEqual(self.turno_taller2.estado, 'terminado')
 
         return super().setUp()
     

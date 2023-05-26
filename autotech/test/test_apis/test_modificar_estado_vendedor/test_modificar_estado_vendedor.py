@@ -15,7 +15,7 @@ class ModificarEstadosVendedor(TestSetUp):
         id_turno = 100
         self.assertEqual(self.post_response_aceptar_papeles(id_turno).status_code, 200)
         turno = Turno_taller.objects.get(id_turno = id_turno)
-        self.assertDictEqual(turno.papeles_en_regla, True)
+        self.assertEqual(turno.papeles_en_regla, True)
         
     def test_aceptar_estado_incorrecto(self):
         id_turno = 101
@@ -37,7 +37,7 @@ class ModificarEstadosVendedor(TestSetUp):
         id_turno = 200
         self.assertEqual(self.post_response_aceptar_papeles(id_turno).status_code, 200)
         turno = Turno_taller.objects.get(id_turno = id_turno)
-        self.assertDictEqual(turno.papeles_en_regla, True)
+        self.assertEqual(turno.papeles_en_regla, True)
         
     def test_aceptar_estado_incorrecto(self):
         id_turno = 201

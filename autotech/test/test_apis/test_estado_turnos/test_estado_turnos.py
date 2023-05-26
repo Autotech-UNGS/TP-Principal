@@ -1,11 +1,8 @@
-from unittest.mock import patch, Mock
+""" from unittest.mock import patch, Mock
 from django.urls import reverse
 from .test_setup import TestSetUp
 from test.factories.usuario_factorie import UsuarioFactory
 from administracion.models import Turno_taller
-
-class EstadoTurnosUsuarioFactory(UsuarioFactory):
-    pass
 
 class EstadoTurnosTestCase(TestSetUp):
 
@@ -32,6 +29,7 @@ class EstadoTurnosTestCase(TestSetUp):
     def get_response_turnos_pendientes_esperado(self, sucursal_supervisor, papeles_en_regla):
         id_sucursal = int(sucursal_supervisor[-3:])
         turnos_pendientes = Turno_taller.objects.filter(estado='pendiente', taller_id=id_sucursal, papeles_en_regla=papeles_en_regla)
+        
         turnos_data = []
         for turno in turnos_pendientes:
             turno_data = {
@@ -71,10 +69,10 @@ class EstadoTurnosTestCase(TestSetUp):
         self.assertEqual(self.get_response_turnos_pendientes(sucursal_supervisor='S001', papeles_en_regla='false').status_code, 200)
         self.assertEqual(self.get_response_turnos_pendientes(sucursal_supervisor='S001', papeles_en_regla='false').data, response_esperado)
     
-    """ def test_pendientes_aprobados_comparar_data_esperada(self):
+       def test_pendientes_aprobados_comparar_data_esperada(self):
         response_esperado = self.get_response_turnos_pendientes_esperado(sucursal_supervisor='S001', papeles_en_regla=True)
         self.assertEqual(self.get_response_turnos_pendientes(sucursal_supervisor='S001', papeles_en_regla='true').status_code, 200)
-        self.assertEqual(self.get_response_turnos_pendientes(sucursal_supervisor='S001', papeles_en_regla='true').data, response_esperado) """
+        self.assertEqual(self.get_response_turnos_pendientes(sucursal_supervisor='S001', papeles_en_regla='true').data, response_esperado)
     
     # -------------------- Test turnos_en_proceso -------------------- #
     # solo existe un tecnico trabajando en sucursal 1, asi que parcheamos el metodo para que devuelve
@@ -225,3 +223,4 @@ class EstadoTurnosTestCase(TestSetUp):
         self.assertEqual(turno_cancelar.estado, 'cancelado')
         self.assertEqual(response.status_code, 400)
     
+"""

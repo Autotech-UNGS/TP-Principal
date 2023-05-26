@@ -3,6 +3,8 @@ from administracion.models import *
 from rest_framework.response import Response
 from .obtener_datos_usuario import *
 from .validaciones_views import * 
+from rest_framework.decorators import action
+from rest_framework.viewsets import ViewSet
 from datetime import *
 import smtplib
 from email.mime.text import MIMEText
@@ -45,6 +47,7 @@ class EjecutarCron(ViewSet):
                 mensaje = MIMEMultipart('alternative')
                 mensaje['From'] = username
                 mensaje['To'] = 'luciacsoria5@gmail.com'
+                #mensaje['To'] = 'forozco@campus.ungs.edu.ar'
                 mensaje['Subject'] = 'CRON'
                 hora = datetime.now()
                 html = f""" <p> mensaje enviado a las {hora} con cron. {cantidad} turnos modificados </p>"""

@@ -7,7 +7,7 @@ from test.factories.usuario_factorie import *
 class EjecutarCronTestCase(TestSetUp):
     def post_ejecutar_cron(self):
         url = reverse('ejecutar-cron')
-        return self.client.get(url)
+        return self.client.post(url)
     
     def test_cambian_a_ausente_1(self):
         #turno = Turno_taller.objects.get(id_turno = 200)

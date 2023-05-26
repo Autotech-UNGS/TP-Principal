@@ -10,12 +10,10 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
 
-
 from administracion.models import  Turno_taller, Registro_evaluacion_para_admin, Registro_evaluacion, Checklist_evaluacion
-from administracion.serializers import  RegistroEvaluacionXAdminSerializer, RegistroEvaluacionSerializer, ChecklistEvaluacionSerializer
+from administracion.serializers import  RegistroEvaluacionXAdminSerializer, RegistroEvaluacionSerializer, ChecklistEvaluacionSerializer, TurnoTallerSerializer
 from .validadores import ValidadorChecklist
 
-from tecnicos.views import TecnicoViewSet
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -27,24 +25,34 @@ class RegistroEvaluacionCreate(APIView):
     # id_turno , diccionario ["id_task_puntaje":{"1":20, "2":30}], detalle 
     def post(self, request, *args, **kwargs):
         validador = ValidadorChecklist()
+        detalle = request.data.get('detalle')
+
+        id_turno = request.data.get('id_turno')
+        if not id_turno:
+            return Response({'error': 'El campo "id_turno" es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not Turno_taller.objects.filter(id_turno=id_turno).exists():
+            return Response({'error': 'El turno pasado no existe'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        turno = Turno_taller.objects.get(id_turno=id_turno)
+
+        if not turno.tipo == "evaluacion":
+            return Response({'error': 'El turno pasado no es un turno para Evaluación'}, status=status.HTTP_400_BAD_REQUEST)
+    
+        if not turno.estado == "en_proceso":
+            return Response({'error': 'El turno pasado no está en estado en proceso'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             validador.validar_diccionario(request)
         except ValidationError as e:
             error_messages = [str(error) for error in e.detail]
             return Response({'error': error_messages}, status=status.HTTP_400_BAD_REQUEST)
         
-        id_turno = request.data.get('id_turno')
+        
         id_task_puntaje = request.data.get('id_task_puntaje')
 
-        detalle = request.data.get('detalle')
         
-        if not Turno_taller.objects.filter(id_turno=id_turno).exists():
-            return Response({'error': 'El turno pasado no existe'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        turno = Turno_taller.objects.get(id_turno = id_turno)
-        if not turno.tipo == "evaluacion":
-            return Response({'error': 'El turno pasado no es un turno para Evaluación'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         if Registro_evaluacion.objects.filter(id_turno=id_turno).exists():
             return Response({'error': 'El turno pasado ya existe en los registros'}, status=status.HTTP_400_BAD_REQUEST)
         # Tomo el turno que corresponde a ese id
@@ -58,7 +66,7 @@ class RegistroEvaluacionCreate(APIView):
 
 @receiver(post_save, sender=Registro_evaluacion)
 def generar_reporte_administracion(sender, instance, created, **kwargs):
-    if created:
+    if created: 
         detalle = instance.detalle
         puntaje_total = Checklist_evaluacion._meta.get_field('puntaje_max').default
         costo_total = 0.0
@@ -97,7 +105,7 @@ class RegistroEvaluacionList(APIView):
 
     def get(self, request, format=None):
         if not Registro_evaluacion.objects.exists():
-            return Response({'error': 'No hay registros actualmente'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'message': 'No hay registros actualmente'}, status=status.HTTP_204_NO_CONTENT)
         else:
             registros = Registro_evaluacion.objects.all()
             serializer = RegistroEvaluacionSerializer(registros, many=True)
@@ -106,17 +114,18 @@ class RegistroEvaluacionList(APIView):
 # -----------------------------------------------------------------------------------------------------
 #------------------------------------REGISTRO EVALUACION LEER UNO--------------------------------------
 # -----------------------------------------------------------------------------------------------------
-class RegistroEvaluacionUno(APIView):
+""" class RegistroEvaluacionUno(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, id_turno, format=None):
+        import pdb; pdb.set_trace()
         if not Registro_evaluacion.objects.filter(id_turno=id_turno).exists():
              return Response({'error': 'No existen registros para el turno proporcionado'}, status=status.HTTP_404_NOT_FOUND)
         else:
             registros = Registro_evaluacion.objects.filter(id_turno=id_turno)
             serializer = RegistroEvaluacionSerializer(registros, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-
+ """
 # -----------------------------------------------------------------------------------------------------
 #------------------------------------REGISTRO EVALUACION LEER CON DETALLES-----------------------------
 # -----------------------------------------------------------------------------------------------------
@@ -125,7 +134,7 @@ class RegistroEvaluacionXAdminReadOnly(APIView):
 
     def get(self, request, format=None):
         if not Registro_evaluacion_para_admin.objects.exists():
-            return Response({'error': 'No hay registros actualmente'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'No hay registros actualmente'}, status=status.HTTP_204_BAD_REQUEST)
         else:
             registros = Registro_evaluacion_para_admin.objects.all()
             serializer = RegistroEvaluacionXAdminSerializer(registros, many=True)
@@ -180,10 +189,6 @@ class RegistroEvaluacionListTecnico(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, id_tecnico, format=None):
-
-        # No hay registros de evaluación
-        if not Registro_evaluacion.objects.exists():
-            return Response({'error': 'No hay registros actualmente'}, status=status.HTTP_204_NO_CONTENT)
         
         # El técnico pasado no tiene turnos de evaluacionen proceso actualmente 
         if not Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='evaluacion'):
@@ -194,10 +199,15 @@ class RegistroEvaluacionListTecnico(APIView):
 
         # El técnico no tiene registros de evaluación guardados
         if not Registro_evaluacion.objects.filter(id_turno__in = id_turnos):
-            return Response({'error': 'El Técnico no posee registros de evaluación guardados'}, status=status.HTTP_400_BAD_REQUEST)
+            serializer = TurnoTallerSerializer(turnos, many=True)
+            # Si no tiene turnos registrados de evalaucion entonces devuelvo todos los turnos que tenga 
+            return Response(serializer.data,status=status.HTTP_200_OK)
         
-        registros = Registro_evaluacion.objects.filter(id_turno__in = id_turnos)    
-        serializer = RegistroEvaluacionSerializer(registros, many=True)
+        registros = Registro_evaluacion.objects.filter(id_turno__in = id_turnos) 
+        id_turnos_registros = list(registros.values_list('id_turno', flat=True))
+
+        turnos_pendientes_de_registro = Turno_taller.objects.filter(id_turno__in = id_turnos).exclude(id_turno__in = id_turnos_registros)
+        serializer = TurnoTallerSerializer(turnos_pendientes_de_registro, many=True)
 
         return Response(serializer.data,status=status.HTTP_200_OK)
     
