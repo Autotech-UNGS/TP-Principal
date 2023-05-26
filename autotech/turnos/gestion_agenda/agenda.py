@@ -29,6 +29,7 @@ class Agenda:
             self.inicializar_horarios(dia)
         return self.dias_horarios.get(dia)
 
+    """
     def horarios_disponibles(self, dia:date) -> list:   # [horarios disponibles]
         horarios_del_dia = self.obtener_horarios_del_dia(dia)
         horarios_disponibles = []
@@ -43,6 +44,7 @@ class Agenda:
                     horarios_disponibles.append(hora[0]) # [8, capacidad] --> [8]
                      
         return horarios_disponibles
+    """        
     
     def horarios_capacidad(self, dia:date) -> list:   # [horarios disponibles]
         horarios_del_dia = self.obtener_horarios_del_dia(dia)
@@ -50,6 +52,7 @@ class Agenda:
         for hora in horarios_del_dia: #[8,capacidad], [9, capacidad], ...
             horarios_disponibles.append(hora) # [8, capacidad] --> [8]
         return horarios_disponibles
+    """
     
     def dias_horarios_disponibles_de_treinta_dias(self, dia:date) -> dict:  #{date -> [horarios disponibles]}
         dias_horarios_disponibles = {}
@@ -59,6 +62,28 @@ class Agenda:
             dias_horarios_disponibles[dia_a_revisar]= horarios_disponibles
             dia_a_revisar = dia_a_revisar + timedelta(days=1)
         return dias_horarios_disponibles
+    """
+    def dias_horarios_disponibles_de_treinta_dias(self, dia:date, cant_horas: int) -> dict:  #{date -> [horarios disponibles]}
+        dias_horarios_disponibles = {}
+        dia_a_revisar = dia
+        for i in range(32):
+            horarios_disponibles = self.horarios_disponibles(dia_a_revisar, cant_horas)
+            dias_horarios_disponibles[dia_a_revisar]= horarios_disponibles
+            dia_a_revisar = dia_a_revisar + timedelta(days=1)
+        return dias_horarios_disponibles
+                
+    def horarios_disponibles(self, dia, cant_horas):
+        horarios_del_dia = self.obtener_horarios_del_dia(dia)
+        horarios_disponibles = []
+        hoy = date.today()
+        ahora = datetime.now().time()
+        for hora in horarios_del_dia:
+            if (dia != hoy or ( dia == hoy and hora[0] > ahora.hour - 3)) and hora[1] > 0:
+                if self.esta_disponible(dia, hora[0], cant_horas):
+                    horarios_disponibles.append(hora[0])
+        
+        return horarios_disponibles
+    
     
     def cargar_turno(self, dia:date, hora_inicio:int, duracion:int):
         if not self.esta_disponible(dia, hora_inicio, duracion):

@@ -1,13 +1,53 @@
-from django.http import JsonResponse, HttpResponse, HttpRequest
+from django.http import HttpResponse
 from administracion.models import *
 from administracion.serializers import TurnoTallerSerializer
 from rest_framework.response import Response
-from .enviar_turno_email import EnvioDeEmail
-from django.http import QueryDict
 from .obtener_datos_usuario import *
 from .validaciones_views import * 
 from datetime import *
     
+class ModificarEstadosVendedor(ViewSet):    
+    # el estado de los papeles del turno pasa a ser True
+    @action(detail=True, methods=['post'])
+    def aceptar_papeles(self, request, patente):
+        try:
+            turno = Turno_taller.objects.get(patente= patente)
+        except:
+            return HttpResponse("error: la patente ingresada no pertenece a ningún turno en el sistema", status=400)
+        else:
+            if turno.tipo != 'evaluacion':
+                return HttpResponse("error: la patente ingresada pertenece a un vehículo sin turno para evaluación", status=400)
+            if turno.estado == 'rechazado':
+                return HttpResponse("error: la patente ingresada pertenece a un vehículo cuyos papeles ya fueron rechazados", status=400)
+            elif turno.estado != 'pendiente':
+                return HttpResponse(f"error: la patente ingresada pertenece a un vehículo con estado {turno.estado}", status=400)
+            
+            turno.papeles_en_regla = True
+            turno.save()
+            serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el estado de los papeles True
+            return Response(serializer.data)
+    
+    # el estado del turno pasa a ser rechazado
+    @action(detail=True, methods=['post'])
+    def rechazar_papeles(self, request, patente):
+        try:
+            turno = Turno_taller.objects.get(patente= patente)
+        except:
+            return HttpResponse("error: la patente ingresada no pertenece a ningún turno en el sistema", status=400)
+        else:
+            if turno.tipo != 'evaluacion':
+                return HttpResponse("error: la patente ingresada pertenece a un vehículo sin turno para evaluación", status=400)
+            if turno.estado != 'pendiente':
+                return HttpResponse(f"error: la patente ingresada pertenece a un vehículo con estado {turno.estado}", status=400)
+            
+            turno.papeles_en_regla = False
+            turno.save()
+            turno.estado = 'rechazado'
+            turno.save()
+            serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el estado del turno rechazado
+            return Response(serializer.data)
+    
+"""
 class CrearTurnoVendedor(ViewSet):
     # los papeles son True por defecto, no hay que modificar el estado de los papeles. El email llega como un dato del json
     # solo admite evaluacion y service.
@@ -54,46 +94,6 @@ class CrearTurnoVendedor(ViewSet):
                 direccion_taller = obtener_direccion_taller(taller_id)
                 EnvioDeEmail.enviar_correo(tipo, email, dia_inicio_date, horario_inicio_time, direccion_taller)
         return Response(serializer.data)
-    
-class ModificarEstadosVendedor(ViewSet):    
-    # el estado de los papeles del turno pasa a ser True
-    @action(detail=True, methods=['post'])
-    def aceptar_papeles(self, request, id_turno):
-        try:
-            turno = Turno_taller.objects.get(id_turno = id_turno)
-        except:
-            return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
-        else:
-            if turno.tipo != 'evaluacion':
-                return HttpResponse("error: el id ingresado no pertenece a un turno de tipo evaluacion, por lo que no tiene estado de papeles", status=400)
-            if turno.estado == 'rechazado':
-                return HttpResponse("error: el id ingresado pertenece a un turno que ya fue rechazado", status=400)
-            elif turno.estado != 'pendiente':
-                return HttpResponse(f"error: el id ingresado pertenece a un turno que ya no esta pendiente: {turno.estado}", status=400)
-            
-            turno.papeles_en_regla = True
-            turno.save()
-            serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el estado de los papeles True
-            return Response(serializer.data)
-    
-    # el estado del turno pasa a ser rechazado
-    @action(detail=True, methods=['post'])
-    def rechazar_papeles(self, request, id_turno):
-        try:
-            turno = Turno_taller.objects.get(id_turno = id_turno)
-        except:
-            return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
-        else:
-            if turno.tipo != 'evaluacion':
-                return HttpResponse("error: el id ingresado no pertenece a un turno de tipo evaluacion, por lo que no tiene estado de papeles", status=400)
-            if turno.estado != 'pendiente':
-                return HttpResponse(f"error: el id ingresado pertenece a un turno que ya no esta pendiente: {turno.estado}", status=400)
-            
-            turno.papeles_en_regla = False
-            turno.save()
-            turno.estado = 'rechazado'
-            turno.save()
-            serializer= TurnoTallerSerializer(turno,many=False) # retornamos el turno, donde debería verse el estado del turno rechazado
-            return Response(serializer.data)
+"""            
     
     
