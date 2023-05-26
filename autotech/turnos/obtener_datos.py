@@ -69,40 +69,14 @@ def obtener_duracion_extraordinario(patente:str):
         turno = Turno_taller.objects.filter(patente=patente, tipo= 'extraordinario').latest('fecha_inicio')
         # 2) con ese turno, nos traemos el registro_extraordinario correspondiente
         registro_extraordinario = Registro_extraordinario.objects.get(id_turno=turno.id_turno)
-        # 3) con ese registro, ya tenemos las tareas y puntajes de cada una
-        id_task_puntaje = registro_extraordinario.id_tasks 
+        # 3) con ese registro, ya tenemos las tareas que deben realizarse
+        lista_task = registro_extraordinario.id_tasks 
         # 4) recorremos los task para obtener el tiempo de cada uno
         duracion = 0
-        for id_task in id_task_puntaje.keys():
-            puntaje_seleccionado = id_task_puntaje.get(id_task)
-            if puntaje_seleccionado > 0:
-                task = Checklist_evaluacion.objects.get(id_task=id_task)
-                duracion_reemplazo = task.duracion_reemplazo     
-                duracion += duracion_reemplazo       
+        for id in lista_task:
+            item = Checklist_evaluacion.objects.get(id_task = id)
+            duracion += item.duracion_reemplazo
         return duracion
     except:
         return -1
-    
-"""
 
-    # 1) obtenemos el turno para evaluacion correspondiente a la reparacion que queremos hacer
-    turno = Turno_taller.objects.filter(patente=patente, tipo= 'evaluacion', origen='extraordinario').latest('fecha_inicio')
-    id_turno = turno.id_turno
-    # 2) con el id de ese turno, nos traemos el turno para admin correspondiente, el cual tiene la duracion que necesitamos
-    registro_admin = Registro_evaluacion_para_admin.objects.get(id_turno=id_turno)
-    return registro_admin.duracion_total_reparaciones
-    
-    turno = Turno_taller.objects.filter(patente=patente, tipo= 'extraordinario').latest('fecha_inicio')
-    id_turno = turno.id_turno
-    registros_extraordinario = Registro_extraordinario.objects.filter(id_turno=id_turno)
-    duracion = 0
-    for registro in registros_extraordinario:
-        id_task_puntaje = registro.id_task_puntaje  
-        for id_task in id_task_puntaje.keys():            
-            puntaje_seleccionado = id_task_puntaje.get(id_task)
-            if puntaje_seleccionado > 0:
-                task = Checklist_extraordinario.objects.get(id_task=id_task) # o es la misma que evaluacion?
-                duracion += task.duracion_reemplazo
-    return duracion
-    """
-        
