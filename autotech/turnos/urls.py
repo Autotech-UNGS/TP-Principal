@@ -10,7 +10,7 @@ urlpatterns = [
     # -------------------------------------------------------------------------------------------------------------
     path('dias-horarios-disponibles/<int:taller_id>/', dias_horarios_disponibles.DiasHorariosDisponiblesViewSet.as_view({'get':'dias_horarios_disponibles'}), name="dias-horarios-disponibles"),
     path('dias-horarios-disponibles-service/<int:taller_id>/<str:marca>/<str:modelo>/<int:km>/', dias_horarios_disponibles.DiasHorariosDisponiblesViewSet.as_view({'get':'dias_horarios_disponibles_service'}), name="dias-horarios-disponibles-service"),
-    path('dias-horarios-disponibles-service/<int:taller_id>/<str:patente>/<str:origen>/', dias_horarios_disponibles.DiasHorariosDisponiblesViewSet.as_view({'get':'dias_horarios_disponibles_reparaciones'}), name="dias-horarios-disponibles-reparaciones"),
+    path('dias-horarios-disponibles-reparaciones/<int:taller_id>/<str:patente>/<str:origen>/', dias_horarios_disponibles.DiasHorariosDisponiblesViewSet.as_view({'get':'dias_horarios_disponibles_reparaciones'}), name="dias-horarios-disponibles-reparaciones"),
     
     path('crear-turno-evaluacion-web/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'crear_turno_evaluacion_web'}), name='crear-turno-evaluacion-web'),
     path('crear-turno-evaluacion-presencial/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'crear_turno_evaluacion_presencial'}), name='crear-turno-evaluacion-presencial'),
