@@ -45,15 +45,15 @@ class CrearActualizarTurnosViewSet(ViewSet):
         # eliminamos el email del request
         datos = request.data.copy()
         del datos['email']
+        datos['papeles_en_regla'] = False
+        datos['tipo'] = 'evaluacion'
+        datos['estado'] = 'pendiente'
+        datos['fecha_fin'] = fecha_hora_fin[0]
+        datos['hora_fin'] = fecha_hora_fin[1]
         serializer = TurnoTallerSerializer(data=datos)
         
         # actualizamos el serializer, lo guardamos, y enviamos el email
         if serializer.is_valid():
-            serializer.validated_data['papeles_en_regla'] = False 
-            serializer.validated_data['tipo'] = 'evaluacion'
-            serializer.validated_data['estado'] = 'pendiente'
-            serializer.validated_data['fecha_fin'] = fecha_hora_fin[0]
-            serializer.validated_data['hora_fin'] = fecha_hora_fin[1]
             serializer.save()
             direccion_taller = obtener_direccion_taller(taller_id)
             EnvioDeEmail.enviar_correo('evaluacion', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
@@ -94,15 +94,15 @@ class CrearActualizarTurnosViewSet(ViewSet):
         # eliminamos el email del request
         datos = request.data.copy()
         del datos['email']
+        datos['papeles_en_regla'] = True 
+        datos['tipo'] = 'evaluacion'
+        datos['estado'] = 'pendiente'
+        datos['fecha_fin'] = fecha_hora_fin[0]
+        datos['hora_fin'] = fecha_hora_fin[1]
         serializer = TurnoTallerSerializer(data=datos)
         
         # actualizamos el serializer, lo guardamos, y enviamos el email
         if serializer.is_valid():
-            serializer.validated_data['papeles_en_regla'] = True 
-            serializer.validated_data['tipo'] = 'evaluacion'
-            serializer.validated_data['estado'] = 'pendiente'
-            serializer.validated_data['fecha_fin'] = fecha_hora_fin[0]
-            serializer.validated_data['hora_fin'] = fecha_hora_fin[1]
             serializer.save()
             direccion_taller = obtener_direccion_taller(taller_id)
             EnvioDeEmail.enviar_correo('evaluacion', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
@@ -119,14 +119,15 @@ class CrearActualizarTurnosViewSet(ViewSet):
         patente
         fecha_inicio
         hora_inicio
+        email
         frecuencia_km
         marca
         modelo
         """
         # datos que necesitamos
         taller_id = request.data.get("taller_id")
-        #email = request.data.get("email")
-        email = obtener_email_usuario()
+        email = request.data.get("email")
+        #email = obtener_email_usuario()
         patente = request.data.get("patente")
         dia_inicio_date = datetime.strptime(request.data.get("fecha_inicio"), '%Y-%m-%d').date()
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
@@ -152,20 +153,24 @@ class CrearActualizarTurnosViewSet(ViewSet):
         if km == None:
             return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
         
+        if km > 5000:
+            if obtener_ultimo_service(patente) + 5000 != km:
+                self.informar_perdida_de_garantia(patente)
+        
         # eliminamos el email y los datos del service del request
         datos = request.data.copy()
         del datos['email']
         del datos['marca']
         del datos['modelo']
-        serializer = TurnoTallerSerializer(data=datos)
+        datos['papeles_en_regla'] = True
+        datos['tipo'] = 'service'
+        datos['estado'] = 'pendiente'
+        datos['fecha_fin'] = fecha_hora_fin[0].strftime("%Y-%m-%d")
+        datos['hora_fin'] = fecha_hora_fin[1].strftime("%H:%M:%S")
         
+        serializer = TurnoTallerSerializer(data=datos)
         # Actualizamos el serializer y enviamos un email
         if serializer.is_valid():
-            serializer.validated_data['papeles_en_regla'] = True 
-            serializer.validated_data['tipo'] = 'service'
-            serializer.validated_data['estado'] = 'pendiente'
-            serializer.validated_data['fecha_fin'] = fecha_hora_fin[0]
-            serializer.validated_data['hora_fin'] = fecha_hora_fin[1]
             serializer.save()
             direccion_taller = obtener_direccion_taller(taller_id)
             EnvioDeEmail.enviar_correo('service', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
@@ -176,20 +181,20 @@ class CrearActualizarTurnosViewSet(ViewSet):
 # ------------------------------------------------------------------------------------------------ #        
         
     @action(detail=False, methods=['post'])
-    def crear_turno_reparacion(self, request, origen:str):
+    def crear_turno_reparacion(self, request):
         """
         taller_id
         patente
         fecha_inicio
         hora_inicio
-        #origen
+        origen
         """
         # datos que necesitamos
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
         dia_inicio_date = datetime.strptime(request.data.get("fecha_inicio"), '%Y-%m-%d').date()
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
-        #origen = request.data.get("origen")
+        origen = request.data.get("origen")
         
         duracion =  obtener_duracion_extraordinario(patente) if origen == 'extraordinario' else obtener_duracion_reparacion(patente)
         if duracion == -1:
@@ -209,19 +214,20 @@ class CrearActualizarTurnosViewSet(ViewSet):
         #if not existe_turno_evaluacion(patente):
             #return HttpResponse("error: la patente no pertenece a la de un auto que ya haya sido evaluado en el taller.", status=400)
         
-        #datos = request.data.copy()
-        #del datos['origen']
+        datos = request.data.copy()
+        del datos['origen']
+        datos['papeles_en_regla'] = True 
+        datos['tipo'] = 'evaluacion'
+        datos['estado'] = 'pendiente'
+        datos['fecha_fin'] = fecha_hora_fin[0]
+        datos['hora_fin'] = fecha_hora_fin[1]
         
-        #serializer = TurnoTallerSerializer(data=datos)
+        serializer = TurnoTallerSerializer(data=datos)
+        
         
         # Actualizamos el serializer
-        serializer = TurnoTallerSerializer(data=request)
+        #serializer = TurnoTallerSerializer(data=request)
         if serializer.is_valid():
-            serializer.validated_data['papeles_en_regla'] = True 
-            serializer.validated_data['tipo'] = 'reparacion'
-            serializer.validated_data['estado'] = 'pendiente'
-            serializer.validated_data['fecha_fin'] = fecha_hora_fin[0]
-            serializer.validated_data['hora_fin'] = fecha_hora_fin[1]
             serializer.save()
         return Response(serializer.data)
         
@@ -256,13 +262,15 @@ class CrearActualizarTurnosViewSet(ViewSet):
         if not patente_registrada(patente): # necesitamos un endpoint que nos de todas las patentes de vehículos
             return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
         
-        serializer = TurnoTallerSerializer(data=request)
+        datos = request.data.copy()
+        datos['papeles_en_regla'] = True 
+        datos['tipo'] = 'evaluacion'
+        datos['estado'] = 'pendiente'
+        datos['fecha_fin'] = fecha_hora_fin[0]
+        datos['hora_fin'] = fecha_hora_fin[1]
+        
+        serializer = TurnoTallerSerializer(data=datos)
         if serializer.is_valid():
-            serializer.validated_data['papeles_en_regla'] = True 
-            serializer.validated_data['tipo'] = 'extraordinario'
-            serializer.validated_data['estado'] = 'pendiente'
-            serializer.validated_data['fecha_fin'] = fecha_hora_fin[0]
-            serializer.validated_data['hora_fin'] = fecha_hora_fin[1]
             serializer.save()
         return Response(serializer.data)        
         
@@ -285,3 +293,5 @@ class CrearActualizarTurnosViewSet(ViewSet):
             return HttpResponse("error: un turno no puede terminar antes de que empiece", status=400)
         return HttpResponse("Dias horarios correctos", status=200)
         
+    def informar_perdida_de_garantia(self, patente:str):
+        return True

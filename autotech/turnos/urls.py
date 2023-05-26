@@ -15,7 +15,7 @@ urlpatterns = [
     path('crear-turno-evaluacion-web/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'crear_turno_evaluacion_web'}), name='crear-turno-evaluacion-web'),
     path('crear-turno-evaluacion-presencial/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'crear_turno_evaluacion_presencial'}), name='crear-turno-evaluacion-presencial'),
     path('crear-turno-service/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'crear_turno_service'}), name='crear-turno-service'),
-    path('crear-turno-reparacion/<str:origen>/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'crear_turno_reparacion'}), name='crear-turno-reparacion'),
+    path('crear-turno-reparacion/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'crear_turno_reparacion'}), name='crear-turno-reparacion'),
     path('crear-turno-extraordinario/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'crear_turno_extraordinario'}), name='crear-turno-extraordinario'),
     
     path('turnos-update/<int:id_turno>/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'turnoUpdate'}), name="turnos-update"),
@@ -37,7 +37,7 @@ urlpatterns = [
     
     #--------------------------------------------------------------------------------------------------------------
     #path('crear-turno-vendedor/', vendedor_views.CrearTurnoVendedor.as_view({'post': 'crear_turno_vendedor'}), name='crear-turno-vendedor'),
-    path('aceptar-papeles/<str:pantente>', vendedor_views.ModificarEstadosVendedor.as_view({'post': 'aceptar_papeles'}), name='aceptar-papeles'),
+    path('aceptar-papeles/<str:patente>', vendedor_views.ModificarEstadosVendedor.as_view({'post': 'aceptar_papeles'}), name='aceptar-papeles'),
     path('rechazar-papeles/<str:patente>', vendedor_views.ModificarEstadosVendedor.as_view({'post': 'rechazar_papeles'}), name='rechazar-papeles'),
     
     #--------------------------------------------------------------------------------------------------------------
