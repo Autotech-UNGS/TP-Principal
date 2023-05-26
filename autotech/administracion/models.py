@@ -101,5 +101,17 @@ class Registro_service(models.Model):
     duracion_total = models.PositiveIntegerField()
     fecha_registro =  models.DateField(auto_now_add=True)
 
+class Service_tasks(models.Model):
+    id_id_tasks = models.AutoField(primary_key=True)
+    id_service = models.ForeignKey(Service,on_delete=models.CASCADE)
+    id_tasks = models.JSONField()
+
+class Checklist_service(models.Model):
+    id_task = models.AutoField(primary_key=True)
+    elemento = models.TextField()
+    tarea = models.TextField()
+    costo_reemplazo = models.FloatField(validators=[MinValueValidator(0)])
+    duracion_reemplazo = models.IntegerField(validators=[MinValueValidator(0)])
+
 # ----------------------------------------------------------------------------------------------------#
 
