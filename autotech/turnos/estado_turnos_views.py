@@ -6,8 +6,6 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from administracion.models import Turno_taller
 from administracion.serializers import TurnoTallerSerializer
-from .detalle_turnos_views import DetalleTurnosViewSet
-from .validaciones_views import ValidadorSupervisor
 import datetime
 
 
@@ -18,20 +16,18 @@ class EstadoTurnosViewSet(ViewSet):
     ESTADO_CANCELADO = 'cancelado'
     ESTADO_RECHAZADO = 'rechazado'
     ESTADO_AUSENTE = 'ausente'
-    validador_sup = ValidadorSupervisor()
-    detalle = DetalleTurnosViewSet()
 
     @action(detail=False, methods=['get'])
     def turnos_pendientes(self, request):
         papeles_en_regla = request.GET.get('papeles_en_regla')
-        sucursal_supervisor = request.GET.get('branch')
+        taller_sup = request.GET.get('branch')
         
-        if not self.validador_sup.sucursal(sucursal_supervisor):
+        if not ValidadorTaller.es_valido(taller_sup):
             return HttpResponse('error: numero de sucursal no valido', status=400)  
         if papeles_en_regla is None or (papeles_en_regla.lower() != 'true' and papeles_en_regla.lower() != 'false'):
             return HttpResponse('error: se requiere información sobre si los papeles están en regla o no', status=400)       
        
-        id_sucursal = self.obtener_id_sucursal(sucursal_supervisor)
+        id_sucursal = self.obtener_id_taller(taller_sup)
         pendientes = []
         
         if papeles_en_regla.lower() == 'true':
@@ -47,62 +43,51 @@ class EstadoTurnosViewSet(ViewSet):
 
     @action(detail=False, methods=['get'])
     def turnos_en_proceso(self, request):
-        sucursal_supervisor = request.GET.get('branch')
+        taller_sup = request.GET.get('branch')
         
-        if not self.validador_sup.sucursal(sucursal_supervisor):
+        if not ValidadorTaller.es_valido(taller_sup):
             return HttpResponse({'error': 'Numero de sucursal no valido'}, status=400)     
         
-        id_sucursal = self.obtener_id_sucursal(sucursal_supervisor)
+        id_sucursal = self.obtener_id_taller(taller_sup)
         en_procesos = self.obtener_turnos_por_estado(self.ESTADO_EN_PROCESO, id_sucursal)
         serializer = TurnoTallerSerializer( en_procesos, many=True)
         
-        try:
-            self.detalle.obtener_data_turnos(serializer)
-            return Response(serializer.data, status=status.HTTP_200_OK)   
-        except requests.HTTPError as e:
-            return HttpResponse(str(e), status=e.response.status_code)   
-        except Exception as e:
-            return HttpResponse('error: violacion en el sistema existe un turno asignado a un usuario que no es un tecnico', status=404)
+        return Response(serializer.data, status=status.HTTP_200_OK)   
 
     @action(detail=False, methods=['get'])
     def turnos_terminados(self, request):
-        sucursal_supervisor = request.GET.get('branch')
+        taller_sup = request.GET.get('branch')
         
-        if not self.validador_sup.sucursal(sucursal_supervisor):
+        if not ValidadorTaller.es_valido(taller_sup):
             return HttpResponse('error: numero de sucursal no valido', status=400)     
         
-        id_sucursal = self.obtener_id_sucursal(sucursal_supervisor)
+        id_sucursal = self.obtener_id_taller(taller_sup)
         terminados = self.obtener_turnos_por_estado(self.ESTADO_TERMINADO, id_sucursal)
         serializer = TurnoTallerSerializer(terminados, many=True)
         
-        try:
-            self.detalle.obtener_data_turnos(serializer)
-            return Response(serializer.data, status=status.HTTP_200_OK)     
-        except requests.HTTPError as e:
-            return HttpResponse(str(e), status=e.response.status_code)  
-        except Exception as e:
-            return HttpResponse('error: violacion en el sistema existe un turno asignado a un usuario que no es un tecnico', status=404)   
+        return Response(serializer.data, status=status.HTTP_200_OK)     
+
 
     @action(detail=False, methods=['get'])
     def turnos_cancelados(self, request):
-        sucursal_supervisor = request.GET.get('branch')
+        taller_sup = request.GET.get('branch')
         
-        if not self.validador_sup.sucursal(sucursal_supervisor):
+        if not ValidadorTaller.es_valido(taller_sup):
             return HttpResponse('error: numero de sucursal no valido', status=400)     
         
-        id_sucursal = self.obtener_id_sucursal(sucursal_supervisor)
+        id_sucursal = self.obtener_id_taller(taller_sup)
         cancelados = self.obtener_turnos_por_estado(self.ESTADO_CANCELADO, id_sucursal)     
         serializer = TurnoTallerSerializer(cancelados, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['get'])
     def turnos_no_validos(self, request):
-        sucursal_supervisor = request.GET.get('branch')
+        taller_sup = request.GET.get('branch')
         
-        if not self.validador_sup.sucursal(sucursal_supervisor):
+        if not ValidadorTaller.es_valido(taller_sup):
             return HttpResponse('error: numero de sucursal no valido', status=400)     
         
-        id_sucursal = self.obtener_id_sucursal(sucursal_supervisor)
+        id_sucursal = self.obtener_id_taller(taller_sup)
         rechazados = self.obtener_turnos_por_estado(self.ESTADO_RECHAZADO, id_sucursal)
         ausentes = self.obtener_turnos_por_estado(self.ESTADO_AUSENTE, id_sucursal)
         no_validos = rechazados.union(ausentes)
@@ -140,11 +125,11 @@ class EstadoTurnosViewSet(ViewSet):
         turno.save()   
         return HttpResponse('El turno ha sido cancelado correctamente.')
         
-    def obtener_id_sucursal(self, sucursal_supervisor):
-        return int(sucursal_supervisor[-3:])
+    def obtener_id_taller(self, taller_sup):
+        return int(taller_sup[-3:])
 
-    def obtener_turnos_por_estado(self, estado, id_sucursal, papeles_en_regla=None, tipo=None):
-        query = Turno_taller.objects.filter(estado=estado, taller_id=id_sucursal)
+    def obtener_turnos_por_estado(self, estado, id_taller, papeles_en_regla=None, tipo=None):
+        query = Turno_taller.objects.filter(estado=estado, taller_id=id_taller)
        
         if papeles_en_regla is not None:
             query = query.filter(papeles_en_regla=papeles_en_regla)    
@@ -152,3 +137,16 @@ class EstadoTurnosViewSet(ViewSet):
                 query = query.filter(tipo=tipo)
         
         return query
+
+class ValidadorTaller():
+       @classmethod
+       def es_valido(cls, taller_empleado):
+        if taller_empleado is None:
+            return False
+        if len(taller_empleado) != 4:
+            return False
+        if taller_empleado[0] != 'T':
+            return False
+        if not taller_empleado[1:].isdigit():
+            return False   
+        return True

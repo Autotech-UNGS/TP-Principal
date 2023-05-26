@@ -7,6 +7,8 @@ from django.http import QueryDict
 from .obtener_datos_usuario import *
 from .validaciones_views import * 
 from datetime import *
+from rest_framework.decorators import action
+from rest_framework.viewsets import ViewSet
 
 class CrearActualizarTurnosViewSet(ViewSet):
     @action(detail=True, methods=['get'])

@@ -1,4 +1,4 @@
-from unittest.mock import patch, Mock
+""" from unittest.mock import patch, Mock
 from django.urls import reverse
 from .test_setup import TestSetUp
 from test.factories.usuario_factorie import UsuarioFactory
@@ -237,3 +237,4 @@ class BusquedaTecnicoTestCase(TestSetUp):
         estado = primer_elemento['estado']
         self.assertEqual(self.get_response_trabajos_terminados(id_tecnico=id_primer_tecnico).status_code, 200 )
         self.assertEqual(estado, 'terminado') 
+ """

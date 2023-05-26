@@ -2,8 +2,7 @@
 from administracion.models import Turno_taller
 from datetime import date, time
 from .gestion_agenda.gestionar_agenda import *
-from tecnicos.views import *
-from tecnicos.consumidor_api_externa import ConsumidorApiTecnicos
+from empleados.api_client.client_tecnico import ClientTecnicos
 
 # -------- dias y horarios disponibles -------- #
 def dias_horarios_disponibles_treinta_dias(id_taller:int):
@@ -61,10 +60,10 @@ def obtener_tecnicos_disponibles(id_turno: int, id_taller: int) -> list:
     return tecnicos_disponibles
 
 def obtener_id_tecnicos(id_taller: int) -> list:
-    tecnicos = ConsumidorApiTecnicos.consumir_tecnicos(f'S00{id_taller}')
+    tecnicos = ClientTecnicos.obtener_datos_especificos_tecnicos(f'T00{id_taller}')
     id_tecnicos = []
     for tecnico in tecnicos:
-        id_tecnicos.append(tecnico['id_empleado'])
+        id_tecnicos.append(tecnico['id'])
     return id_tecnicos
 
 # -------- asignar tecnico -------- #
@@ -83,19 +82,7 @@ def tecnico_esta_disponible(id_tecnico: int, fecha_inicio:date, hora_inicio:time
 
 def coinciden_los_talleres(id_tecnico: int, id_taller: int):
     taller_del_tecnico = obtener_taller_del_tecnico(id_tecnico)
-    return int(taller_del_tecnico[-1]) == id_taller
+    return int(taller_del_tecnico[-3:]) == id_taller
 
 def obtener_taller_del_tecnico(id_tecnico):
-    return ConsumidorApiTecnicos.obtener_taller_tecnico(id_tecnico)
-
-class ValidadorSupervisor():
-    def sucursal(self, sucursal_supervisor):
-        if sucursal_supervisor is None:
-            return False
-        if len(sucursal_supervisor) != 4:
-            return False
-        if sucursal_supervisor[0] != 'S':
-            return False
-        if not sucursal_supervisor[1:].isdigit():
-            return False   
-        return True
+    return ClientTecnicos.obtener_taller_tecnico(id_tecnico)

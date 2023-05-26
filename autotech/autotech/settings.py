@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'turnos',
     'evaluaciones',
-    'tecnicos',
+    'empleados',
     'talleres',
     #'django_crontab',
 ]
@@ -95,30 +95,6 @@ WSGI_APPLICATION = 'autotech.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-""" DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',
-        conn_max_age=600
-    )
-} """
-
-
-""" DATABASES = {
-
-    'default': dj_database_url.config('postgres://insomniadb_itl0_user:i6J4uJVDJH1po9OQ84VWOirZWSag60B5@dpg-chakmuvdvk4ktc5c0a0g-a.ohio-postgres.render.com/insomniadb_itl0')
-
-} """
-
-""" DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'insomniadb_73w9',
-        'USER': 'admin',
-        'PASSWORD': '3sKi4wWanO9CoaGu3OKB0HgtFow11VTT',
-        'HOST': 'dpg-chehs2ak728m8k6h8ft0-a.ohio-postgres.render.com',
-        'PORT': '5432',
-    }
-} """
 
 if 'test' in sys.argv:
     DATABASES = {
