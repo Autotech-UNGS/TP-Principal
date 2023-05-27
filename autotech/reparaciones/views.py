@@ -16,7 +16,6 @@ class RegistroReparacionViewSet(ViewSet):
             return Response({'error': 'El turno no existe'}, status=status.HTTP_400_BAD_REQUEST)
 
         if not origen == 'extraordinario' and not  origen == 'evaluacion':
-            print("llegue-error2")
             return Response({'error': 'El turno no corresponde a un turno tipo extraordinario o un turno tipo evaluacion'}, status=status.HTTP_400_BAD_REQUEST)
 
         if origen == 'evaluacion':

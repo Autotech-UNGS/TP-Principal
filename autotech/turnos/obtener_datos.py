@@ -56,6 +56,7 @@ def obtener_duracion_reparacion(patente:str):
     try:
         # 1) obtenemos el turno para evaluacion correspondiente a la reparacion que queremos hacer
         turno = Turno_taller.objects.filter(patente=patente, tipo= 'evaluacion').latest('fecha_inicio')
+       
         # 2) con ese turno, nos traemos el turno para admin correspondiente, el cual tiene la duracion que necesitamos
         registro_admin = Registro_evaluacion_para_admin.objects.get(id_turno=turno.id_turno)
         return ceil(registro_admin.duracion_total_reparaciones / 60)
@@ -71,7 +72,7 @@ def obtener_duracion_extraordinario(patente:str):
         # 2) con ese turno, nos traemos el registro_extraordinario correspondiente
         registro_extraordinario = Registro_extraordinario.objects.get(id_turno=turno.id_turno)
         # 3) con ese registro, ya tenemos las tareas que deben realizarse
-        lista_task = json.loads(registro_extraordinario.id_tasks)
+        lista_task = registro_extraordinario.id_tasks
         # 4) recorremos los task para obtener el tiempo de cada uno
         duracion = 0
         for id in lista_task:
