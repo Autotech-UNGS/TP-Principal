@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import estado_turnos_views, modificar_estado_cron_view, visualizar_turnos_views, crear_turnos_views, asignar_tecnico_views, vendedor_views
+from . import estado_turnos_views, modificar_estado_cron_view, visualizar_turnos_views, crear_turnos_views, asignar_tecnico_views, vendedor_views, dias_horarios_disponibles
 
 urlpatterns = [
     path('',visualizar_turnos_views.turnosOverview,name='turnos'),
@@ -8,9 +8,17 @@ urlpatterns = [
     path('turnos-detalle/<int:id_turno>/', visualizar_turnos_views.VisualizarTurnosViewSet.as_view({'get': 'turnoDetalle'}), name='turnos-detalle'),
     
     # -------------------------------------------------------------------------------------------------------------
-    path('turnos-create/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'crearTurno'}), name="turnos-create"),
+    path('dias-horarios-disponibles/<int:taller_id>/', dias_horarios_disponibles.DiasHorariosDisponiblesViewSet.as_view({'get':'dias_horarios_disponibles'}), name="dias-horarios-disponibles"),
+    path('dias-horarios-disponibles-service/<int:taller_id>/<str:marca>/<str:modelo>/<int:km>/', dias_horarios_disponibles.DiasHorariosDisponiblesViewSet.as_view({'get':'dias_horarios_disponibles_service'}), name="dias-horarios-disponibles-service"),
+    path('dias-horarios-disponibles-reparaciones/<int:taller_id>/<str:patente>/<str:origen>/', dias_horarios_disponibles.DiasHorariosDisponiblesViewSet.as_view({'get':'dias_horarios_disponibles_reparaciones'}), name="dias-horarios-disponibles-reparaciones"),
+    
+    path('crear-turno-evaluacion-web/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'crear_turno_evaluacion_web'}), name='crear-turno-evaluacion-web'),
+    path('crear-turno-evaluacion-presencial/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'crear_turno_evaluacion_presencial'}), name='crear-turno-evaluacion-presencial'),
+    path('crear-turno-service/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'crear_turno_service'}), name='crear-turno-service'),
+    path('crear-turno-reparacion/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'crear_turno_reparacion'}), name='crear-turno-reparacion'),
+    path('crear-turno-extraordinario/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'crear_turno_extraordinario'}), name='crear-turno-extraordinario'),
+    
     path('turnos-update/<int:id_turno>/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'post':'turnoUpdate'}), name="turnos-update"),
-    path('dias-horarios-disponibles/<int:taller_id>/', crear_turnos_views.CrearActualizarTurnosViewSet.as_view({'get':'diasHorariosDisponibles'}), name="dias-horarios-disponibles"),    
     
     # -------------------------------------------------------------------------------------------------------------
     path('tecnicos-disponibles/<int:id_turno>/', asignar_tecnico_views.AsignarTecnicoViewSet.as_view({'get':'tecnicos_disponibles'}), name="tecnicos-disponibles"),
@@ -28,9 +36,9 @@ urlpatterns = [
     #--------------------------------------------------------------------------------------------------------------
     
     #--------------------------------------------------------------------------------------------------------------
-    path('crear-turno-vendedor/', vendedor_views.CrearTurnoVendedor.as_view({'post': 'crear_turno_vendedor'}), name='crear-turno-vendedor'),
-    path('aceptar-papeles/<int:id_turno>', vendedor_views.ModificarEstadosVendedor.as_view({'post': 'aceptar_papeles'}), name='aceptar-papeles'),
-    path('rechazar-papeles/<int:id_turno>', vendedor_views.ModificarEstadosVendedor.as_view({'post': 'rechazar_papeles'}), name='rechazar-papeles'),
+    #path('crear-turno-vendedor/', vendedor_views.CrearTurnoVendedor.as_view({'post': 'crear_turno_vendedor'}), name='crear-turno-vendedor'),
+    path('aceptar-papeles/<str:patente>', vendedor_views.ModificarEstadosVendedor.as_view({'post': 'aceptar_papeles'}), name='aceptar-papeles'),
+    path('rechazar-papeles/<str:patente>', vendedor_views.ModificarEstadosVendedor.as_view({'post': 'rechazar_papeles'}), name='rechazar-papeles'),
     
     #--------------------------------------------------------------------------------------------------------------
     path('ejecutar-cron/', modificar_estado_cron_view.EjecutarCron.as_view({'post': 'ejecutar_cron'}), name='ejecutar-cron')
