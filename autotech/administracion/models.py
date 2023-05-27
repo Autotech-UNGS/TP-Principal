@@ -40,11 +40,13 @@ class Registro_reparacion(models.Model):
     duracion_total = models.IntegerField(validators=[MinValueValidator(0)])
     fecha_registro = models.DateField(auto_now_add=True)
     detalle = models.TextField(blank=True, null=True)
+    detalle_evaluacion = models.TextField(blank=True, null=True)
     origen = models.TextField(choices=OrigenReparacion.choices, null=True, blank=True)
 # ----------------------------------------------------------------------------------------------------#
 class Registro_extraordinario(models.Model): 
     id_turno = models.OneToOneField(Turno_taller, on_delete=models.PROTECT)
     id_tasks = models.JSONField()
+    detalle = models.TextField(blank=True, null=True)
     
 # ----------------------------------------------------------------------------------------------------#
 class Registro_evaluacion_para_admin(models.Model):
