@@ -289,6 +289,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
         else:
             return HttpResponse("error: request inválido", status=400)
         
+# ---------------------------------------------------------------------------------------- #
+# ------------------------------------- validaciones ------------------------------------- #
+# ---------------------------------------------------------------------------------------- #
 
     def validar_taller(self, taller_id:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time) -> HttpResponse:
         if not existe_taller(taller_id):

@@ -49,7 +49,7 @@ def cargar_turnos_desde_hoy_a_cuarentaycinco_dias(agenda:Agenda, id_taller:int):
         dia = dia + timedelta(days=1)         
 
 def cargar_turnos_taller(dia:date, agenda:Agenda, id_taller:int):
-    turnos = Turno_taller.objects.filter(fecha_inicio=dia).filter(taller_id = id_taller)
+    turnos = Turno_taller.objects.filter(fecha_inicio=dia).filter(taller_id = id_taller).exclude(estado='terminado').exclude(estado='cancelado').exclude(estado='rechazado').exclude('ausente')
     for turno in turnos:
         duracion = calcular_duracion(turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin)
         agenda.cargar_turno(turno.fecha_inicio, turno.hora_inicio.hour, duracion)
@@ -58,7 +58,7 @@ def cargar_turnos_taller(dia:date, agenda:Agenda, id_taller:int):
 
 def tecnico_esta_disponible_agenda(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time, id_tecnico:int) -> bool:
     try:
-        turnos_del_tecnico = Turno_taller.objects.filter(tecnico_id= id_tecnico).exclude(estado='terminado').exclude(estado='cancelado').exclude(estado='rechazado')
+        turnos_del_tecnico = Turno_taller.objects.filter(tecnico_id= id_tecnico).exclude(estado='terminado').exclude(estado='cancelado').exclude(estado='rechazado').exclude('ausente')
     except:
         return True
     else:
