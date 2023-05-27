@@ -10,7 +10,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
 
-from administracion.models import  Turno_taller, Registro_evaluacion_para_admin, Registro_evaluacion, Checklist_evaluacion
+from administracion.models import  Turno_taller, Registro_evaluacion_para_admin, Registro_evaluacion, Checklist_evaluacion, Registro_extraordinario
 from administracion.serializers import  RegistroEvaluacionXAdminSerializer, RegistroEvaluacionSerializer, ChecklistEvaluacionSerializer, TurnoTallerSerializer
 from .validadores import ValidadorChecklist
 
@@ -212,7 +212,43 @@ class RegistroEvaluacionListTecnico(APIView):
         return Response(serializer.data,status=status.HTTP_200_OK)
     
 
-
-
-
+# -----------------------------------------------------------------------------------------------------
+#------------------------------------REGISTRO EXTRAORDINARIO CREAR -------------------------
+# -----------------------------------------------------------------------------------------------------
+class RegistroExtraordinarioCreate(APIView):
+    permission_classes = [permissions.AllowAny]
     
+    # id_turno, "id_tasks":"[1,2,3,4,5]", detalle
+    def post(self, request, *args, **kwargs):
+        validador = ValidadorChecklist()
+        id_turno = request.data.get('id_turno')
+        id_tasks = request.data.get('id_tasks')
+        detalle = request.data.get('detalle')
+
+        if not id_turno:
+            return Response({'error': 'El campo "id_turno" es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not Turno_taller.objects.filter(id_turno=id_turno).exists():
+            return Response({'error': 'El turno pasado no existe'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        turno = Turno_taller.objects.get(id_turno=id_turno)
+
+        if not turno.tipo == 'extraordinario':
+            return Response({'error': 'El turno pasado no es un turno para extraordinario'}, status=status.HTTP_400_BAD_REQUEST)
+    
+        if not turno.estado == 'en_proceso':
+            return Response({'error': 'El turno pasado no está en estado en proceso'}, status=status.HTTP_400_BAD_REQUEST)   
+        
+        try:
+            validador.validar_tareas(request)
+        except ValidationError as e:
+            error_messages = [str(error) for error in e.detail]
+            return Response({'error': error_messages}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Tomo el turno que corresponde a ese id
+        turno_taller = Turno_taller.objects.get(pk=id_turno)
+        registro_extraordinario = Registro_extraordinario.objects.create(id_turno = turno_taller,
+                                                                id_tasks=id_tasks, detalle=detalle)
+        serializer = RegistroEvaluacionSerializer(registro_extraordinario)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
