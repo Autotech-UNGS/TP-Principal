@@ -8,6 +8,7 @@ from .validaciones_views import *
 from datetime import *
 from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
+from reparaciones.views import RegistroReparacionViewSet
 
 class CrearActualizarTurnosViewSet(ViewSet):
 
@@ -233,8 +234,11 @@ class CrearActualizarTurnosViewSet(ViewSet):
         
         serializer = TurnoTallerSerializer(data=datos)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)        
+            turno = serializer.save()
+            registro_reparacion = RegistroReparacionViewSet()
+            registro_reparacion.registrar(turno, origen)
+
+            return Response(serializer.data)             
         else:
             return HttpResponse("error: request inválido", status=400)
         

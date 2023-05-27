@@ -117,9 +117,12 @@ class EstadoTurnosViewSet(ViewSet):
     @action(detail=True, methods=['patch'])
     def cancelar_turno_pendiente(self, request, id_turno):
         try:
-            turno = Turno_taller.objects.get(id_turno=id_turno, estado=self.ESTADO_PENDIENTE)
+            turno = Turno_taller.objects.get(id_turno=id_turno)
         except Turno_taller.DoesNotExist:
-            return HttpResponse('error: el turno no existe o no esta en estado pendiente', status=400) 
+            return HttpResponse('error: el turno no existe', status=400) 
+        
+        if turno.estado not in [self.ESTADO_PENDIENTE, self.ESTADO_EN_PROCESO]:
+            return HttpResponse('error: el turno no es un turno pendiente o no es un turno en proceso', status=400)
         
         turno.estado = self.ESTADO_CANCELADO
         turno.save()   

@@ -12,11 +12,12 @@ from .validadores import ValidadorTurno, ValidadorRegistroReparacion
 class RegistroReparacionViewSet(ViewSet):
     def registrar(self, turno, origen):
         validador_turno = ValidadorTurno()
-
         if not validador_turno.existe_turno(turno):
+            print("llegue-error1")
             return Response({'error': 'El turno no existe'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not validador_turno.es_turno_extraordinario(turno) and not validador_turno.es_turno_evaluacion(turno):
+        if not origen == 'extraordinario' and not  origen == 'evaluacion':
+            print("llegue-error2")
             return Response({'error': 'El turno no corresponde a un turno tipo extraordinario o un turno tipo evaluacion'}, status=status.HTTP_400_BAD_REQUEST)
 
         if origen == 'evaluacion':
@@ -45,7 +46,7 @@ class RegistroReparacionViewSet(ViewSet):
     def obtener_registro_evaluacion(self, turno):
         return Registro_evaluacion.objects.filter(id_turno__patente=turno.patente).last()
 
-    def filtrar_tareas_con_puntaje_mayor_a_cero(registro_evaluacion):
+    def filtrar_tareas_con_puntaje_mayor_a_cero(self, registro_evaluacion):
         return [
             task_id
             for task_id, puntaje in registro_evaluacion.id_task_puntaje.items()
@@ -165,7 +166,7 @@ class RegistroReparacionViewSet(ViewSet):
             # Eliminamos la tarea de las tareas hechas
             tareas_hechas = registro_reparacion.tasks_hechas or []
             tareas_hechas.remove(id_task)
-            registro_reparacion.tasks_pendientes = tareas_hechas
+            registro_reparacion.tasks_hechas = tareas_hechas
             
             # Guardamos los cambios en el registro de reparación
             registro_reparacion.save()
@@ -178,9 +179,8 @@ class RegistroReparacionViewSet(ViewSet):
         except Registro_reparacion.DoesNotExist:
             return Response({'error': 'No se encontró un registro de reparación para el turno especificado'}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['get'])
-    def listar_tareas_hechas_pendientes(self, request):
-        id_turno = request.data.get('id_turno')
+    @action(detail=True, methods=['get'])
+    def listar_tareas_registradas(self, request, id_turno):
         
         try:
             # Obtenemos el registro de reparación perteneciente al turno
@@ -198,11 +198,11 @@ class RegistroReparacionViewSet(ViewSet):
             # Asignar valor True a las tareas hechas
             for tarea_id in tareas_hechas:
                 resultado[str(tarea_id)] = True
-
-            # Convertir el diccionario a formato JSON  
-            json_resultado = json.dumps(resultado)    
-
-            return Response(json_resultado, status=status.HTTP_200_OK)   
+         
+            response = {
+                "tasks": resultado 
+            }
+            return Response(response, status=status.HTTP_200_OK)   
         except Turno_taller.DoesNotExist:
             return Response({'error': 'No se encontró un turno con el ID especificado'}, status=status.HTTP_400_BAD_REQUEST)
         
