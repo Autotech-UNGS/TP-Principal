@@ -36,7 +36,7 @@ urlpatterns = [
     path('cancelar-turno/<int:id_turno>/', estado_turnos_views.EstadoTurnosViewSet.as_view({'patch': 'cancelar_turno_pendiente'}), name='cancelar-turno-pendiente'),
 
     #--------------------------------------------------------------------------------------------------------------
-    path('reprogramar_turno/', reprogramar_turno.ReprogramarTurnoViewSet.as_view({'post': 'reprogramar_turno'}), name='reprogramar-turno'),
+    path('reprogramar-turno/', reprogramar_turno.ReprogramarTurnoViewSet.as_view({'post': 'reprogramar_turno'}), name='reprogramar-turno'),
     
     #--------------------------------------------------------------------------------------------------------------
     #path('crear-turno-vendedor/', vendedor_views.CrearTurnoVendedor.as_view({'post': 'crear_turno_vendedor'}), name='crear-turno-vendedor'),
