@@ -12,7 +12,15 @@ class TestSetUp(APITestCase):
     def setUp(self):
         
         self.taller1 = G(Taller, id_taller=100, capacidad=10)
-        self.taller2 = G(Taller,id_taller=101, capacidad=10)
+        self.taller3 = G(Taller,id_taller=101, capacidad=2)
+        
+        # vamos a saturar los horarios 8, 10 y 15 del taller 103, el dia 2023/06/27
+        self.turno_test1 = G(Turno_taller, taller_id = 101, fecha_inicio=date(2023,6,27), hora_inicio=time(8,0,0), fecha_fin=date(2023,6,27), hora_fin=time(9,0,0))
+        self.turno_test2 = G(Turno_taller, taller_id = 101, fecha_inicio=date(2023,6,27), hora_inicio=time(8,0,0), fecha_fin=date(2023,6,27), hora_fin=time(9,0,0))
+        self.turno_test3 = G(Turno_taller, taller_id = 101, fecha_inicio=date(2023,6,27), hora_inicio=time(10,0,0), fecha_fin=date(2023,6,27), hora_fin=time(11,0,0))
+        self.turno_test4 = G(Turno_taller, taller_id = 101, fecha_inicio=date(2023,6,27), hora_inicio=time(10,0,0), fecha_fin=date(2023,6,27), hora_fin=time(11,0,0))
+        self.turno_test5 = G(Turno_taller, taller_id = 101, fecha_inicio=date(2023,6,27), hora_inicio=time(15,0,0), fecha_fin=date(2023,6,27), hora_fin=time(16,0,0))
+        self.turno_test6 = G(Turno_taller, taller_id = 101, fecha_inicio=date(2023,6,27), hora_inicio=time(15,0,0), fecha_fin=date(2023,6,27), hora_fin=time(16,0,0))
         
         self.service1 = G(Service, id_service= 200, costo_base = 0.0, costo_total = 0.0, marca="generico", modelo = "generico", frecuencia_km=5000, duracion_total=180)
         
