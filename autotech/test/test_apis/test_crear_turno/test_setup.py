@@ -3,9 +3,10 @@ from ddf import G
 from rest_framework.test import APITestCase
 from rest_framework import status
 import pdb
-from administracion.models import Turno_taller, Service, Registro_service
+from administracion.models import Turno_taller, Service, Registro_service, Registro_evaluacion_para_admin, Registro_extraordinario, Checklist_evaluacion
 from administracion.models import Taller
 from datetime import date, time
+import json
 
 class TestSetUp(APITestCase):
     def setUp(self):
@@ -33,7 +34,19 @@ class TestSetUp(APITestCase):
         self.turno_service = G(Turno_taller, patente = 'AS123FF', id_turno= 500, tipo='service', frecuencia_km= 5000, estado="terminado", tecnico_id= None, fecha_inicio=date(2023,4,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,4,21), hora_fin=time(12,0,0), papeles_en_regla=True)
         self.registro_service = G(Registro_service, id_service=self.service1, id_turno=self.turno_service)
         
-        self.assertEqual(Turno_taller.objects.count(), 5)
+        # reparaciones:
+        # esta patente tiene un turno de evaluacion, y también uno extraordinario:
+        self.turno_evaluacion = G(Turno_taller, patente = 'LCS262', id_turno= 400, tipo='evaluacion', estado="terminado", fecha_inicio=date(2023,4,20), hora_inicio=time(10,0,0))
+        self.turno_extraordinario = G(Turno_taller, patente = 'LCS262', id_turno= 401, tipo='extraordinario', estado="terminado", fecha_inicio=date(2023,4,20), hora_inicio=time(10,0,0))
+        
+        task = [10, 20]
+        task_json = json.dumps(task)
+        self.registro_evaluacion_admin = G(Registro_evaluacion_para_admin, id_turno=400, duracion_total_reparaciones=180, costo_total = 0.0)
+        self.registro_extraordinario = G(Registro_extraordinario, id_tasks=task_json, id_turno=401)
+        self.task_1 = G(Checklist_evaluacion, id_task=10, duracion_reemplazo=60, costo_reemplazo = 0.0)
+        self.task_2 = G(Checklist_evaluacion, id_task=20, duracion_reemplazo=60, costo_reemplazo = 0.0)
+        
+        self.assertEqual(Turno_taller.objects.count(), 7)
 
         return super().setUp()
     

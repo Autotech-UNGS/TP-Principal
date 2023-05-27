@@ -48,8 +48,10 @@ class CrearActualizarTurnosViewSet(ViewSet):
         datos['papeles_en_regla'] = False
         datos['tipo'] = 'evaluacion'
         datos['estado'] = 'pendiente'
-        datos['fecha_fin'] = fecha_hora_fin[0]
-        datos['hora_fin'] = fecha_hora_fin[1]
+        datos['fecha_fin'] = fecha_hora_fin[0].strftime("%Y-%m-%d")
+        datos['hora_fin'] = fecha_hora_fin[1].strftime("%H:%M:%S")
+        datos['tecnico_id'] = None
+        datos['frecuencia_km'] = None
         serializer = TurnoTallerSerializer(data=datos)
         
         # actualizamos el serializer, lo guardamos, y enviamos el email
@@ -57,7 +59,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
             serializer.save()
             direccion_taller = obtener_direccion_taller(taller_id)
             EnvioDeEmail.enviar_correo('evaluacion', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
-        return Response(serializer.data)
+            return Response(serializer.data)        
+        else:
+            return HttpResponse("error: request inválido", status=400)
         
 # ------------------------------------------------------------------------------------------------ #
 # ---------------------------------- turno evaluacion: presencial -------------------------------- #
@@ -97,8 +101,10 @@ class CrearActualizarTurnosViewSet(ViewSet):
         datos['papeles_en_regla'] = True 
         datos['tipo'] = 'evaluacion'
         datos['estado'] = 'pendiente'
-        datos['fecha_fin'] = fecha_hora_fin[0]
-        datos['hora_fin'] = fecha_hora_fin[1]
+        datos['fecha_fin'] = fecha_hora_fin[0].strftime("%Y-%m-%d")
+        datos['hora_fin'] = fecha_hora_fin[1].strftime("%H:%M:%S")
+        datos['tecnico_id'] = None
+        datos['frecuencia_km'] = None
         serializer = TurnoTallerSerializer(data=datos)
         
         # actualizamos el serializer, lo guardamos, y enviamos el email
@@ -106,7 +112,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
             serializer.save()
             direccion_taller = obtener_direccion_taller(taller_id)
             EnvioDeEmail.enviar_correo('evaluacion', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
-        return Response(serializer.data)
+            return Response(serializer.data)        
+        else:
+            return HttpResponse("error: request inválido", status=400)
         
 # ------------------------------------------------------------------------------------------------ #
 # ---------------------------------------- turno service ----------------------------------------- #
@@ -167,6 +175,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         datos['estado'] = 'pendiente'
         datos['fecha_fin'] = fecha_hora_fin[0].strftime("%Y-%m-%d")
         datos['hora_fin'] = fecha_hora_fin[1].strftime("%H:%M:%S")
+        datos['tecnico_id'] = None
         
         serializer = TurnoTallerSerializer(data=datos)
         # Actualizamos el serializer y enviamos un email
@@ -174,7 +183,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
             serializer.save()
             direccion_taller = obtener_direccion_taller(taller_id)
             EnvioDeEmail.enviar_correo('service', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
-        return Response(serializer.data)
+            return Response(serializer.data)        
+        else:
+            return HttpResponse("error: request inválido", status=400)
         
 # ------------------------------------------------------------------------------------------------ #
 # --------------------------------------- turno reparacion --------------------------------------- #
@@ -211,25 +222,21 @@ class CrearActualizarTurnosViewSet(ViewSet):
         if origen == 'extraordinario':
             if not patente_registrada(patente=patente):
                 return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
-        #if not existe_turno_evaluacion(patente):
-            #return HttpResponse("error: la patente no pertenece a la de un auto que ya haya sido evaluado en el taller.", status=400)
         
         datos = request.data.copy()
         del datos['origen']
-        datos['papeles_en_regla'] = True 
-        datos['tipo'] = 'evaluacion'
+        datos['papeles_en_regla'] = True
+        datos['tipo'] = 'reparacion'
         datos['estado'] = 'pendiente'
-        datos['fecha_fin'] = fecha_hora_fin[0]
-        datos['hora_fin'] = fecha_hora_fin[1]
+        datos['fecha_fin'] = fecha_hora_fin[0].strftime("%Y-%m-%d")
+        datos['hora_fin'] = fecha_hora_fin[1].strftime("%H:%M:%S")
         
         serializer = TurnoTallerSerializer(data=datos)
-        
-        
-        # Actualizamos el serializer
-        #serializer = TurnoTallerSerializer(data=request)
         if serializer.is_valid():
             serializer.save()
-        return Response(serializer.data)
+            return Response(serializer.data)        
+        else:
+            return HttpResponse("error: request inválido", status=400)
         
 # ------------------------------------------------------------------------------------------------ #
 # ------------------------------------- turno extraordinario ------------------------------------- #
@@ -259,20 +266,24 @@ class CrearActualizarTurnosViewSet(ViewSet):
         dias_horarios_validos = self.validar_dias_horarios(dia_inicio=dia_inicio_date, horario_inicio= horario_inicio_time, dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
         if dias_horarios_validos.status_code == 400:
             return dias_horarios_validos
-        if not patente_registrada(patente): # necesitamos un endpoint que nos de todas las patentes de vehículos
+        if not patente_registrada(patente): 
             return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
         
         datos = request.data.copy()
         datos['papeles_en_regla'] = True 
-        datos['tipo'] = 'evaluacion'
+        datos['tipo'] = 'extraordinario'
         datos['estado'] = 'pendiente'
-        datos['fecha_fin'] = fecha_hora_fin[0]
-        datos['hora_fin'] = fecha_hora_fin[1]
+        datos['fecha_fin'] = fecha_hora_fin[0].strftime("%Y-%m-%d")
+        datos['hora_fin'] = fecha_hora_fin[1].strftime("%H:%M:%S")
+        datos['tecnico_id'] = None
+        datos['frecuencia_km'] = None
         
         serializer = TurnoTallerSerializer(data=datos)
         if serializer.is_valid():
             serializer.save()
-        return Response(serializer.data)        
+            return Response(serializer.data)        
+        else:
+            return HttpResponse("error: request inválido", status=400)
         
 
     def validar_taller(self, taller_id:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time) -> HttpResponse:

@@ -1,6 +1,7 @@
 from administracion.models import Taller, Service, Turno_taller, Registro_evaluacion_para_admin, Checklist_evaluacion, Registro_extraordinario, Registro_service
 from datetime import date, time, timedelta
 from math import ceil
+import json
 
 def obtener_email_usuario():
     #return 'forozco@campus.ungs.edu.ar'
@@ -70,13 +71,13 @@ def obtener_duracion_extraordinario(patente:str):
         # 2) con ese turno, nos traemos el registro_extraordinario correspondiente
         registro_extraordinario = Registro_extraordinario.objects.get(id_turno=turno.id_turno)
         # 3) con ese registro, ya tenemos las tareas que deben realizarse
-        lista_task = registro_extraordinario.id_tasks 
+        lista_task = json.loads(registro_extraordinario.id_tasks)
         # 4) recorremos los task para obtener el tiempo de cada uno
         duracion = 0
         for id in lista_task:
             item = Checklist_evaluacion.objects.get(id_task = id)
             duracion += item.duracion_reemplazo
-        return duracion
+        return ceil(duracion / 60) 
     except:
         return -1
 
