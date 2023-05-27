@@ -22,6 +22,8 @@ class ReprogramarTurnoViewSet(ViewSet):
         
         # datos del turno necesarios para validaciones
         turno = self.obtener_turno(id_turno)
+        if turno == None:
+            return HttpResponse("error: no hay un turno con la id solicitada.", status=400)
         taller_id = turno.taller_id.id_taller
         vieja_fecha_inicio = turno.fecha_inicio
         vieja_hora_inicio = turno.hora_inicio
@@ -31,8 +33,6 @@ class ReprogramarTurnoViewSet(ViewSet):
         duracion = obtener_duracion(vieja_fecha_inicio, vieja_hora_inicio, vieja_fecha_fin, vieja_hora_fin)
         nueva_fecha_hora_fin = obtener_fecha_hora_fin(nueva_fecha_inicio, nueva_hora_inicio, duracion)
         
-        if turno == None:
-            return HttpResponse("error: no hay un turno con la id solicitada.", status=400)
         if turno.estado != 'cancelado':
             return HttpResponse("error: el turno debe estar cancelado para poder reprogramarse.", status=400)
         taller_valido = self.validar_taller(taller_id= taller_id, dia_inicio=nueva_fecha_inicio, horario_inicio= nueva_hora_inicio, dia_fin= nueva_fecha_hora_fin[0], horario_fin=nueva_fecha_hora_fin[1])
