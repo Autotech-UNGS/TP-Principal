@@ -13,7 +13,6 @@ class RegistroReparacionViewSet(ViewSet):
     def registrar(self, turno, origen):
         validador_turno = ValidadorTurno()
         if not validador_turno.existe_turno(turno):
-            print("llegue-error1")
             return Response({'error': 'El turno no existe'}, status=status.HTTP_400_BAD_REQUEST)
 
         if not origen == 'extraordinario' and not  origen == 'evaluacion':
@@ -54,13 +53,14 @@ class RegistroReparacionViewSet(ViewSet):
             if puntaje > 0
         ]
 
-    def crear_registro_reparacion(self, turno, tasks_pendientes, costo_total, duracion_total, origen):
+    def crear_registro_reparacion(self, turno, tasks_pendientes, costo_total, duracion_total, origen, detalle_evaluacion):
         Registro_reparacion.objects.create(
             id_turno=turno,
             tasks_pendientes=tasks_pendientes,
             costo_total=costo_total,
             duracion_total=duracion_total,
-            origen=origen
+            origen=origen,
+            detalle_evaluacion = detalle_evaluacion
         )
 
     def obtener_registro_extraordinario(self, turno):
@@ -117,24 +117,27 @@ class RegistroReparacionViewSet(ViewSet):
             # Obtenemos el registro de reparación perteneciente al turno
             turno = Turno_taller.objects.get(id_turno=id_turno)
             registro_reparacion = Registro_reparacion.objects.get(id_turno=turno)
-            
-            # Agregamos la tarea a las tareas hechas
-            tareas_hechas = registro_reparacion.tasks_hechas or []
-            tareas_hechas.append(id_task)
-            registro_reparacion.tasks_hechas = tareas_hechas
-            
-            # Eliminamos la tarea de las tareas pendientes
+
+            # Obtener las listas de tareas pendientes y tareas hechas
             tareas_pendientes = registro_reparacion.tasks_pendientes or []
-            tareas_pendientes.remove(id_task)
-            registro_reparacion.tasks_pendientes = tareas_pendientes
-            
-            # Seteamos el detalle
-            registro_reparacion.detalle = detalle
-            
-            # Guardamos los cambios en el registro de reparación
-            registro_reparacion.save()
-            
-            return Response({'message': 'Registro modificado exitosamente'}, status=status.HTTP_200_OK)
+            tareas_hechas = registro_reparacion.tasks_hechas or []
+
+            # Comprobar si la tarea está en la lista de tareas pendientes
+            if id_task not in tareas_hechas:
+                # Comprobar si la tarea no está en la lista de tareas hechas
+                if id_task in tareas_pendientes:
+                    # Realizar las modificaciones necesarias
+                    tareas_pendientes.remove(id_task)
+                    tareas_hechas.append(id_task)
+                    registro_reparacion.tasks_pendientes = tareas_pendientes
+                    registro_reparacion.tasks_hechas = tareas_hechas
+                    registro_reparacion.detalle = detalle
+                    registro_reparacion.save()
+                    return Response({'message': 'Registro modificado exitosamente'}, status=status.HTTP_200_OK)
+                else:
+                    return Response({'error': 'La tarea no corresponde a una tarea del registro'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'error': 'La tarea ya está en la lista de tareas hechas'}, status=status.HTTP_400_BAD_REQUEST)
         
         except Turno_taller.DoesNotExist:
             return Response({'error': 'No se encontró un turno con el ID especificado'}, status=status.HTTP_400_BAD_REQUEST)
@@ -158,21 +161,24 @@ class RegistroReparacionViewSet(ViewSet):
             # Obtenemos el registro de reparación perteneciente al turno
             turno = Turno_taller.objects.get(id_turno=id_turno)
             registro_reparacion = Registro_reparacion.objects.get(id_turno=turno)
-            
-            # Agregamos la tarea a las tareas pendientes
+
+            # Obtener las listas de tareas pendientes y tareas hechas
             tareas_pendientes = registro_reparacion.tasks_pendientes or []
-            tareas_pendientes.append(id_task)
-            registro_reparacion.tasks_hechas = tareas_pendientes
-            
-            # Eliminamos la tarea de las tareas hechas
             tareas_hechas = registro_reparacion.tasks_hechas or []
-            tareas_hechas.remove(id_task)
-            registro_reparacion.tasks_hechas = tareas_hechas
-            
-            # Guardamos los cambios en el registro de reparación
-            registro_reparacion.save()
-            
-            return Response({'message': 'Registro modificado exitosamente'}, status=status.HTTP_200_OK)
+
+            # Comprobar si la tarea no está en la lista de tareas pendientes
+            if id_task not in tareas_pendientes:
+                # Comprobar si la tarea está en la lista de tareas hechas
+                if id_task in tareas_hechas:
+                    # Realizar las modificaciones necesarias
+                    tareas_hechas.remove(id_task)
+                    registro_reparacion.tasks_hechas = tareas_hechas
+                    registro_reparacion.save()
+                    return Response({'message': 'Registro modificado exitosamente'}, status=status.HTTP_200_OK)
+                else:
+                    return Response({'error': 'La tarea no corresponde a una tarea del registro'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'error': 'La tarea ya está en la lista de tareas pendientes'}, status=status.HTTP_400_BAD_REQUEST)
         
         except Turno_taller.DoesNotExist:
             return Response({'error': 'No se encontró un turno con el ID especificado'}, status=status.HTTP_400_BAD_REQUEST)
@@ -227,7 +233,7 @@ class RegistroReparacionViewSet(ViewSet):
         except Registro_reparacion.DoesNotExist:
             return Response({'error': 'No se encontró un registro de reparación para el turno especificado'}, status=status.HTTP_400_BAD_REQUEST)
     
-    
+
     @action(detail=False, methods=['patch'])
     def modificar_detalle_reparacion(self, request):
         id_turno = request.data.get('id_turno')
@@ -238,6 +244,7 @@ class RegistroReparacionViewSet(ViewSet):
             registro_reparacion = Registro_reparacion.objects.get(id_turno=turno)
 
             registro_reparacion.detalle = detalle
+            registro_reparacion.save()
             return Response({'message': 'detalle modificado exitosamente'}, status=status.HTTP_200_OK)
         except Turno_taller.DoesNotExist:
             return Response({'error': 'No se encontró un turno con el ID especificado'}, status=status.HTTP_400_BAD_REQUEST)
