@@ -151,8 +151,7 @@ class RegistroReparacionViewSet(ViewSet):
         id_task = request.data.get('id_task')
 
         if id_turno is None:
-            return Response({'error': 'El campo "id_turno" es requerido'}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response({'error': 'El campo "id_turno" es requerido'}, status=status.HTTP_400_BAD_REQUEST)     
         if id_task is None:
             return Response({'error': 'El campo "id_task" es requerido'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -228,7 +227,7 @@ class RegistroReparacionViewSet(ViewSet):
             return Response({"detalle_evaluacion": detalle}, status=status.HTTP_200_OK)
         except Turno_taller.DoesNotExist:
             return Response({'error': 'No se encontró un turno con el ID especificado'}, status=status.HTTP_400_BAD_REQUEST)
-        
+              
         except Registro_reparacion.DoesNotExist:
             return Response({'error': 'No se encontró un registro de reparación para el turno especificado'}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -246,8 +245,8 @@ class RegistroReparacionViewSet(ViewSet):
             registro_reparacion.save()
             return Response({'message': 'detalle modificado exitosamente'}, status=status.HTTP_200_OK)
         except Turno_taller.DoesNotExist:
-            return Response({'error': 'No se encontró un turno con el ID especificado'}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response({'error': 'No se encontró un turno con el ID especificado'}, status=status.HTTP_400_BAD_REQUEST) 
+              
         except Registro_reparacion.DoesNotExist:
             return Response({'error': 'No se encontró un registro de reparación para el turno especificado'}, status=status.HTTP_400_BAD_REQUEST)
         
