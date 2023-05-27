@@ -1,7 +1,7 @@
 from django.urls import reverse
 from .test_setup import TestSetUp
 from administracion.models import Turno_taller
-from turnos.crear_turnos_views import *
+from turnos.views.crear_turnos_views import *
 from test.factories.usuario_factorie import *
 
 class CrearTurnoTestCase(TestSetUp):
@@ -466,3 +466,103 @@ class CrearTurnoTestCase(TestSetUp):
                             "taller_id": 10}
         
         self.assertEqual(self.post_response_crear_turno_extraordinario(turno_incorrecto).status_code, 400)                
+        
+# ----------------------------------------------------------------------------------------------- #    
+# ------------------------ extra: turnos en horarios con turnos inválidos ----------------------- #    
+# ----------------------------------------------------------------------------------------------- #         
+    def test_turno_sobre_terminado(self):
+        turno_correcto = {"patente": "AS123FD",
+                          "fecha_inicio": "2023-9-29",
+                          "hora_inicio": "08:00:00",
+                          "email": "luciacsoria5@gmail.com",
+                          "taller_id": 10}
+        
+        response_esperado = { "id_turno": 501,
+                            "tipo": "evaluacion",
+                            "estado": "pendiente",
+                            "tecnico_id": None,
+                            "patente": "AS123FD",
+                            "fecha_inicio": "2023-09-29",
+                            "hora_inicio": "08:00:00",
+                            "fecha_fin": "2023-09-29",
+                            "hora_fin": "09:00:00",
+                            "frecuencia_km": None,
+                            "papeles_en_regla": False,
+                            "taller_id": 10}
+        
+        response = self.post_response_crear_turno_evaluacion_web(turno_correcto)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), response_esperado) 
+        
+    def test_turno_sobre_cancelado(self):
+        turno_correcto = {"patente": "AS123FD",
+                          "fecha_inicio": "2023-9-29",
+                          "hora_inicio": "10:00:00",
+                          "email": "luciacsoria5@gmail.com",
+                          "taller_id": 10}
+        
+        response_esperado = { "id_turno": 501,
+                            "tipo": "evaluacion",
+                            "estado": "pendiente",
+                            "tecnico_id": None,
+                            "patente": "AS123FD",
+                            "fecha_inicio": "2023-09-29",
+                            "hora_inicio": "10:00:00",
+                            "fecha_fin": "2023-09-29",
+                            "hora_fin": "11:00:00",
+                            "frecuencia_km": None,
+                            "papeles_en_regla": False,
+                            "taller_id": 10}
+        
+        response = self.post_response_crear_turno_evaluacion_web(turno_correcto)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), response_esperado)         
+        
+    def test_turno_sobre_rechazado(self):
+        turno_correcto = {"patente": "AS123FD",
+                          "fecha_inicio": "2023-9-29",
+                          "hora_inicio": "13:00:00",
+                          "email": "luciacsoria5@gmail.com",
+                          "taller_id": 10}
+        
+        response_esperado = { "id_turno": 501,
+                            "tipo": "evaluacion",
+                            "estado": "pendiente",
+                            "tecnico_id": None,
+                            "patente": "AS123FD",
+                            "fecha_inicio": "2023-09-29",
+                            "hora_inicio": "13:00:00",
+                            "fecha_fin": "2023-09-29",
+                            "hora_fin": "14:00:00",
+                            "frecuencia_km": None,
+                            "papeles_en_regla": False,
+                            "taller_id": 10}
+        
+        response = self.post_response_crear_turno_evaluacion_web(turno_correcto)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), response_esperado)         
+        
+    def test_turno_sobre_ausente(self):
+        turno_correcto = {"patente": "AS123FD",
+                          "fecha_inicio": "2023-9-29",
+                          "hora_inicio": "15:00:00",
+                          "email": "luciacsoria5@gmail.com",
+                          "taller_id": 10}
+        
+        response_esperado = { "id_turno": 501,
+                            "tipo": "evaluacion",
+                            "estado": "pendiente",
+                            "tecnico_id": None,
+                            "patente": "AS123FD",
+                            "fecha_inicio": "2023-09-29",
+                            "hora_inicio": "15:00:00",
+                            "fecha_fin": "2023-09-29",
+                            "hora_fin": "16:00:00",
+                            "frecuencia_km": None,
+                            "papeles_en_regla": False,
+                            "taller_id": 10}
+        
+        response = self.post_response_crear_turno_evaluacion_web(turno_correcto)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), response_esperado)
+        

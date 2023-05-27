@@ -27,6 +27,18 @@ class TestSetUp(APITestCase):
         # sólo un lugar disponible el 2023/9/24 de 8 a 12
         self.turno_test4 = G(Turno_taller, id_turno= 4, taller_id=10, tipo='evaluacion', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,23), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,24), hora_fin=time(12,0,0), papeles_en_regla=True)
         
+        # estos turnos estan terminados/cancelados/rechazados/ausentes, asi que no hay problema para cargarles un turno encima
+        # taller 10, a las 8, 10, 13 y 15hs, el 2023/09/29
+        self.turno_test5 = G(Turno_taller, taller_id = 10, fecha_inicio=date(2023,9,29), hora_inicio=time(8,0,0), fecha_fin=date(2023,9,29), hora_fin=time(9,0,0), estado='terminado')
+        self.turno_test6 = G(Turno_taller, taller_id = 10, fecha_inicio=date(2023,9,29), hora_inicio=time(8,0,0), fecha_fin=date(2023,9,29), hora_fin=time(9,0,0), estado='terminado')
+        self.turno_test7 = G(Turno_taller, taller_id = 10, fecha_inicio=date(2023,9,29), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,29), hora_fin=time(11,0,0), estado='cancelado')
+        self.turno_test8 = G(Turno_taller, taller_id = 10, fecha_inicio=date(2023,9,29), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,29), hora_fin=time(11,0,0), estado='cancelado')
+        self.turno_test9 = G(Turno_taller, taller_id = 10, fecha_inicio=date(2023,9,29), hora_inicio=time(13,0,0), fecha_fin=date(2023,9,29), hora_fin=time(14,0,0), estado='rechazado')
+        self.turno_test10 = G(Turno_taller, taller_id = 10, fecha_inicio=date(2023,9,29), hora_inicio=time(13,0,0), fecha_fin=date(2023,9,29), hora_fin=time(14,0,0), estado='rechazado')
+        self.turno_test11 = G(Turno_taller, taller_id = 10, fecha_inicio=date(2023,9,29), hora_inicio=time(15,0,0), fecha_fin=date(2023,9,29), hora_fin=time(16,0,0), estado='ausente')
+        self.turno_test12 = G(Turno_taller, taller_id = 10, fecha_inicio=date(2023,9,29), hora_inicio=time(15,0,0), fecha_fin=date(2023,9,29), hora_fin=time(16,0,0), estado='ausente')
+        
+        
         self.service1 = G(Service, id_service= 200, costo_base = 0.0, costo_total = 0.0, marca="generico", modelo = "generico", frecuencia_km=5000, duracion_total=180)
         self.service2 = G(Service, id_service= 300, costo_base = 0.0, costo_total = 0.0, marca="generico", modelo = "generico", frecuencia_km=10000, duracion_total=180)
         
@@ -46,7 +58,7 @@ class TestSetUp(APITestCase):
         self.task_1 = G(Checklist_evaluacion, id_task=10, duracion_reemplazo=60, costo_reemplazo = 0.0)
         self.task_2 = G(Checklist_evaluacion, id_task=20, duracion_reemplazo=60, costo_reemplazo = 0.0)
         
-        self.assertEqual(Turno_taller.objects.count(), 7)
+        self.assertEqual(Turno_taller.objects.count(), 15)
 
         return super().setUp()
     

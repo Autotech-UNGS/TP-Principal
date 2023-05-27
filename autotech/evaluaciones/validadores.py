@@ -1,5 +1,8 @@
+import json
 from rest_framework.exceptions import ValidationError
 from administracion.models import Checklist_evaluacion
+from rest_framework import status
+from rest_framework.response import Response
 
 
 class ValidadorChecklist:
@@ -31,4 +34,17 @@ class ValidadorChecklist:
                     raise ValidationError(f'La tarea {id_task}: {task.elemento} supera el puntaje máximo de la misma: {puntaje_maximo_item}')
         else:
              raise ValidationError(f'Faltan tareas por calificar')
+        return True
+
+    def validar_tareas(self, request):
+        id_tasks = request.data.get('id_tasks')
+        
+        if not id_tasks:
+            return Response({'error': 'El campo "id_tasks" es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+        id_tasks = json.loads(id_tasks)  # Convertir id_tasks de cadena de texto JSON a lista de enteros
+        
+        id_task_evaluacion= Checklist_evaluacion.objects.values_list('id_task', flat=True)
+        if not set(id_tasks).issubset(id_task_evaluacion):
+             raise ValidationError(f'Existen tareas de {id_tasks} que no están incluidas en la checklist de evaluacion')
+        
         return True

@@ -2,12 +2,13 @@ from django.http import JsonResponse, HttpResponse
 from administracion.models import *
 from administracion.serializers import TurnoTallerSerializer
 from rest_framework.response import Response
-from .enviar_turno_email import EnvioDeEmail
-from .obtener_datos import *
-from .validaciones_views import * 
+from ..enviar_turno_email import EnvioDeEmail
+from ..obtener_datos import *
+from ..validaciones_views import * 
 from datetime import *
 from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
+from reparaciones.views import RegistroReparacionViewSet
 
 class CrearActualizarTurnosViewSet(ViewSet):
 
@@ -233,8 +234,11 @@ class CrearActualizarTurnosViewSet(ViewSet):
         
         serializer = TurnoTallerSerializer(data=datos)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)        
+            turno = serializer.save()
+            registro_reparacion = RegistroReparacionViewSet()
+            registro_reparacion.registrar(turno, origen)
+
+            return Response(serializer.data)             
         else:
             return HttpResponse("error: request inválido", status=400)
         
@@ -285,6 +289,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
         else:
             return HttpResponse("error: request inválido", status=400)
         
+# ---------------------------------------------------------------------------------------- #
+# ------------------------------------- validaciones ------------------------------------- #
+# ---------------------------------------------------------------------------------------- #
 
     def validar_taller(self, taller_id:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time) -> HttpResponse:
         if not existe_taller(taller_id):

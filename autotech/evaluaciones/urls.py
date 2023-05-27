@@ -14,7 +14,9 @@ urlpatterns = [
 
     #path('registros/listar/<int:id_turno>/', RegistroEvaluacionUno.as_view(), name = 'listar_registros_evaluacion_por_id'),
 
-    path('checklist/listar/', ChecklistEvaluacionList.as_view(), name= 'listar_checklist_evaluacion')
+    path('checklist/listar/', ChecklistEvaluacionList.as_view(), name= 'listar_checklist_evaluacion'),
+
+    path('registro-extraordinario/crear/', RegistroExtraordinarioCreate.as_view(), name= 'crear_registro_extraordinario'),
 
     
 ]

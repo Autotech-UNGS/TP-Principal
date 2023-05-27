@@ -1,6 +1,8 @@
 from django.urls import path
 
-from . import estado_turnos_views, modificar_estado_cron_view, visualizar_turnos_views, crear_turnos_views, asignar_tecnico_views, vendedor_views, dias_horarios_disponibles
+from .views import asignar_tecnico_views, crear_turnos_views, dias_horarios_disponibles, estado_turnos_views, modificar_estado_cron_view, vendedor_views, reprogramar_turno
+
+from .views import visualizar_turnos_views
 
 urlpatterns = [
     path('',visualizar_turnos_views.turnosOverview,name='turnos'),
@@ -9,6 +11,7 @@ urlpatterns = [
     
     # -------------------------------------------------------------------------------------------------------------
     path('dias-horarios-disponibles/<int:taller_id>/', dias_horarios_disponibles.DiasHorariosDisponiblesViewSet.as_view({'get':'dias_horarios_disponibles'}), name="dias-horarios-disponibles"),
+    path('dias-horarios-disponibles-turno/<int:taller_id>/<int:id_turno>/', dias_horarios_disponibles.DiasHorariosDisponiblesViewSet.as_view({'get':'dias_horarios_disponibles_turno'}), name="dias-horarios-disponibles-turno"),
     path('dias-horarios-disponibles-service/<int:taller_id>/<str:marca>/<str:modelo>/<int:km>/', dias_horarios_disponibles.DiasHorariosDisponiblesViewSet.as_view({'get':'dias_horarios_disponibles_service'}), name="dias-horarios-disponibles-service"),
     path('dias-horarios-disponibles-reparaciones/<int:taller_id>/<str:patente>/<str:origen>/', dias_horarios_disponibles.DiasHorariosDisponiblesViewSet.as_view({'get':'dias_horarios_disponibles_reparaciones'}), name="dias-horarios-disponibles-reparaciones"),
     
@@ -34,6 +37,7 @@ urlpatterns = [
     path('cancelar-turno/<int:id_turno>/', estado_turnos_views.EstadoTurnosViewSet.as_view({'patch': 'cancelar_turno_pendiente'}), name='cancelar-turno-pendiente'),
 
     #--------------------------------------------------------------------------------------------------------------
+    path('reprogramar-turno/', reprogramar_turno.ReprogramarTurnoViewSet.as_view({'post': 'reprogramar_turno'}), name='reprogramar-turno'),
     
     #--------------------------------------------------------------------------------------------------------------
     #path('crear-turno-vendedor/', vendedor_views.CrearTurnoVendedor.as_view({'post': 'crear_turno_vendedor'}), name='crear-turno-vendedor'),

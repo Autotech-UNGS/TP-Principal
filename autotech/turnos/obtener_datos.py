@@ -12,6 +12,26 @@ def obtener_direccion_taller(taller_id) -> str:
     taller = Taller.objects.get(id_taller= taller_id)
     return f'{taller.direccion}, {taller.localidad}, {taller.provincia}.'
 
+def obtener_duracion(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time):
+    if fecha_inicio == fecha_fin:
+        return hora_fin.hour - hora_inicio.hour
+    else:
+        duracion = 0
+        fecha = fecha_inicio
+        hora = hora_inicio
+        seguir = True
+        while seguir:
+            hora = time(hora.hour + 1, 0, 0)
+            duracion += 1
+            # si llegamos al dia y a la hora del fin del turno, terminamos el ciclo
+            if fecha == fecha_fin and hora == hora_fin:
+                seguir = False
+            # si llegamos al final de la jornada, reiniciamos la hora y avanzamos un dia
+            if (hora.hour == 17 and fecha.weekday() != 6) or (hora.hour == 12 and fecha.weekday() == 6):
+                hora = time(8,0,0)
+                fecha = fecha + timedelta(days=1)
+    return duracion
+
 def obtener_ultimo_service(patente:str):
     # tengo que encontrar todos los turnos de services de esa patente, y quedarme con el último
     # con ese ultimo turno de tipo service, tengo que encontrar el Registro_service que le corresponde
@@ -56,6 +76,7 @@ def obtener_duracion_reparacion(patente:str):
     try:
         # 1) obtenemos el turno para evaluacion correspondiente a la reparacion que queremos hacer
         turno = Turno_taller.objects.filter(patente=patente, tipo= 'evaluacion').latest('fecha_inicio')
+       
         # 2) con ese turno, nos traemos el turno para admin correspondiente, el cual tiene la duracion que necesitamos
         registro_admin = Registro_evaluacion_para_admin.objects.get(id_turno=turno.id_turno)
         return ceil(registro_admin.duracion_total_reparaciones / 60)
@@ -72,6 +93,7 @@ def obtener_duracion_extraordinario(patente:str):
         registro_extraordinario = Registro_extraordinario.objects.get(id_turno=turno.id_turno)
         # 3) con ese registro, ya tenemos las tareas que deben realizarse
         lista_task = json.loads(registro_extraordinario.id_tasks)
+        #lista_task = registro_extraordinario.id_tasks
         # 4) recorremos los task para obtener el tiempo de cada uno
         duracion = 0
         for id in lista_task:
