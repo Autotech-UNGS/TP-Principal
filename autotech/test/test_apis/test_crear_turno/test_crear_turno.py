@@ -5,366 +5,464 @@ from turnos.crear_turnos_views import *
 from test.factories.usuario_factorie import *
 
 class CrearTurnoTestCase(TestSetUp):
-    def post_response_crear_turno(self, turno):
-        url = reverse('turnos-create')
+    def post_response_crear_turno_evaluacion_web(self, turno):
+        url = reverse('crear-turno-evaluacion-web')
         return self.client.post(url, turno, format='json')
     
-    def get_response_lista_turnos(self):
-        url = reverse('turnos-list')
-        return self.client.get(url)
-        
-    def get_response_turno_detalle(self, id_turno):
-        url = reverse('turnos-detalle', args=[id_turno])
-        return self.client.get(url)
+    def post_response_crear_turno_evaluacion_presencial(self, turno):
+        url = reverse('crear-turno-evaluacion-presencial')
+        return self.client.post(url, turno, format='json')
     
-    def test_cargar_turno_correcto_evaluacion(self):
-        turno_correcto = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-23",
-        "hora_inicio": "12:00:00",
-        "fecha_fin": "2023-10-23",
-        "hora_fin": "13:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        response_esperado = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-23",
-        "hora_inicio": "12:00:00",
-        "fecha_fin": "2023-10-23",
-        "hora_fin": "13:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": False,
-        "taller_id": 10}
+    def post_response_crear_turno_service(self, turno):
+        url = reverse('crear-turno-service')
+        return self.client.post(url, turno, format='json')
     
-        self.assertEqual(self.post_response_crear_turno(turno_correcto).status_code, 200)
-        self.assertDictEqual(self.post_response_crear_turno(turno_correcto).json(), response_esperado)
-        
-    def test_cargar_turno_correcto_service(self):
-        turno_correcto = {"id_turno": 8,
-        "tipo": "service",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-23",
-        "hora_inicio": "12:00:00",
-        "fecha_fin": "2023-10-23",
-        "hora_fin": "13:00:00",
-        "frecuencia_km": 5000,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_correcto).status_code, 200)
-        
-    def test_cargar_turno_correcto_extraordinario(self):
-        turno_correcto = {"id_turno": 9,
-        "tipo": "extraordinario",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-23",
-        "hora_inicio": "12:00:00",
-        "fecha_fin": "2023-10-23",
-        "hora_fin": "13:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_correcto).status_code, 200)
-        
-    def test_cargar_turno_correcto_reparacion(self):
-        turno_correcto = {"id_turno": 10,
-        "tipo": "reparacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-23",
-        "hora_inicio": "12:00:00",
-        "fecha_fin": "2023-10-23",
-        "hora_fin": "13:00:00",
-        "frecuencia_km": 0,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_correcto).status_code, 200)
-        
-    def test_cargar_turno_para_ayer(self):
-        ayer = datetime.today() - timedelta(days=1)
-        turno_incorrecto = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": ayer.strftime("%Y-%m-%d"),
-        "hora_inicio": "10:00:00",
-        "fecha_fin": ayer.strftime("%Y-%m-%d"),
-        "hora_fin": "11:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)
-        
-    def test_cargar_turno_para_hoy(self):
-        hoy = datetime.today()
-        turno_correcto = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": hoy.strftime("%Y-%m-%d"),
-        "hora_inicio": "10:00:00",
-        "fecha_fin": hoy.strftime("%Y-%m-%d"),
-        "hora_fin": "11:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        response_esperado = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": hoy.strftime("%Y-%m-%d"),
-        "hora_inicio": "10:00:00",
-        "fecha_fin": hoy.strftime("%Y-%m-%d"),
-        "hora_fin": "11:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": False,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_correcto).status_code, 200)
-        self.assertDictEqual(self.post_response_crear_turno(turno_correcto).json(), response_esperado)       
-        
-    def test_cargar_turno_para_mañana(self):
-        mañana = datetime.today() + timedelta(days=1)
-        turno_correcto = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": mañana.strftime("%Y-%m-%d"),
-        "hora_inicio": "10:00:00",
-        "fecha_fin": mañana.strftime("%Y-%m-%d"),
-        "hora_fin": "11:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        response_esperado = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": mañana.strftime("%Y-%m-%d"),
-        "hora_inicio": "10:00:00",
-        "fecha_fin": mañana.strftime("%Y-%m-%d"),
-        "hora_fin": "11:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": False,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_correcto).status_code, 200)
-        self.assertDictEqual(self.post_response_crear_turno(turno_correcto).json(), response_esperado)       
+    def post_response_crear_turno_reparacion(self, turno):
+        url = reverse('crear-turno-reparacion')
+        return self.client.post(url, turno, format='json')
     
-    def test_service_sin_km(self):
-        turno_incorrecto = {"id_turno": 6,
-        "tipo": "service",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-23",
-        "hora_inicio": "12:00:00",
-        "fecha_fin": "2023-10-23",
-        "hora_fin": "13:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)  
-        
-    def test_taller_no_existe(self):
-        turno_incorrecto = {"id_turno": 6,
-        "tipo": "service",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-23",
-        "hora_inicio": "12:00:00",
-        "fecha_fin": "2023-10-23",
-        "hora_fin": "13:00:00",
-        "frecuencia_km": 0,
-        "papeles_en_regla": True,
-        "taller_id": 108}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)         
-        
-    def test_horarios_no_exactos(self):
-        turno_incorrecto = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-23",
-        "hora_inicio": "12:30:00",
-        "fecha_fin": "2023-10-23",
-        "hora_fin": "13:40:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)  
-        
-    def test_horarios_fuera_de_rango_superior_semana(self):
-        turno_incorrecto = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-23",
-        "hora_inicio": "15:00:00",
-        "fecha_fin": "2023-10-23",
-        "hora_fin": "18:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400) 
-    
-    def test_horarios_fuera_de_rango_inferior_semana(self):
-        turno_incorrecto = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-23",
-        "hora_inicio": "7:00:00",
-        "fecha_fin": "2023-10-23",
-        "hora_fin": "10:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400) 
-        
-        
-    def test_horarios_fuera_de_rango_superior_domingo(self):
-        turno_incorrecto = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-22",
-        "hora_inicio": "11:00:00",
-        "fecha_fin": "2023-10-22",
-        "hora_fin": "13:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)        
-        
-    def test_horarios_fuera_de_rango_inferior_domingo(self):
-        turno_incorrecto = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-22",
-        "hora_inicio": "10:00:00",
-        "fecha_fin": "2023-10-22",
-        "hora_fin": "7:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)        
-        
-    def test_hora_inicio_y_final_iguales(self):
-        turno_incorrecto = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-23",
-        "hora_inicio": "11:00:00",
-        "fecha_fin": "2023-10-23",
-        "hora_fin": "11:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)
-        
-    def test_hora_inicio_superior_a_fin(self):
-        turno_incorrecto = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-23",
-        "hora_inicio": "12:00:00",
-        "fecha_fin": "2023-10-23",
-        "hora_fin": "11:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)
-        
-    def test_dia_inicio_superior_a_fin(self):
-        turno_incorrecto = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-10-23",
-        "hora_inicio": "12:00:00",
-        "fecha_fin": "2023-10-22",
-        "hora_fin": "11:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 10}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)        
-        
-    def test_horario_no_disponible_completo(self):
-        turno_incorrecto = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-9-21",
-        "hora_inicio": "10:00:00",
-        "fecha_fin": "2023-9-21",
-        "hora_fin": "12:00:00",
-        "frecuencia_km": None,
-        "papeles_en_regla": True,
-        "taller_id": 11}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)        
-        
-    def test_horario_no_disponible_en_parte(self):
-        turno_incorrecto = {"id_turno": 6,
-        "tipo": "evaluacion",
-        "estado": "pendiente",
-        "tecnico_id": None,
-        "patente": "AS123FD",
-        "fecha_inicio": "2023-9-21",
-        "hora_inicio": "10:00:00",
-        "fecha_fin": "2023-9-21",
-        "hora_fin": "11:00:00",
-        "frecuencia_km": 0,
-        "papeles_en_regla": True,
-        "taller_id": 11}
-        
-        self.assertEqual(self.post_response_crear_turno(turno_incorrecto).status_code, 400)       
+    def post_response_crear_turno_extraordinario(self, turno):
+        url = reverse('crear-turno-extraordinario')
+        return self.client.post(url, turno, format='json')
 
-         
+    
+# ------------------------------------------------------------------------------------------------ #    
+# ------------------------------------- turno evaluacion: web ------------------------------------ #
+# ------------------------------------------------------------------------------------------------ #    
+    def test_evaluacion_web_correcto(self):
+        turno_correcto = {"patente": "AS123FD",
+                          "fecha_inicio": "2023-10-23",
+                          "hora_inicio": "12:00:00",
+                          "email": "luciacsoria5@gmail.com",
+                          "taller_id": 10}
+        
+        response_esperado = { "id_turno": 501,
+                            "tipo": "evaluacion",
+                            "estado": "pendiente",
+                            "tecnico_id": None,
+                            "patente": "AS123FD",
+                            "fecha_inicio": "2023-10-23",
+                            "hora_inicio": "12:00:00",
+                            "fecha_fin": "2023-10-23",
+                            "hora_fin": "13:00:00",
+                            "frecuencia_km": None,
+                            "papeles_en_regla": False,
+                            "taller_id": 10}
+        
+        response = self.post_response_crear_turno_evaluacion_web(turno_correcto)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), response_esperado) 
+        
+    def test_evaluacion_web_taller_no_existe(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                          "fecha_inicio": "2023-10-23",
+                          "hora_inicio": "12:00:00",
+                          "email": "luciacsoria5@gmail.com",
+                          "taller_id": 23}
+        self.assertEqual(self.post_response_crear_turno_evaluacion_web(turno_incorrecto).status_code, 400)
+        
+    def test_evaluacion_web_taller_no_disponible_completo(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-9-21",
+                            "hora_inicio": "10:00:00",
+                            "taller_id": 11,
+                            "email": "luciacsoria5@gmail.com"}
+        
+        self.assertEqual(self.post_response_crear_turno_evaluacion_web(turno_incorrecto).status_code, 400)        
+        
+    def test_evaluacion_web_taller_disponible_en_parte(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-9-21",
+                            "hora_inicio": "10:00:00",
+                            "taller_id": 11,
+                            "email": "luciacsoria5@gmail.com"}
+        
+        self.assertEqual(self.post_response_crear_turno_evaluacion_web(turno_incorrecto).status_code, 400) 
+        
+    def test_evaluacion_web_horarios_no_exactos(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-10-23",
+                            "hora_inicio": "12:30:00",
+                            "taller_id": 10,
+                            "email": "luciacsoria5@gmail.com"}
+        
+        self.assertEqual(self.post_response_crear_turno_evaluacion_web(turno_incorrecto).status_code, 400)   
+    
+    def test_evaluacion_web_horarios_fuera_de_rango_inferior_semana(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-10-23",
+                            "hora_inicio": "7:00:00",
+                            "taller_id": 10,
+                            "email": "luciacsoria5@gmail.com"}
+        
+        self.assertEqual(self.post_response_crear_turno_evaluacion_web(turno_incorrecto).status_code, 400)       
+        
+    def test_evaluacion_web_horarios_fuera_de_rango_inferior_domingo(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-10-22",
+                            "hora_inicio": "7:00:00",
+                            "taller_id": 10,
+                            "email": "luciacsoria5@gmail.com"}
+        
+        self.assertEqual(self.post_response_crear_turno_evaluacion_web(turno_incorrecto).status_code, 400)                
+
+# ------------------------------------------------------------------------------------------------------- #        
+# ------------------------------------- turno evaluacion: presencial ------------------------------------ #        
+# ------------------------------------------------------------------------------------------------------- #
+    def test_evaluacion_presencial_correcto(self):
+        turno_correcto = {"patente": "AS123FD",
+                          "fecha_inicio": "2023-10-23",
+                          "hora_inicio": "12:00:00",
+                          "email": "luciacsoria5@gmail.com",
+                          "taller_id": 10}
+        
+        response_esperado = { "id_turno": 501,
+                            "tipo": "evaluacion",
+                            "estado": "pendiente",
+                            "tecnico_id": None,
+                            "patente": "AS123FD",
+                            "fecha_inicio": "2023-10-23",
+                            "hora_inicio": "12:00:00",
+                            "fecha_fin": "2023-10-23",
+                            "hora_fin": "13:00:00",
+                            "frecuencia_km": None,
+                            "papeles_en_regla": True,
+                            "taller_id": 10}
+        
+        response = self.post_response_crear_turno_evaluacion_presencial(turno_correcto)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), response_esperado) 
+        
+    def test_evaluacion_presencial_taller_no_existe(self):
+        turno_incorrecto = {"taller_id": 23,
+                          "patente": "AS123FD",
+                          "fecha_inicio": "2023-10-23",
+                          "hora_inicio": "12:00:00",
+                          "email": "luciacsoria5@gmail.com"}
+        self.assertEqual(self.post_response_crear_turno_evaluacion_presencial(turno_incorrecto).status_code, 400)
+        
+    def test_evaluacion_presencial_taller_no_disponible_completo(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-9-21",
+                            "hora_inicio": "10:00:00",
+                            "taller_id": 11,
+                            "email": "luciacsoria5@gmail.com"}
+        
+        self.assertEqual(self.post_response_crear_turno_evaluacion_presencial(turno_incorrecto).status_code, 400)        
+        
+    def test_evaluacion_presencial_taller_disponible_en_parte(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-9-21",
+                            "hora_inicio": "10:00:00",
+                            "taller_id": 11,
+                            "email": "luciacsoria5@gmail.com"}
+        
+        self.assertEqual(self.post_response_crear_turno_evaluacion_presencial(turno_incorrecto).status_code, 400) 
+        
+    def test_evaluacion_presencial_horarios_no_exactos(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-10-23",
+                            "hora_inicio": "12:30:00",
+                            "taller_id": 10,
+                            "email": "luciacsoria5@gmail.com"}
+        
+        self.assertEqual(self.post_response_crear_turno_evaluacion_presencial(turno_incorrecto).status_code, 400)   
+    
+    def test_evaluacion_presencial_horarios_fuera_de_rango_inferior_semana(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-10-23",
+                            "hora_inicio": "7:00:00",
+                            "taller_id": 10,
+                            "email": "luciacsoria5@gmail.com"}
+        
+        self.assertEqual(self.post_response_crear_turno_evaluacion_presencial(turno_incorrecto).status_code, 400)       
+        
+    def test_evaluacion_presencial_horarios_fuera_de_rango_inferior_domingo(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-10-22",
+                            "hora_inicio": "7:00:00",
+                            "taller_id": 10,
+                            "email": "luciacsoria5@gmail.com"}
+        
+        self.assertEqual(self.post_response_crear_turno_evaluacion_presencial(turno_incorrecto).status_code, 400)          
+        
+# ---------------------------------------------------------------------------------------- #        
+# ------------------------------------- turno service ------------------------------------ #                
+# ---------------------------------------------------------------------------------------- #
+    def test_service_correcto(self):
+        turno_correcto = {"patente": "AS123FF",
+                          "fecha_inicio": "2023-10-23",
+                          "hora_inicio": "12:00:00",
+                          "email": "luciacsoria5@gmail.com",
+                          "frecuencia_km": 5000,
+                          "marca":"generico",
+                          "modelo":"generico",
+                          "taller_id": 10}
+        
+        response_esperado = { "id_turno": 501,
+                            "tipo": "service",
+                            "estado": "pendiente",
+                            "tecnico_id": None,
+                            "patente": "AS123FF",
+                            "fecha_inicio": "2023-10-23",
+                            "hora_inicio": "12:00:00",
+                            "fecha_fin": "2023-10-23",
+                            "hora_fin": "15:00:00",
+                            "frecuencia_km": 5000,
+                            "papeles_en_regla": True,
+                            "taller_id": 10}
+        
+        response = self.post_response_crear_turno_service(turno_correcto)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), response_esperado) 
+        
+    def test_service_correcto_2(self):
+        turno_correcto = {"patente": "AS123FF",
+                          "fecha_inicio": "2023-10-23",
+                          "hora_inicio": "12:00:00",
+                          "email": "luciacsoria5@gmail.com",
+                          "frecuencia_km": 10000,
+                          "marca":"generico",
+                          "modelo":"generico",
+                          "taller_id": 10,}
+        
+        response_esperado = { "id_turno": 501,
+                            "tipo": "service",
+                            "estado": "pendiente",
+                            "tecnico_id": None,
+                            "patente": "AS123FF",
+                            "fecha_inicio": "2023-10-23",
+                            "hora_inicio": "12:00:00",
+                            "fecha_fin": "2023-10-23",
+                            "hora_fin": "15:00:00",
+                            "frecuencia_km": 10000,
+                            "papeles_en_regla": True,
+                            "taller_id": 10}
+        
+        response = self.post_response_crear_turno_service(turno_correcto)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), response_esperado)        
+        
+    def test_service_no_existe(self):
+        turno_incorrecto = {"taller_id": 23,
+                          "patente": "AS123FD",
+                          "fecha_inicio": "2023-10-23",
+                          "hora_inicio": "12:00:00",
+                          "email": "luciacsoria5@gmail.com",
+                          "frecuencia_km":15000,
+                          "marca":"generico",
+                          "modelo":"generico"}
+        
+        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)        
+        
+    def test_service_taller_no_existe(self):
+        turno_incorrecto = {"taller_id": 103,
+                          "patente": "AS123FD",
+                          "fecha_inicio": "2023-10-23",
+                          "hora_inicio": "12:00:00",
+                          "email": "luciacsoria5@gmail.com",
+                          "frecuencia_km": 5000,
+                          "marca":"generico",
+                          "modelo":"generico"}
+        
+        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)
+        
+    def test_service_taller_no_disponible_completo(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-9-21",
+                            "hora_inicio": "10:00:00",
+                            "taller_id": 11,
+                            "email": "luciacsoria5@gmail.com",
+                            "frecuencia_km":5000,
+                            "marca":"generico",
+                            "modelo":"generico"}
+        
+        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)        
+        
+    def test_service_taller_disponible_en_parte(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-9-21",
+                            "hora_inicio": "10:00:00",
+                            "taller_id": 11,
+                            "email": "luciacsoria5@gmail.com",
+                            "frecuencia_km":5000,
+                            "marca":"generico",
+                            "modelo":"generico"}
+        
+        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400) 
+        
+    def test_service_horarios_no_exactos(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-10-23",
+                            "hora_inicio": "12:30:00",
+                            "taller_id": 10,
+                            "email": "luciacsoria5@gmail.com",
+                            "frecuencia_km":5000,
+                            "marca":"generico",
+                            "modelo":"generico"}
+        
+        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)   
+    
+    def test_service_horarios_fuera_de_rango_inferior_semana(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-10-23",
+                            "hora_inicio": "7:00:00",
+                            "taller_id": 10,
+                            "email": "luciacsoria5@gmail.com",
+                            "frecuencia_km":5000,
+                            "marca":"generico",
+                            "modelo":"generico"}
+        
+        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)       
+        
+    def test_service_horarios_fuera_de_rango_inferior_domingo(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-10-22",
+                            "hora_inicio": "7:00:00",
+                            "taller_id": 10,
+                            "email": "luciacsoria5@gmail.com",
+                            "frecuencia_km":5000,
+                            "marca":"generico",
+                            "modelo":"generico"}
+        
+        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)                  
+        
+# ------------------------------------------------------------------------------------------- #            
+# ------------------------------------- turno reparacion ------------------------------------ #            
+# ------------------------------------------------------------------------------------------- #                
+    def test_reparacion_evaluacion_correcto(self):
+        turno_correcto = {"patente": "LCS262",
+                          "fecha_inicio": "2023-10-24",
+                          "hora_inicio": "12:00:00",
+                          "taller_id": 10,
+                          "origen": "evaluacion"}
+        
+        response_esperado = { "id_turno": 501,
+                            "tipo": "reparacion",
+                            "estado": "pendiente",
+                            "tecnico_id": None,
+                            "patente": "LCS262",
+                            "fecha_inicio": "2023-10-24",
+                            "hora_inicio": "12:00:00",
+                            "fecha_fin": "2023-10-24",
+                            "hora_fin": "15:00:00",
+                            "frecuencia_km": None,
+                            "papeles_en_regla": True,
+                            "taller_id": 10}      
+        
+        response = self.post_response_crear_turno_reparacion(turno_correcto)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), response_esperado)  
+    
+    def test_reparacion_extraordinario_correcto(self):   
+        turno_correcto = {"patente": "LCS262",
+                          "fecha_inicio": "2023-10-24",
+                          "hora_inicio": "12:00:00",
+                          "taller_id": 10,
+                          "origen": "extraordinario"}
+        
+        response_esperado = { "id_turno": 501,
+                            "tipo": "reparacion",
+                            "estado": "pendiente",
+                            "tecnico_id": None,
+                            "patente": "LCS262",
+                            "fecha_inicio": "2023-10-24",
+                            "hora_inicio": "12:00:00",
+                            "fecha_fin": "2023-10-24",
+                            "hora_fin": "14:00:00",
+                            "frecuencia_km": None,
+                            "papeles_en_regla": True,
+                            "taller_id": 10}
+        
+        response = self.post_response_crear_turno_reparacion(turno_correcto)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), response_esperado)  
+        
+    def test_reparacion_evaluacion_patente_no_evaluada(self):
+        turno_incorrecto = {"patente": "262CBS",
+                          "fecha_inicio": "2023-10-23",
+                          "hora_inicio": "12:00:00",
+                          "taller_id": 10,
+                          "origen": "evaluacion"}
+        self.assertEqual(self.post_response_crear_turno_reparacion(turno_incorrecto).status_code, 400)        
+    
+    def test_reparacion_extraordinario_patente_no_evaluada(self):    
+        turno_incorrecto = {"patente": "262CBS",
+                          "fecha_inicio": "2023-10-23",
+                          "hora_inicio": "12:00:00",
+                          "taller_id": 10,
+                          "origen": "extraordinario"}              
+        self.assertEqual(self.post_response_crear_turno_reparacion(turno_incorrecto).status_code, 400)        
+
+# ----------------------------------------------------------------------------------------------- #    
+# ------------------------------------- turno extraordinario ------------------------------------ #    
+# ----------------------------------------------------------------------------------------------- #                        
+    def test_extraordinario_correcto(self):
+        turno_correcto = {"patente": "AS123FD",
+                          "fecha_inicio": "2023-10-23",
+                          "hora_inicio": "12:00:00",
+                          "taller_id": 10}
+        
+        response_esperado = { "id_turno": 501,
+                            "tipo": "extraordinario",
+                            "estado": "pendiente",
+                            "tecnico_id": None,
+                            "patente": "AS123FD",
+                            "fecha_inicio": "2023-10-23",
+                            "hora_inicio": "12:00:00",
+                            "fecha_fin": "2023-10-23",
+                            "hora_fin": "13:00:00",
+                            "frecuencia_km": None,
+                            "papeles_en_regla": True,
+                            "taller_id": 10}
+        
+        response = self.post_response_crear_turno_extraordinario(turno_correcto)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), response_esperado) 
+        
+    def test_extraordinario_taller_no_existe(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                          "fecha_inicio": "2023-10-23",
+                          "hora_inicio": "12:00:00",
+                          "taller_id": 23}
+        self.assertEqual(self.post_response_crear_turno_extraordinario(turno_incorrecto).status_code, 400)
+        
+    def test_extraordinario_taller_no_disponible_completo(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-9-21",
+                            "hora_inicio": "10:00:00",
+                            "taller_id": 11}
+        
+        self.assertEqual(self.post_response_crear_turno_extraordinario(turno_incorrecto).status_code, 400)        
+        
+    def test_extraordinario_taller_disponible_en_parte(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-9-21",
+                            "hora_inicio": "10:00:00",
+                            "taller_id": 11}
+        
+        self.assertEqual(self.post_response_crear_turno_extraordinario(turno_incorrecto).status_code, 400) 
+        
+    def test_extraordinario_horarios_no_exactos(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-10-23",
+                            "hora_inicio": "12:30:00",
+                            "taller_id": 10}
+        
+        self.assertEqual(self.post_response_crear_turno_extraordinario(turno_incorrecto).status_code, 400)   
+    
+    def test_extraordinario_horarios_fuera_de_rango_inferior_semana(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-10-23",
+                            "hora_inicio": "7:00:00",
+                            "taller_id": 10}
+        
+        self.assertEqual(self.post_response_crear_turno_extraordinario(turno_incorrecto).status_code, 400)       
+        
+    def test_extraordinario_horarios_fuera_de_rango_inferior_domingo(self):
+        turno_incorrecto = {"patente": "AS123FD",
+                            "fecha_inicio": "2023-10-22",
+                            "hora_inicio": "7:00:00",
+                            "taller_id": 10}
+        
+        self.assertEqual(self.post_response_crear_turno_extraordinario(turno_incorrecto).status_code, 400)                

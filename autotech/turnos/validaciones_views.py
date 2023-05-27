@@ -5,13 +5,16 @@ from .gestion_agenda.gestionar_agenda import *
 from empleados.api_client.client_tecnico import ClientTecnicos
 
 # -------- dias y horarios disponibles -------- #
-def dias_horarios_disponibles_treinta_dias(id_taller:int):
-    return dias_disponibles_desde_hoy_a_treinta_dias(id_taller)
+def dias_horarios_disponibles_treinta_dias(id_taller:int, cant_horas:int):
+    return dias_disponibles_desde_hoy_a_treinta_dias(id_taller, cant_horas)
+
+def dias_horarios_disponibles_cuarentaycinco_dias(id_taller, cant_horas:int):
+    return dias_disponibles_desde_hoy_a_cuarentaycinco_dias(id_taller, cant_horas)
 
 # -------- crear turno -------- #
 
 def existe_turno_evaluacion(patente):
-    turnos = Turno_taller.objects.filter(patente=patente, tipo = 'evaluacion')
+    turnos = Turno_taller.objects.filter(patente=patente, tipo = 'evaluacion', estado='terminado')
     return turnos.count() != 0
 
 #TODO
