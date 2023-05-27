@@ -30,7 +30,7 @@ class RegistroReparacionViewSet(ViewSet):
 
             registro_admin = Registro_evaluacion_para_admin.objects.get(id_turno=registro_evaluacion.id_turno)
 
-            self.crear_registro_reparacion(turno, tareas_con_puntaje_mayor_a_cero, registro_admin.costo_total, registro_admin.duracion_total_reparaciones, origen)
+            self.crear_registro_reparacion(turno, tareas_con_puntaje_mayor_a_cero, registro_admin.costo_total, registro_admin.duracion_total_reparaciones, origen, registro_evaluacion.detalle)
 
         if origen == 'extraordinario':
             registro_extraordinario = self.obtener_registro_extraordinario(turno)
@@ -39,9 +39,10 @@ class RegistroReparacionViewSet(ViewSet):
                 return Response({'error': 'No existe registro extraordinario para la patente del turno'}, status=status.HTTP_400_BAD_REQUEST)
 
             tareas_registro = registro_extraordinario.id_tasks
+            detalle_evaluacion = registro_extraordinario.detalle
             costo_total, duracion_total = self.calcular_costo_y_duracion_total(tareas_registro)
 
-            self.crear_registro_reparacion(turno, tareas_registro, costo_total, duracion_total, origen)
+            self.crear_registro_reparacion(turno, tareas_registro, costo_total, duracion_total, origen, detalle_evaluacion)
 
     def obtener_registro_evaluacion(self, turno):
         return Registro_evaluacion.objects.filter(id_turno__patente=turno.patente).last()
@@ -200,7 +201,8 @@ class RegistroReparacionViewSet(ViewSet):
                 resultado[str(tarea_id)] = True
          
             response = {
-                "tasks": resultado 
+                "tasks": resultado,
+                "detalle": registro_reparacion.detalle
             }
             return Response(response, status=status.HTTP_200_OK)   
         except Turno_taller.DoesNotExist:
@@ -209,3 +211,38 @@ class RegistroReparacionViewSet(ViewSet):
         except Registro_reparacion.DoesNotExist:
             return Response({'error': 'No se encontró un registro de reparación para el turno especificado'}, status=status.HTTP_400_BAD_REQUEST)
  
+
+    @action(detail=True, methods=['get'])
+    def mostrar_detalle_evaluacion_realizada(self, request, id_turno):
+        try:
+            # Obtenemos el registro de reparación perteneciente al turno
+            turno = Turno_taller.objects.get(id_turno=id_turno)
+            registro_reparacion = Registro_reparacion.objects.get(id_turno=turno)
+
+            detalle = registro_reparacion.detalle_evaluacion
+            return Response({"detalle_evaluacion": detalle}, status=status.HTTP_200_OK)
+        except Turno_taller.DoesNotExist:
+            return Response({'error': 'No se encontró un turno con el ID especificado'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Registro_reparacion.DoesNotExist:
+            return Response({'error': 'No se encontró un registro de reparación para el turno especificado'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    @action(detail=False, methods=['patch'])
+    def modificar_detalle_reparacion(self, request):
+        id_turno = request.data.get('id_turno')
+        detalle = request.data.get('detalle')
+        try:
+            # Obtenemos el registro de reparación perteneciente al turno
+            turno = Turno_taller.objects.get(id_turno=id_turno)
+            registro_reparacion = Registro_reparacion.objects.get(id_turno=turno)
+
+            registro_reparacion.detalle = detalle
+            return Response({'message': 'detalle modificado exitosamente'}, status=status.HTTP_200_OK)
+        except Turno_taller.DoesNotExist:
+            return Response({'error': 'No se encontró un turno con el ID especificado'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Registro_reparacion.DoesNotExist:
+            return Response({'error': 'No se encontró un registro de reparación para el turno especificado'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    
