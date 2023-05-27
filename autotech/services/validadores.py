@@ -35,7 +35,6 @@ class ValidadorService:
              raise ValidationError(f'El campo {str(costo_base)} no puede ser un valor negativo')
         
         existing_service = Service.objects.filter(marca=marca, modelo=modelo, frecuencia_km=frecuencia_km).exists()
-        print(existing_service)
         if existing_service:
              raise ValidationError(f'Ya se encuenta un service registrado para la marca: {marca} y modelo: {modelo} para {frecuencia_km} KM')
         
