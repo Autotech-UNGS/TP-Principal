@@ -76,6 +76,7 @@ def obtener_duracion_reparacion(patente:str):
     try:
         # 1) obtenemos el turno para evaluacion correspondiente a la reparacion que queremos hacer
         turno = Turno_taller.objects.filter(patente=patente, tipo= 'evaluacion').latest('fecha_inicio')
+       
         # 2) con ese turno, nos traemos el turno para admin correspondiente, el cual tiene la duracion que necesitamos
         registro_admin = Registro_evaluacion_para_admin.objects.get(id_turno=turno.id_turno)
         return ceil(registro_admin.duracion_total_reparaciones / 60)

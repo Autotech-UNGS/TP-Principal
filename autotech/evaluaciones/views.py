@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
 
 from administracion.models import  Turno_taller, Registro_evaluacion_para_admin, Registro_evaluacion, Checklist_evaluacion, Registro_extraordinario
-from administracion.serializers import  RegistroEvaluacionXAdminSerializer, RegistroEvaluacionSerializer, ChecklistEvaluacionSerializer, TurnoTallerSerializer
+from administracion.serializers import  RegistroEvaluacionXAdminSerializer, RegistroEvaluacionSerializer, ChecklistEvaluacionSerializer, TurnoTallerSerializer, RegistroExtraordinarioSerializer
 from .validadores import ValidadorChecklist
 
 
@@ -239,7 +239,12 @@ class RegistroExtraordinarioCreate(APIView):
         if not turno.estado == 'en_proceso':
             return Response({'error': 'El turno pasado no está en estado en proceso'}, status=status.HTTP_400_BAD_REQUEST)   
         
+        if not turno.estado == 'en_proceso':
+            return Response({'error': 'El turno pasado no está en estado en proceso'}, status=status.HTTP_400_BAD_REQUEST)   
+        
         try:
+            id_tasks = json.loads(id_tasks)  # Convertir id_tasks a lista
+            id_tasks = [str(task_id) for task_id in id_tasks]  # Convertir los IDs de tareas a cadenas de texto
             validador.validar_tareas(request)
         except ValidationError as e:
             error_messages = [str(error) for error in e.detail]
@@ -247,8 +252,13 @@ class RegistroExtraordinarioCreate(APIView):
 
         # Tomo el turno que corresponde a ese id
         turno_taller = Turno_taller.objects.get(pk=id_turno)
+
+        # Verificar si ya existe un registro extraordinario para el turno
+        if Registro_extraordinario.objects.filter(id_turno=turno_taller).exists():
+            return Response({'error': 'Ya existe un registro extraordinario para este turno'}, status=status.HTTP_400_BAD_REQUEST)
+        
         registro_extraordinario = Registro_extraordinario.objects.create(id_turno = turno_taller,
                                                                 id_tasks=id_tasks, detalle=detalle)
-        serializer = RegistroEvaluacionSerializer(registro_extraordinario)
+        serializer = RegistroExtraordinarioSerializer(registro_extraordinario)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -1,3 +1,4 @@
+import json
 from rest_framework.exceptions import ValidationError
 from administracion.models import Checklist_evaluacion
 from rest_framework import status
@@ -40,6 +41,7 @@ class ValidadorChecklist:
         
         if not id_tasks:
             return Response({'error': 'El campo "id_tasks" es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+        id_tasks = json.loads(id_tasks)  # Convertir id_tasks de cadena de texto JSON a lista de enteros
         
         id_task_evaluacion= Checklist_evaluacion.objects.values_list('id_task', flat=True)
         if not set(id_tasks).issubset(id_task_evaluacion):
