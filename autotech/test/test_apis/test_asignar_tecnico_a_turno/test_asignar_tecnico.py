@@ -2,7 +2,7 @@ from unittest.mock import patch, Mock
 from django.urls import reverse
 from .test_setup import TestSetUp
 from administracion.models import Turno_taller
-from turnos.asignar_tecnico_views import *
+from turnos.views.asignar_tecnico_views import *
 from test.factories.usuario_factorie import *
 
 class AsignarTecnicoTestCase(TestSetUp):

@@ -1,6 +1,8 @@
 from django.urls import path
 
-from . import estado_turnos_views, modificar_estado_cron_view, visualizar_turnos_views, crear_turnos_views, asignar_tecnico_views, vendedor_views, dias_horarios_disponibles
+from .views import asignar_tecnico_views, crear_turnos_views, dias_horarios_disponibles, estado_turnos_views, modificar_estado_cron_view, vendedor_views
+
+from .views import visualizar_turnos_views
 
 urlpatterns = [
     path('',visualizar_turnos_views.turnosOverview,name='turnos'),

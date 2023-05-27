@@ -37,7 +37,7 @@ class RegistroReparacionViewSet(ViewSet):
             if registro_extraordinario is None:
                 return Response({'error': 'No existe registro extraordinario para la patente del turno'}, status=status.HTTP_400_BAD_REQUEST)
 
-            tareas_registro = registro_extraordinario.id_tasks
+            tareas_registro = json.loads(registro_extraordinario.id_tasks)
             detalle_evaluacion = registro_extraordinario.detalle
             costo_total, duracion_total = self.calcular_costo_y_duracion_total(tareas_registro)
 

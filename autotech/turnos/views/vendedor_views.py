@@ -2,8 +2,8 @@ from django.http import HttpResponse
 from administracion.models import *
 from administracion.serializers import TurnoTallerSerializer
 from rest_framework.response import Response
-from .obtener_datos import *
-from .validaciones_views import * 
+from ..obtener_datos import *
+from ..validaciones_views import * 
 from datetime import *
 from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
