@@ -7,5 +7,6 @@ urlpatterns = [
     path('crear/', alta_talleres.TalleresCreate.as_view(), name = 'talleres-crear'),
     path('sucursales-validas-activas/', visualizar_sucursales.VisualizarSucursalesConTallerValidas.as_view(), name = 'sucursales-list'),
     path('sucursales-validas-activas/<int:id_sucursal>', visualizar_sucursales.VisualizarUnaSucursalConTallerValida.as_view(), name = 'sucursales-una'),
+    path('sucursales-sin-taller/', visualizar_sucursales.VisualizarSucursalesSinTaller.as_view(), name = 'sucursales-una')
 
 ]

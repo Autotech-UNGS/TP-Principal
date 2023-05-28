@@ -36,3 +36,17 @@ class VisualizarUnaSucursalConTallerValida(APIView):
             return Response({'error': error_messages}, status=status.HTTP_404_NOT_FOUND)
         
         return Response(cliente, status=status.HTTP_200_OK)
+
+    
+class VisualizarSucursalesSinTaller(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, format=None):
+
+        try:
+            cliente = ClientSucursales.obtener_sucursales_sin_talller()
+        except Exception as e:
+            error_messages = str(e)
+            return Response({'error': error_messages}, status=status.HTTP_204_NO_CONTENT)
+        
+        return Response(cliente, status=status.HTTP_200_OK)

@@ -41,12 +41,8 @@ class TalleresCreate(APIView):
         
         # localidad, provincia, codigo_postal = sucursal
         localidad = ClientSucursales.obtener_valor_clave(id_sucursal,"localidad")
-        print(localidad)
         provincia = ClientSucursales.obtener_valor_clave(id_sucursal,"provincia")
-        print(provincia)
         codigo_postal = ClientSucursales.obtener_valor_clave(id_sucursal,"codigo_postal")
-        print(codigo_postal)
-
 
         taller = Taller.objects.create(id_taller = id_sucursal
                                        , nombre=nombre
@@ -60,7 +56,6 @@ class TalleresCreate(APIView):
                                        , cod_postal=codigo_postal)
 
         serializer = TallerSerializer(taller)
-
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     
