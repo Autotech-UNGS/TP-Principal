@@ -33,14 +33,15 @@ def horarios_exactos(hora_inicio:time, hora_fin:time):
     return hora_inicio.minute == 0 and hora_fin.minute == 0 and hora_inicio.second == 0 and hora_fin.second == 0 # and hora_inicio <= hora_fin
         
 def horarios_dentro_de_rango(dia:date, horario_inicio:time, horario_fin:time):
-    horario_valido = horario_inicio < horario_fin
+    #horario_valido = horario_inicio < horario_fin
     if dia.weekday() == 6: # domigo
         horario_inicio_valido = horario_inicio.hour >= 8 and horario_inicio.hour <= 11 # podemos dar turnos de 8 a 11
-        horario_fin_valido = horario_fin.hour >= 9 and horario_fin.hour <= 12 # los turnos pueden terminar de 9 a 12
+        #horario_fin_valido = horario_fin.hour >= 9 and horario_fin.hour <= 12 # los turnos pueden terminar de 9 a 12
     else:
         horario_inicio_valido = horario_inicio.hour >= 8 and horario_inicio.hour <= 16 # podemos dar turnos de 8 a 16
-        horario_fin_valido = horario_fin.hour >= 9 and horario_fin.hour <= 17 # los turnos pueden terminar de 9 a 17
-    return horario_inicio_valido and horario_fin_valido and horario_valido
+        #horario_fin_valido = horario_fin.hour >= 9 and horario_fin.hour <= 17 # los turnos pueden terminar de 9 a 17
+    #return horario_inicio_valido and horario_fin_valido and horario_valido
+    return horario_inicio_valido
     
 def dia_hora_coherentes(dia_inicio: date, horario_inicio: time, dia_fin: date , horario_fin: time):
     if dia_inicio < dia_fin:

@@ -29,7 +29,8 @@ class ReprogramarTurnoViewSet(ViewSet):
         vieja_hora_inicio = turno.hora_inicio
         vieja_fecha_fin = turno.fecha_fin
         vieja_hora_fin = turno.hora_fin
-        print(taller_id)
+        patente = turno.patente
+        tipo = turno.tipo
         
         duracion = obtener_duracion(vieja_fecha_inicio, vieja_hora_inicio, vieja_fecha_fin, vieja_hora_fin)
         nueva_fecha_hora_fin = obtener_fecha_hora_fin(nueva_fecha_inicio, nueva_hora_inicio, duracion)
@@ -42,9 +43,11 @@ class ReprogramarTurnoViewSet(ViewSet):
         dias_horarios_validos = self.validar_dias_horarios(dia_inicio=nueva_fecha_inicio, horario_inicio= nueva_hora_inicio, dia_fin= nueva_fecha_hora_fin[0], horario_fin=nueva_fecha_hora_fin[1])
         if dias_horarios_validos.status_code == 400:
             return dias_horarios_validos
+        patente_valida = self.validar_patente(patente, tipo, fecha_turno=nueva_fecha_inicio, hora_turno=nueva_hora_inicio)
+        if patente_valida.status_code == 400:
+            return patente_valida
         
         # datos para crear el nuevo turno:
-        tipo = turno.tipo
         estado = 'pendiente'
         patente = turno.patente
         frecuencia_km = turno.frecuencia_km
@@ -54,6 +57,7 @@ class ReprogramarTurnoViewSet(ViewSet):
                                                   fecha_inicio=nueva_fecha_inicio, hora_inicio= nueva_hora_inicio, 
                                                   fecha_fin= nueva_fecha_hora_fin[0], hora_fin=nueva_fecha_hora_fin[1], 
                                                   frecuencia_km= frecuencia_km, papeles_en_regla= papeles_en_regla)
+        
         nuevo_turno_data = serializers.serialize('json', [nuevo_turno])
         nuevo_turno_data = json.loads(nuevo_turno_data)[0]['fields']
         nuevo_turno_data['id_turno'] = nuevo_turno.id_turno
@@ -70,7 +74,6 @@ class ReprogramarTurnoViewSet(ViewSet):
         nuevo_turno_data['papeles_en_regla'] = nuevo_turno.papeles_en_regla
         
         return JsonResponse(nuevo_turno_data, json_dumps_params={'indent': 4})
-        #return JsonResponse(nuevo_turno_json, safe=False)
         
 # ---------------------------------------------------------------------------------------- #
 # ------------------------------------- validaciones ------------------------------------- #
@@ -93,9 +96,18 @@ class ReprogramarTurnoViewSet(ViewSet):
         if not horarios_exactos(horario_inicio, horario_fin):
             return HttpResponse("error: los horarios de comienzo y fin de un turno deben ser horas exactas", status=400)
         if not horarios_dentro_de_rango(dia_inicio, horario_inicio, horario_fin):
-            return HttpResponse("error: los horarios superan el limite de la jornada laboral", status=400)
+            return HttpResponse("error: el horario de inicio es inferior al horario laboral", status=400)
         if not dia_valido(dia_inicio):
             return HttpResponse("error: no se puede sacar un turno para una fecha que ya paso.", status=400)
         if not dia_hora_coherentes(dia_inicio, horario_inicio, dia_fin, horario_fin):
             return HttpResponse("error: un turno no puede terminar antes de que empiece", status=400)
         return HttpResponse("Dias horarios correctos", status=200)        
+    
+    def validar_patente(self, patente:str, tipo:str, fecha_turno: date, hora_turno:time):
+        turnos_ese_dia_ese_tipo = Turno_taller.objects.filter(patente=patente, tipo=tipo, fecha_inicio= fecha_turno)
+        if turnos_ese_dia_ese_tipo.count() != 0:
+            return HttpResponse("error: la patente ingresada ya tiene un turno del mismo tipo para ese mismo dia", status=400)
+        turnos_ese_dia_horario = Turno_taller.objects.filter(patente=patente, fecha_inicio= fecha_turno, hora_inicio=hora_turno)
+        if turnos_ese_dia_horario.count() != 0:
+            return HttpResponse("error: la patente ingresada ya tiene un turno para ese mismo dia y horario", status=400)
+        return HttpResponse("Patente correcta", status=200)
