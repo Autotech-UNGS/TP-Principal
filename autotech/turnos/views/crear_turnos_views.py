@@ -4,11 +4,11 @@ from administracion.serializers import TurnoTallerSerializer
 from rest_framework.response import Response
 from ..enviar_turno_email import EnvioDeEmail
 from ..obtener_datos import *
-from ..validaciones_views import * 
 from datetime import *
 from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from reparaciones.views import RegistroReparacionViewSet
+from ..validaciones_crear_turno import validaciones
 
 class CrearActualizarTurnosViewSet(ViewSet):
 
@@ -35,16 +35,11 @@ class CrearActualizarTurnosViewSet(ViewSet):
         duracion = 1
         fecha_hora_fin = obtener_fecha_hora_fin(dia_inicio_date, horario_inicio_time, duracion)
         
-        # validaciones: se valida que el taller exista y esté disponible, y que los horarios sean válidos
-        taller_valido = self.validar_taller(taller_id= taller_id, dia_inicio=dia_inicio_date, horario_inicio= horario_inicio_time, dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
-        if taller_valido.status_code == 400:
-            return taller_valido
-        dias_horarios_validos = self.validar_dias_horarios(dia_inicio=dia_inicio_date, horario_inicio= horario_inicio_time, dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
-        if dias_horarios_validos.status_code == 400:
-            return dias_horarios_validos
-        #patente_valida = self.validar_patente(patente, 'evaluacion', fecha_turno=dia_inicio_date, hora_turno=horario_inicio_time)
-        #if patente_valida.status_code == 400:
-        #    return patente_valida
+        resultado_validacion = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='evaluacion', 
+                                                                   dia_inicio=dia_inicio_date, horario_inicio=horario_inicio_time,
+                                                                   dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
+        if resultado_validacion.status_code == 400:
+            return resultado_validacion
         
         # eliminamos el email del request
         datos = request.data.copy()
@@ -91,16 +86,11 @@ class CrearActualizarTurnosViewSet(ViewSet):
         duracion = 1
         fecha_hora_fin = obtener_fecha_hora_fin(dia_inicio_date, horario_inicio_time, duracion)
         
-        # validaciones: se valida que el taller exista y esté disponible, y que los horarios sean válidos
-        taller_valido = self.validar_taller(taller_id= taller_id, dia_inicio=dia_inicio_date, horario_inicio= horario_inicio_time, dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
-        if taller_valido.status_code == 400:
-            return taller_valido
-        dias_horarios_validos = self.validar_dias_horarios(dia_inicio=dia_inicio_date, horario_inicio= horario_inicio_time, dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
-        if dias_horarios_validos.status_code == 400:
-            return dias_horarios_validos
-        #patente_valida = self.validar_patente(patente, 'evaluacion', fecha_turno=dia_inicio_date, hora_turno=horario_inicio_time)
-        #if patente_valida.status_code == 400:
-        #    return patente_valida
+        resultado_validacion = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='evaluacion', 
+                                                                   dia_inicio=dia_inicio_date, horario_inicio=horario_inicio_time,
+                                                                   dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
+        if resultado_validacion.status_code == 400:
+            return resultado_validacion
         
         # eliminamos el email del request
         datos = request.data.copy()
@@ -156,20 +146,15 @@ class CrearActualizarTurnosViewSet(ViewSet):
         
         fecha_hora_fin = obtener_fecha_hora_fin(dia_inicio_date, horario_inicio_time, duracion)
         
-        # validaciones: se valida que el taller exista y esté disponible, que los horarios sean válidos, que la patente sea nuestra, y que el km no sea Null
-        taller_valido = self.validar_taller(taller_id= taller_id, dia_inicio=dia_inicio_date, horario_inicio= horario_inicio_time, dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
-        if taller_valido.status_code == 400:
-            return taller_valido
-        dias_horarios_validos = self.validar_dias_horarios(dia_inicio=dia_inicio_date, horario_inicio= horario_inicio_time, dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
-        if dias_horarios_validos.status_code == 400:
-            return dias_horarios_validos
-        if not patente_registrada(patente):
+        resultado_validacion = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='service', 
+                                                                   dia_inicio=dia_inicio_date, horario_inicio=horario_inicio_time,
+                                                                   dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
+        if resultado_validacion.status_code == 400:
+            return resultado_validacion
+        if not validaciones.patente_registrada(patente):
             return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
         if km == None:
             return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
-        #patente_valida = self.validar_patente(patente, 'service', fecha_turno=dia_inicio_date, hora_turno=horario_inicio_time)
-        #if patente_valida.status_code == 400:
-        #    return patente_valida
         
         if km > 5000:
             if obtener_ultimo_service(patente) + 5000 != km:
@@ -220,21 +205,17 @@ class CrearActualizarTurnosViewSet(ViewSet):
         duracion =  obtener_duracion_extraordinario(patente) if origen == 'extraordinario' else obtener_duracion_reparacion(patente)
         if duracion == -1:
             return HttpResponse("error: la patente no pertenece a la de un auto que ya haya sido evaluado en el taller.", status=400)
+        
         fecha_hora_fin = obtener_fecha_hora_fin(dia_inicio_date, horario_inicio_time, duracion)
         
-        # validaciones: se valida que el taller exista y esté disponible, que los horarios sean válidos, y que hayamos evaluado el auto a reparar
-        taller_valido = self.validar_taller(taller_id= taller_id, dia_inicio=dia_inicio_date, horario_inicio= horario_inicio_time, dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
-        if taller_valido.status_code == 400:
-            return taller_valido
-        dias_horarios_validos = self.validar_dias_horarios(dia_inicio=dia_inicio_date, horario_inicio= horario_inicio_time, dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
-        if dias_horarios_validos.status_code == 400:
-            return dias_horarios_validos
+        resultado_validacion = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='reparacion', 
+                                                                   dia_inicio=dia_inicio_date, horario_inicio=horario_inicio_time,
+                                                                   dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
+        if resultado_validacion.status_code == 400:
+            return resultado_validacion
         if origen == 'extraordinario':
-            if not patente_registrada(patente=patente):
-                return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
-        #patente_valida = self.validar_patente(patente, 'reparacion', fecha_turno=dia_inicio_date, hora_turno=horario_inicio_time)
-        #if patente_valida.status_code == 400:
-        #    return patente_valida                    
+            if not validaciones.patente_registrada(patente=patente):
+                return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)               
         
         datos = request.data.copy()
         del datos['origen']
@@ -266,7 +247,6 @@ class CrearActualizarTurnosViewSet(ViewSet):
         fecha_inicio
         hora_inicio
         """
-        # datos que necesitamos
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
         dia_inicio_date = datetime.strptime(request.data.get("fecha_inicio"), '%Y-%m-%d').date()
@@ -275,19 +255,14 @@ class CrearActualizarTurnosViewSet(ViewSet):
         duracion = 1
         fecha_hora_fin = obtener_fecha_hora_fin(dia_inicio_date, horario_inicio_time, duracion)
         
-        # validaciones: se valida que el taller exista y esté disponible, que los horarios sean válidos, y que la patente sea nuestra
-        taller_valido = self.validar_taller(taller_id= taller_id, dia_inicio=dia_inicio_date, horario_inicio= horario_inicio_time, dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
-        if taller_valido.status_code == 400:
-            return taller_valido
-        dias_horarios_validos = self.validar_dias_horarios(dia_inicio=dia_inicio_date, horario_inicio= horario_inicio_time, dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
-        if dias_horarios_validos.status_code == 400:
-            return dias_horarios_validos
-        if not patente_registrada(patente): 
+        resultado_validacion = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='extraordinario', 
+                                                                   dia_inicio=dia_inicio_date, horario_inicio=horario_inicio_time,
+                                                                   dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
+        if resultado_validacion.status_code == 400:
+            return resultado_validacion
+        if not validaciones.patente_registrada(patente): 
             return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
-        #patente_valida = self.validar_patente(patente, 'extraordinario', fecha_turno=dia_inicio_date, hora_turno=horario_inicio_time)
-        #if patente_valida.status_code == 400:
-        #    return patente_valida
-        
+ 
         datos = request.data.copy()
         datos['papeles_en_regla'] = True 
         datos['tipo'] = 'extraordinario'
@@ -303,37 +278,6 @@ class CrearActualizarTurnosViewSet(ViewSet):
             return Response(serializer.data)        
         else:
             return HttpResponse("error: request inválido", status=400)
-        
-# ---------------------------------------------------------------------------------------- #
-# ------------------------------------- validaciones ------------------------------------- #
-# ---------------------------------------------------------------------------------------- #
-
-    def validar_taller(self, taller_id:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time) -> HttpResponse:
-        if not existe_taller(taller_id):
-            return HttpResponse("error: el id ingresado no pertenece a ningún taller en el sistema", status=400)
-        if not taller_esta_disponible(taller_id, dia_inicio, horario_inicio, dia_fin, horario_fin):
-            return HttpResponse("error: ese dia no esta disponible en ese horario", status=400)
-        return HttpResponse("Taller correcto", status=200)
-        
-    def validar_dias_horarios(self, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time) -> HttpResponse:
-        if not horarios_exactos(horario_inicio, horario_fin):
-            return HttpResponse("error: los horarios de comienzo y fin de un turno deben ser horas exactas", status=400)
-        if not horarios_dentro_de_rango(dia_inicio, horario_inicio, horario_fin):
-            return HttpResponse("error: los horarios superan el limite de la jornada laboral", status=400)
-        if not dia_valido(dia_inicio):
-            return HttpResponse("error: no se puede sacar un turno para una fecha que ya paso.", status=400)
-        if not dia_hora_coherentes(dia_inicio, horario_inicio, dia_fin, horario_fin):
-            return HttpResponse("error: un turno no puede terminar antes de que empiece", status=400)
-        return HttpResponse("Dias horarios correctos", status=200)
-        
-    def validar_patente(self, patente:str, tipo:str, fecha_turno: date, hora_turno:time):
-        turnos_ese_dia_ese_tipo = Turno_taller.objects.filter(patente=patente, tipo=tipo, fecha_inicio= fecha_turno)
-        if turnos_ese_dia_ese_tipo.count() != 0:
-            return HttpResponse("error: la patente ingresada ya tiene un turno del mismo tipo para ese mismo dia", status=400)
-        turnos_ese_dia_horario = Turno_taller.objects.filter(patente=patente, fecha_inicio= fecha_turno, hora_inicio=hora_turno)
-        if turnos_ese_dia_horario.count() != 0:
-            return HttpResponse("error: la patente ingresada ya tiene un turno para ese mismo dia y horario", status=400)
-        return HttpResponse("Patente correcta", status=200)
     
     def informar_perdida_de_garantia(self, patente:str):
         return True

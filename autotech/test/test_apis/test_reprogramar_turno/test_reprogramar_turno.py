@@ -188,7 +188,7 @@ class ReprogramarTurnoTestCase(TestSetUp):
                             "hora_inicio": "11:00:00",
                             "fecha_fin": "2023-10-17",
                             "hora_fin": "12:00:00",
-                            "frecuencia_km": 5000,
+                            "frecuencia_km": None,
                             "papeles_en_regla": True,
                             "taller_id": 10}
         

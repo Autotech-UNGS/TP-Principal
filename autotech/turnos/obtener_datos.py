@@ -6,6 +6,13 @@ import json
 def obtener_email_usuario():
     #return 'forozco@campus.ungs.edu.ar'
     return 'luciacsoria5@gmail.com'
+
+def obtener_turno(id_turno):
+    try:
+        turno = Turno_taller.objects.get(id_turno= id_turno)
+        return turno
+    except:
+        return None
     
 # cuando esta funciónn se invoca, ya sabemos que el taller existe    
 def obtener_direccion_taller(taller_id) -> str:
