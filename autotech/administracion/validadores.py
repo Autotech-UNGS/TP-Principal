@@ -2,8 +2,8 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 nombre_taller_regex = RegexValidator(
-        regex='^[a-zA-Z0-9]+$',
-        message="El nombre de taller debe tener solo numeros y letras",
+        regex='^[a-zA-Z0-9&\s]+$',
+        message="El nombre de taller debe contener solo números, letras, espacios y &",
         code="invalid_nombre_taller")
 
 telefono_regex = RegexValidator(
@@ -13,7 +13,7 @@ telefono_regex = RegexValidator(
 
 patente_regex = RegexValidator(
     '^(([A-Z]{2}\d{3}[A-Z]{2})|([A-Z]{3}\d{3}))$',
-    message="La patente ingresada no es valida. Debe ser en mayusculas con el formato 00AAA00 o ",
+    message="La patente ingresada no es valida. Debe ser en mayusculas con el formato 00AAA00 o AAA000 ",
     code="invalid_patente")
 
 

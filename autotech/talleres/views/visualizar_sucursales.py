@@ -4,10 +4,7 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.exceptions import ValidationError
 
-from administracion.models import Taller
-from administracion.serializers import TallerSerializer
 from talleres.validadores import *
 from talleres.api_client.cliente_sucursales import ClientSucursales
 
@@ -34,5 +31,19 @@ class VisualizarUnaSucursalConTallerValida(APIView):
         except Exception as e:
             error_messages = str(e)
             return Response({'error': error_messages}, status=status.HTTP_404_NOT_FOUND)
+        
+        return Response(cliente, status=status.HTTP_200_OK)
+
+    
+class VisualizarSucursalesSinTaller(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, format=None):
+
+        try:
+            cliente = ClientSucursales.obtener_sucursales_sin_talller()
+        except Exception as e:
+            error_messages = str(e)
+            return Response({'error': error_messages}, status=status.HTTP_204_NO_CONTENT)
         
         return Response(cliente, status=status.HTTP_200_OK)

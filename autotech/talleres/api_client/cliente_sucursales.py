@@ -1,8 +1,11 @@
 import requests
+
 import json
+
 from rest_framework.response import Response
 from rest_framework import status
 
+from administracion.models import Taller
 
 
 
@@ -49,5 +52,19 @@ class ClientSucursales():
                     
 
         raise Exception(f'No se encontró la sucursal: {id_sucursal}')
+    
+    @classmethod
+    def obtener_sucursales_sin_talller(cls):
+
+        sucursales = cls._obtener_datos(cls.BASE_URL)
+        sucursales_sin_taller = []
+
+        talleres_ids = set(Taller.objects.values_list('id_taller', flat=True))
+
+        for sucursal in sucursales:
+            if sucursal["id"] not in talleres_ids:
+                    sucursales_sin_taller.append(sucursal)
+
+        return sucursales_sin_taller
 
         

@@ -105,7 +105,7 @@ def obtener_duracion_extraordinario(patente:str):
         # 2) con ese turno, nos traemos el registro_extraordinario correspondiente
         registro_extraordinario = Registro_extraordinario.objects.get(id_turno=turno.id_turno)
         # 3) con ese registro, ya tenemos las tareas que deben realizarse
-        lista_task = json.loads(registro_extraordinario.id_tasks)
+        lista_task = registro_extraordinario.id_tasks
         #lista_task = registro_extraordinario.id_tasks
         # 4) recorremos los task para obtener el tiempo de cada uno
         duracion = 0
