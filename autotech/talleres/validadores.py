@@ -1,8 +1,6 @@
 from rest_framework.exceptions import ValidationError
 from administracion.models import Taller
 from talleres.api_client.cliente_sucursales import ClientSucursales
-from rest_framework.response import Response
-from rest_framework import status
 import re
 
 
