@@ -5,18 +5,20 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from administracion.serializers import TurnoTallerSerializer
 from administracion.models import Turno_taller
+from .validadores_views import ValidadorDatosEmpleado
 
 
 class TrabajosTecnicoViewSet(ViewSet):
     @action(detail=True, methods=['get'])
     def detalle_trabajos_tecnico(self, request, id_tecnico):
+        validador_sup = ValidadorDatosEmpleado()
         taller_sup= request.GET.get('branch')       
         
-        if not self.validador_sup.sucursal(taller_sup):
-            return HttpResponse('error: numero de sucursal no valido', status=400)      
+        if not validador_sup.taller(taller_sup):
+            return HttpResponse('error: numero de taller no valido', status=400)      
         
-        id_sucursal = int(taller_sup[-3:])
-        turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, taller_id=id_sucursal).order_by('estado')
+        id_taller = int(taller_sup[-3:])
+        turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, taller_id=id_taller).order_by('estado')
         data = []
         
         for turno in turnos:

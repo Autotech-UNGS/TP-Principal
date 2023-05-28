@@ -45,7 +45,7 @@ class DiasHorariosDisponiblesTestCase(TestSetUp):
         ultimo_horario = 17 if dia.weekday() != 6 else 12
         if dia != date.today() or (dia == date.today() and datetime.now().hour < 8):
             hora = 8
-        elif datetime.now().hour > ultimo_horario:
+        elif datetime.now().hour - 3 > ultimo_horario - 3:
             return []
         else:
             hora = datetime.now().hour - 2 # esto para que ande en la api
