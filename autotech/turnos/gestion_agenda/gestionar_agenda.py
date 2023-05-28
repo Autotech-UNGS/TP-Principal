@@ -96,7 +96,7 @@ def calcular_duracion(fecha_inicio: date, hora_inicio: time, fecha_fin: date, ho
             duracion += 1
             # si llegamos al dia y a la hora del fin del turno, terminamos el ciclo
             if fecha == fecha_fin and hora == hora_fin:
-                seguir = False
+                break
             # si llegamos al final de la jornada, reiniciamos la hora y avanzamos un dia
             if (hora.hour == 17 and fecha.weekday() != 6) or (hora.hour == 12 and fecha.weekday() == 6):
                 hora = time(8,0,0)

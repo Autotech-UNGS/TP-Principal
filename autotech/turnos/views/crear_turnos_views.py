@@ -42,6 +42,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
         dias_horarios_validos = self.validar_dias_horarios(dia_inicio=dia_inicio_date, horario_inicio= horario_inicio_time, dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
         if dias_horarios_validos.status_code == 400:
             return dias_horarios_validos
+        #patente_valida = self.validar_patente(patente, 'evaluacion', fecha_turno=dia_inicio_date, hora_turno=horario_inicio_time)
+        #if patente_valida.status_code == 400:
+        #    return patente_valida
         
         # eliminamos el email del request
         datos = request.data.copy()
@@ -95,6 +98,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
         dias_horarios_validos = self.validar_dias_horarios(dia_inicio=dia_inicio_date, horario_inicio= horario_inicio_time, dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
         if dias_horarios_validos.status_code == 400:
             return dias_horarios_validos
+        #patente_valida = self.validar_patente(patente, 'evaluacion', fecha_turno=dia_inicio_date, hora_turno=horario_inicio_time)
+        #if patente_valida.status_code == 400:
+        #    return patente_valida
         
         # eliminamos el email del request
         datos = request.data.copy()
@@ -161,6 +167,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
             return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
         if km == None:
             return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
+        #patente_valida = self.validar_patente(patente, 'service', fecha_turno=dia_inicio_date, hora_turno=horario_inicio_time)
+        #if patente_valida.status_code == 400:
+        #    return patente_valida
         
         if km > 5000:
             if obtener_ultimo_service(patente) + 5000 != km:
@@ -223,6 +232,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
         if origen == 'extraordinario':
             if not patente_registrada(patente=patente):
                 return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
+        #patente_valida = self.validar_patente(patente, 'reparacion', fecha_turno=dia_inicio_date, hora_turno=horario_inicio_time)
+        #if patente_valida.status_code == 400:
+        #    return patente_valida                    
         
         datos = request.data.copy()
         del datos['origen']
@@ -272,6 +284,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
             return dias_horarios_validos
         if not patente_registrada(patente): 
             return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
+        #patente_valida = self.validar_patente(patente, 'extraordinario', fecha_turno=dia_inicio_date, hora_turno=horario_inicio_time)
+        #if patente_valida.status_code == 400:
+        #    return patente_valida
         
         datos = request.data.copy()
         datos['papeles_en_regla'] = True 
@@ -311,5 +326,14 @@ class CrearActualizarTurnosViewSet(ViewSet):
             return HttpResponse("error: un turno no puede terminar antes de que empiece", status=400)
         return HttpResponse("Dias horarios correctos", status=200)
         
+    def validar_patente(self, patente:str, tipo:str, fecha_turno: date, hora_turno:time):
+        turnos_ese_dia_ese_tipo = Turno_taller.objects.filter(patente=patente, tipo=tipo, fecha_inicio= fecha_turno)
+        if turnos_ese_dia_ese_tipo.count() != 0:
+            return HttpResponse("error: la patente ingresada ya tiene un turno del mismo tipo para ese mismo dia", status=400)
+        turnos_ese_dia_horario = Turno_taller.objects.filter(patente=patente, fecha_inicio= fecha_turno, hora_inicio=hora_turno)
+        if turnos_ese_dia_horario.count() != 0:
+            return HttpResponse("error: la patente ingresada ya tiene un turno para ese mismo dia y horario", status=400)
+        return HttpResponse("Patente correcta", status=200)
+    
     def informar_perdida_de_garantia(self, patente:str):
         return True
