@@ -42,6 +42,8 @@ class Agenda:
         for i in range(32):
             horarios_disponibles = self.horarios_disponibles(dia_a_revisar, cant_horas)
             dias_horarios_disponibles[dia_a_revisar]= horarios_disponibles
+            if horarios_disponibles != []:
+                dias_horarios_disponibles[dia_a_revisar]= horarios_disponibles
             dia_a_revisar = dia_a_revisar + timedelta(days=1)
         return dias_horarios_disponibles
     
@@ -50,7 +52,8 @@ class Agenda:
         dia_a_revisar = dia
         for i in range(47):
             horarios_disponibles = self.horarios_disponibles(dia_a_revisar, cant_horas)
-            dias_horarios_disponibles[dia_a_revisar]= horarios_disponibles
+            if horarios_disponibles != []:
+                dias_horarios_disponibles[dia_a_revisar]= horarios_disponibles
             dia_a_revisar = dia_a_revisar + timedelta(days=1)
         return dias_horarios_disponibles
                 

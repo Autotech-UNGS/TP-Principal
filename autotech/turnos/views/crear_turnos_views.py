@@ -23,11 +23,11 @@ class CrearActualizarTurnosViewSet(ViewSet):
         patente
         fecha_inicio
         hora_inicio
-        email
+        #email
         """
         # datos que necesitamos
         taller_id = request.data.get("taller_id")
-        email = request.data.get("email")
+        #email = request.data.get("email")
         patente = request.data.get("patente")
         dia_inicio_date = datetime.strptime(request.data.get("fecha_inicio"), '%Y-%m-%d').date()
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
@@ -43,7 +43,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         
         # eliminamos el email del request
         datos = request.data.copy()
-        del datos['email']
+        #del datos['email']
         datos['papeles_en_regla'] = False
         datos['tipo'] = 'evaluacion'
         datos['estado'] = 'pendiente'
@@ -57,6 +57,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         if serializer.is_valid():
             serializer.save()
             direccion_taller = obtener_direccion_taller(taller_id)
+            email = obtener_email_usuario()
             EnvioDeEmail.enviar_correo('evaluacion', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
             return Response(serializer.data)        
         else:
@@ -74,11 +75,11 @@ class CrearActualizarTurnosViewSet(ViewSet):
         patente
         fecha_inicio
         hora_inicio
-        email
+        #email
         """
         # datos que necesitamos
         taller_id = request.data.get("taller_id")
-        email = request.data.get("email")
+        #email = request.data.get("email")
         patente = request.data.get("patente")
         dia_inicio_date = datetime.strptime(request.data.get("fecha_inicio"), '%Y-%m-%d').date()
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
@@ -94,7 +95,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         
         # eliminamos el email del request
         datos = request.data.copy()
-        del datos['email']
+        #del datos['email']
         datos['papeles_en_regla'] = True 
         datos['tipo'] = 'evaluacion'
         datos['estado'] = 'pendiente'
@@ -108,6 +109,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         if serializer.is_valid():
             serializer.save()
             direccion_taller = obtener_direccion_taller(taller_id)
+            email = obtener_email_usuario()
             EnvioDeEmail.enviar_correo('evaluacion', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
             return Response(serializer.data)        
         else:
@@ -124,20 +126,22 @@ class CrearActualizarTurnosViewSet(ViewSet):
         patente
         fecha_inicio
         hora_inicio
-        email
+        #email
         frecuencia_km
-        marca
-        modelo
+        #marca
+        #modelo
         """
         # datos que necesitamos
         taller_id = request.data.get("taller_id")
-        email = request.data.get("email")
-        #email = obtener_email_usuario()
+        #email = request.data.get("email")
+        email = obtener_email_usuario()
         patente = request.data.get("patente")
         dia_inicio_date = datetime.strptime(request.data.get("fecha_inicio"), '%Y-%m-%d').date()
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
-        marca = request.data.get("marca")
-        modelo = request.data.get("modelo")
+        #marca = request.data.get("marca")
+        #modelo = request.data.get("modelo")
+        marca = obtener_marca(patente)
+        modelo = obtener_modelo(patente)
         km = request.data.get("frecuencia_km")
         
         duracion = obtener_duracion_service(marca=marca, modelo=modelo, km=km)
@@ -152,7 +156,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         if resultado_validacion.status_code == 400:
             return resultado_validacion
         if not validaciones.patente_registrada(patente):
-            return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
+            return HttpResponse("error: la patente no está registrada  perteneciente a un cliente", status=400)
         if km == None:
             return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
         
@@ -162,9 +166,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
         
         # eliminamos el email y los datos del service del request
         datos = request.data.copy()
-        del datos['email']
-        del datos['marca']
-        del datos['modelo']
+        #del datos['email']
+        #del datos['marca']
+        #del datos['modelo']
         datos['papeles_en_regla'] = True
         datos['tipo'] = 'service'
         datos['estado'] = 'pendiente'

@@ -10,8 +10,7 @@ from ..obtener_datos import *
 class DiasHorariosDisponiblesViewSet(ViewSet):    
     @action(detail=True, methods=['get'])
     def dias_horarios_disponibles_turno(self, request, taller_id: int, id_turno:int):
-        turno = self.obtener_turno(id_turno)
-        
+        turno = obtener_turno(id_turno)
         if turno == None:
             return HttpResponse("error: el id ingresado no pertenece a ningún turno en el sistema", status=400)
         if not existe_taller(taller_id):
@@ -21,13 +20,6 @@ class DiasHorariosDisponiblesViewSet(ViewSet):
         dias_horarios_data = dias_horarios_disponibles_cuarentaycinco_dias(taller_id, duracion)
         resultado = [{'dia': dia, 'horarios_disponibles':dias_horarios_data.get(dia)} for dia in dias_horarios_data]
         return JsonResponse({'dias_y_horarios':resultado})
-    
-    def obtener_turno(self, id_turno:int) -> Turno_taller:
-        try:
-            turno = Turno_taller.objects.get(id_turno = id_turno)
-            return turno
-        except:
-            return None
     
     @action(detail=True, methods=['get'])
     def dias_horarios_disponibles(self, request, taller_id: int):

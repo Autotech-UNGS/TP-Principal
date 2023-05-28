@@ -8,6 +8,7 @@ class DiasHorariosDisponiblesTestCase(TestSetUp):
     taller_valido = 100
     taller_invalido = 200
     taller_con_turnos = 101
+    taller_con_dia_lleno = 102
     
     def get_response_dias_horarios_disponibles(self, taller_id):
         url = reverse('dias-horarios-disponibles', args=[taller_id])
@@ -25,8 +26,10 @@ class DiasHorariosDisponiblesTestCase(TestSetUp):
         dias_horarios = []
         dia = date.today()
         for i in range(32):
-            dia_horario = {"dia": dia.strftime("%Y-%m-%d"), "horarios_disponibles": self.obtener_horarios(dia)}
-            dias_horarios.append(dia_horario)
+            horarios = self.obtener_horarios(dia)
+            dia_horario = {"dia": dia.strftime("%Y-%m-%d"), "horarios_disponibles": horarios}
+            if horarios != []:
+                dias_horarios.append(dia_horario)
             dia = dia + timedelta(days=1)        
         resultado = {'dias_y_horarios': dias_horarios}            
         return resultado
@@ -35,8 +38,10 @@ class DiasHorariosDisponiblesTestCase(TestSetUp):
         dias_horarios = []
         dia = date.today()
         for i in range(47):
-            dia_horario = {"dia": dia.strftime("%Y-%m-%d"), "horarios_disponibles": self.obtener_horarios(dia)}
-            dias_horarios.append(dia_horario)
+            horarios = self.obtener_horarios(dia)
+            dia_horario = {"dia": dia.strftime("%Y-%m-%d"), "horarios_disponibles": horarios}
+            if horarios != []:
+                dias_horarios.append(dia_horario)
             dia = dia + timedelta(days=1)        
         resultado = {'dias_y_horarios': dias_horarios}            
         return resultado
@@ -114,7 +119,7 @@ class DiasHorariosDisponiblesTestCase(TestSetUp):
         
         response = self.get_response_dias_horarios_disponibles_reparaciones(self.taller_valido, "LCS262", "evaluacion")
         self.assertEqual(response.status_code, 200)
-        self.assertDictEqual(response.json(), response_esperado)  
+        self.assertDictEqual(response.json(), response_esperado)  # no
         
     def test_reparaciones_evaluacion_incompleto(self):
         response_esperado = self.generar_response_cuarentaycinco_dias_completo()
@@ -124,7 +129,7 @@ class DiasHorariosDisponiblesTestCase(TestSetUp):
         
         response = self.get_response_dias_horarios_disponibles_reparaciones(self.taller_con_turnos, "LCS262", "evaluacion") # esta reparacion dura 3 horas
         self.assertEqual(response.status_code, 200)
-        self.assertDictEqual(response.json(), response_esperado)        
+        self.assertDictEqual(response.json(), response_esperado)     # no   
     
     def test_reparaciones_evaluacion_taller_no_existe(self):   
         self.assertEqual(self.get_response_dias_horarios_disponibles_reparaciones(self.taller_invalido, "LCS262", "evaluacion").status_code, 400)  
@@ -141,7 +146,7 @@ class DiasHorariosDisponiblesTestCase(TestSetUp):
         
         response = self.get_response_dias_horarios_disponibles_reparaciones(self.taller_valido, "LCS262", "extraordinario")
         self.assertEqual(response.status_code, 200)
-        self.assertDictEqual(response.json(), response_esperado)
+        self.assertDictEqual(response.json(), response_esperado) # no
         
     def test_reparaciones_extraordinario_incompleto(self):
         response_esperado = self.generar_response_cuarentaycinco_dias_completo()
@@ -151,7 +156,7 @@ class DiasHorariosDisponiblesTestCase(TestSetUp):
         
         response = self.get_response_dias_horarios_disponibles_reparaciones(self.taller_con_turnos, "LCS262", "extraordinario") # esta reparacion dura 2 horas
         self.assertEqual(response.status_code, 200)
-        self.assertDictEqual(response.json(), response_esperado)         
+        self.assertDictEqual(response.json(), response_esperado)    # no     
         
     def test_reparaciones_extraordinario_taller_no_existe(self):
         self.assertEqual(self.get_response_dias_horarios_disponibles_reparaciones(self.taller_invalido, "LCS262", "extraordinario").status_code, 400)      
@@ -159,4 +164,13 @@ class DiasHorariosDisponiblesTestCase(TestSetUp):
     def test_reparaciones_extraordinario_vehiculo_no_evaluado(self):
         self.assertEqual(self.get_response_dias_horarios_disponibles_reparaciones(self.taller_valido, "CBS291", "extraordinario").status_code, 400) 
         
-    
+# --------------------------------------------------------------------- #    
+# ---------------------------- dia completo --------------------------- #
+# --------------------------------------------------------------------- #  
+    def test_dia_sin_espacio(self):
+        response_esperado = self.generar_response_treinta_dias_completo()
+        response_esperado["dias_y_horarios"] = [elemento for elemento in response_esperado["dias_y_horarios"] if elemento["dia"] != "2023-06-26"]
+            
+        response = self.get_response_dias_horarios_disponibles(self.taller_con_dia_lleno)
+        self.assertEqual(response.status_code, 200) # no
+        self.assertDictEqual(response.json(), response_esperado)

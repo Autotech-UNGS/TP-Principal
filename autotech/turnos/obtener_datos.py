@@ -7,6 +7,12 @@ def obtener_email_usuario():
     #return 'forozco@campus.ungs.edu.ar'
     return 'luciacsoria5@gmail.com'
 
+def obtener_marca(patente:str):
+    return "generico"
+
+def obtener_modelo(patente:str):
+    return "generico"
+
 def obtener_turno(id_turno):
     try:
         turno = Turno_taller.objects.get(id_turno= id_turno)
