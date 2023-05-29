@@ -191,8 +191,8 @@ class RegistroEvaluacionListTecnico(APIView):
     def get(self, request, id_tecnico, format=None):
         
         # El técnico pasado no tiene turnos de evaluacionen proceso actualmente 
-        if not Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='evaluacion'):
-            return Response({'error': 'El ID del técnico no es válido con un turno de evaluación vigente'}, status=status.HTTP_400_BAD_REQUEST)
+        """  if not Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='evaluacion'):
+            return Response({'error': 'El ID del técnico no es válido con un turno de evaluación vigente'}, status=status.HTTP_400_BAD_REQUEST) """
         
         turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='evaluacion')
         id_turnos = list(turnos.values_list('id_turno', flat=True))
