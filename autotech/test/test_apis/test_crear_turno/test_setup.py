@@ -51,12 +51,12 @@ class TestSetUp(APITestCase):
         self.turno_evaluacion = G(Turno_taller, patente = 'LCS262', id_turno= 400, tipo='evaluacion', estado="terminado", fecha_inicio=date(2023,4,20), hora_inicio=time(10,0,0))
         self.turno_extraordinario = G(Turno_taller, patente = 'LCS262', id_turno= 401, tipo='extraordinario', estado="terminado", fecha_inicio=date(2023,4,20), hora_inicio=time(10,0,0))
         
-        task = [10, 20]
-        task_json = json.dumps(task)
+        task = ["10", "20"]
+        #task_json = json.dumps(task)
         self.registro_evaluacion_admin = G(Registro_evaluacion_para_admin, id_turno=400, duracion_total_reparaciones=180, costo_total = 0.0)
-        self.registro_extraordinario = G(Registro_extraordinario, id_tasks=task_json, id_turno=401)
-        self.task_1 = G(Checklist_evaluacion, id_task=10, duracion_reemplazo=60, costo_reemplazo = 0.0)
-        self.task_2 = G(Checklist_evaluacion, id_task=20, duracion_reemplazo=60, costo_reemplazo = 0.0)
+        self.registro_extraordinario = G(Registro_extraordinario, id_tasks=task, id_turno=401)
+        self.task_1 = G(Checklist_evaluacion, id_task="10", duracion_reemplazo=60, costo_reemplazo = 0.0)
+        self.task_2 = G(Checklist_evaluacion, id_task="20", duracion_reemplazo=60, costo_reemplazo = 0.0)
         
         self.assertEqual(Turno_taller.objects.count(), 15)
 

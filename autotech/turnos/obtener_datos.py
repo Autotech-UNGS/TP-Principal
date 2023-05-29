@@ -6,6 +6,22 @@ import json
 def obtener_email_usuario():
     #return 'forozco@campus.ungs.edu.ar'
     return 'luciacsoria5@gmail.com'
+
+def obtener_marca(patente:str):
+    return "generico"
+
+def obtener_modelo(patente:str):
+    return "generico"
+
+def obtener_km_de_venta(patente):
+    return 0
+
+def obtener_turno(id_turno):
+    try:
+        turno = Turno_taller.objects.get(id_turno= id_turno)
+        return turno
+    except:
+        return None
     
 # cuando esta funciónn se invoca, ya sabemos que el taller existe    
 def obtener_direccion_taller(taller_id) -> str:
@@ -33,15 +49,17 @@ def obtener_duracion(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_f
     return duracion
 
 def obtener_ultimo_service(patente:str):
+    try:
     # tengo que encontrar todos los turnos de services de esa patente, y quedarme con el último
     # con ese ultimo turno de tipo service, tengo que encontrar el Registro_service que le corresponde
     # con el id_service de ese Registro_service, tengo que encontrar el Service correspondiente
     # con ese Service, obtengo la frecuencia_km, y la retorno
-    ultimo_turno_service = Turno_taller.objects.filter(patente=patente, tipo='service').latest('fecha_inicio')
-    registro_de_ultimo_service = Registro_service.objects.get(id_turno=ultimo_turno_service.id_turno)
-    ultimo_service = Service.objects.get(id_service=registro_de_ultimo_service.id_service.id_service)
-    
-    return ultimo_service.frecuencia_km
+        ultimo_turno_service = Turno_taller.objects.filter(patente=patente, tipo='service').latest('fecha_inicio')
+        registro_de_ultimo_service = Registro_service.objects.get(id_turno=ultimo_turno_service.id_turno)
+        ultimo_service = Service.objects.get(id_service=registro_de_ultimo_service.id_service.id_service)
+        return ultimo_service.frecuencia_km
+    except:
+        return -1
 
 
 def obtener_fecha_hora_fin(dia_inicio:date, horario_inicio:time, duracion:int) -> list: #[fecha_fin, hora_fin]
@@ -93,7 +111,6 @@ def obtener_duracion_extraordinario(patente:str):
         registro_extraordinario = Registro_extraordinario.objects.get(id_turno=turno.id_turno)
         # 3) con ese registro, ya tenemos las tareas que deben realizarse
         lista_task = registro_extraordinario.id_tasks
-        #lista_task = registro_extraordinario.id_tasks
         # 4) recorremos los task para obtener el tiempo de cada uno
         duracion = 0
         for id in lista_task:

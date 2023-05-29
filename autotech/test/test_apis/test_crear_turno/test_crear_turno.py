@@ -33,7 +33,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": "AS123FD",
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
-                          "email": "luciacsoria5@gmail.com",
+                          ##"email": "luciacsoria5@gmail.com",
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -57,7 +57,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_incorrecto = {"patente": "AS123FD",
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
-                          "email": "luciacsoria5@gmail.com",
+                          ##"email": "luciacsoria5@gmail.com",
                           "taller_id": 23}
         self.assertEqual(self.post_response_crear_turno_evaluacion_web(turno_incorrecto).status_code, 400)
         
@@ -65,8 +65,8 @@ class CrearTurnoTestCase(TestSetUp):
         turno_incorrecto = {"patente": "AS123FD",
                             "fecha_inicio": "2023-9-21",
                             "hora_inicio": "10:00:00",
-                            "taller_id": 11,
-                            "email": "luciacsoria5@gmail.com"}
+                            "taller_id": 11}
+                            ###"email": "luciacsoria5@gmail.com"}
         
         self.assertEqual(self.post_response_crear_turno_evaluacion_web(turno_incorrecto).status_code, 400)        
         
@@ -74,8 +74,8 @@ class CrearTurnoTestCase(TestSetUp):
         turno_incorrecto = {"patente": "AS123FD",
                             "fecha_inicio": "2023-9-21",
                             "hora_inicio": "10:00:00",
-                            "taller_id": 11,
-                            "email": "luciacsoria5@gmail.com"}
+                            "taller_id": 11}
+                            ###"email": "luciacsoria5@gmail.com"}
         
         self.assertEqual(self.post_response_crear_turno_evaluacion_web(turno_incorrecto).status_code, 400) 
         
@@ -83,8 +83,8 @@ class CrearTurnoTestCase(TestSetUp):
         turno_incorrecto = {"patente": "AS123FD",
                             "fecha_inicio": "2023-10-23",
                             "hora_inicio": "12:30:00",
-                            "taller_id": 10,
-                            "email": "luciacsoria5@gmail.com"}
+                            "taller_id": 10}
+                            ###"email": "luciacsoria5@gmail.com"}
         
         self.assertEqual(self.post_response_crear_turno_evaluacion_web(turno_incorrecto).status_code, 400)   
     
@@ -92,8 +92,8 @@ class CrearTurnoTestCase(TestSetUp):
         turno_incorrecto = {"patente": "AS123FD",
                             "fecha_inicio": "2023-10-23",
                             "hora_inicio": "7:00:00",
-                            "taller_id": 10,
-                            "email": "luciacsoria5@gmail.com"}
+                            "taller_id": 10}
+                            ###"email": "luciacsoria5@gmail.com"}
         
         self.assertEqual(self.post_response_crear_turno_evaluacion_web(turno_incorrecto).status_code, 400)       
         
@@ -101,8 +101,8 @@ class CrearTurnoTestCase(TestSetUp):
         turno_incorrecto = {"patente": "AS123FD",
                             "fecha_inicio": "2023-10-22",
                             "hora_inicio": "7:00:00",
-                            "taller_id": 10,
-                            "email": "luciacsoria5@gmail.com"}
+                            "taller_id": 10}
+                            ###"email": "luciacsoria5@gmail.com"}
         
         self.assertEqual(self.post_response_crear_turno_evaluacion_web(turno_incorrecto).status_code, 400)                
 
@@ -113,7 +113,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": "AS123FD",
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
-                          "email": "luciacsoria5@gmail.com",
+                          ##"email": "luciacsoria5@gmail.com",
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -137,16 +137,16 @@ class CrearTurnoTestCase(TestSetUp):
         turno_incorrecto = {"taller_id": 23,
                           "patente": "AS123FD",
                           "fecha_inicio": "2023-10-23",
-                          "hora_inicio": "12:00:00",
-                          "email": "luciacsoria5@gmail.com"}
+                          "hora_inicio": "12:00:00"}
+                          ###"email": "luciacsoria5@gmail.com"}
         self.assertEqual(self.post_response_crear_turno_evaluacion_presencial(turno_incorrecto).status_code, 400)
         
     def test_evaluacion_presencial_taller_no_disponible_completo(self):
         turno_incorrecto = {"patente": "AS123FD",
                             "fecha_inicio": "2023-9-21",
                             "hora_inicio": "10:00:00",
-                            "taller_id": 11,
-                            "email": "luciacsoria5@gmail.com"}
+                            "taller_id": 11}
+                            ###"email": "luciacsoria5@gmail.com"}
         
         self.assertEqual(self.post_response_crear_turno_evaluacion_presencial(turno_incorrecto).status_code, 400)        
         
@@ -154,8 +154,8 @@ class CrearTurnoTestCase(TestSetUp):
         turno_incorrecto = {"patente": "AS123FD",
                             "fecha_inicio": "2023-9-21",
                             "hora_inicio": "10:00:00",
-                            "taller_id": 11,
-                            "email": "luciacsoria5@gmail.com"}
+                            "taller_id": 11}
+                            ###"email": "luciacsoria5@gmail.com"}
         
         self.assertEqual(self.post_response_crear_turno_evaluacion_presencial(turno_incorrecto).status_code, 400) 
         
@@ -163,8 +163,8 @@ class CrearTurnoTestCase(TestSetUp):
         turno_incorrecto = {"patente": "AS123FD",
                             "fecha_inicio": "2023-10-23",
                             "hora_inicio": "12:30:00",
-                            "taller_id": 10,
-                            "email": "luciacsoria5@gmail.com"}
+                            "taller_id": 10}
+                            ##"email": "luciacsoria5@gmail.com"}
         
         self.assertEqual(self.post_response_crear_turno_evaluacion_presencial(turno_incorrecto).status_code, 400)   
     
@@ -172,8 +172,8 @@ class CrearTurnoTestCase(TestSetUp):
         turno_incorrecto = {"patente": "AS123FD",
                             "fecha_inicio": "2023-10-23",
                             "hora_inicio": "7:00:00",
-                            "taller_id": 10,
-                            "email": "luciacsoria5@gmail.com"}
+                            "taller_id": 10}
+                            ##"email": "luciacsoria5@gmail.com"}
         
         self.assertEqual(self.post_response_crear_turno_evaluacion_presencial(turno_incorrecto).status_code, 400)       
         
@@ -181,8 +181,8 @@ class CrearTurnoTestCase(TestSetUp):
         turno_incorrecto = {"patente": "AS123FD",
                             "fecha_inicio": "2023-10-22",
                             "hora_inicio": "7:00:00",
-                            "taller_id": 10,
-                            "email": "luciacsoria5@gmail.com"}
+                            "taller_id": 10}
+                            ##"email": "luciacsoria5@gmail.com"}
         
         self.assertEqual(self.post_response_crear_turno_evaluacion_presencial(turno_incorrecto).status_code, 400)          
         
@@ -193,7 +193,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": "AS123FF",
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
-                          "email": "luciacsoria5@gmail.com",
+                          #"email": "luciacsoria5@gmail.com",
                           "frecuencia_km": 5000,
                           "marca":"generico",
                           "modelo":"generico",
@@ -220,11 +220,11 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": "AS123FF",
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
-                          "email": "luciacsoria5@gmail.com",
+                          #"email": "luciacsoria5@gmail.com",
                           "frecuencia_km": 10000,
                           "marca":"generico",
                           "modelo":"generico",
-                          "taller_id": 10,}
+                          "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
                             "tipo": "service",
@@ -248,7 +248,7 @@ class CrearTurnoTestCase(TestSetUp):
                           "patente": "AS123FD",
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
-                          "email": "luciacsoria5@gmail.com",
+                          #"email": "luciacsoria5@gmail.com",
                           "frecuencia_km":15000,
                           "marca":"generico",
                           "modelo":"generico"}
@@ -260,7 +260,7 @@ class CrearTurnoTestCase(TestSetUp):
                           "patente": "AS123FD",
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
-                          "email": "luciacsoria5@gmail.com",
+                          #"email": "luciacsoria5@gmail.com",
                           "frecuencia_km": 5000,
                           "marca":"generico",
                           "modelo":"generico"}
@@ -272,7 +272,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "fecha_inicio": "2023-9-21",
                             "hora_inicio": "10:00:00",
                             "taller_id": 11,
-                            "email": "luciacsoria5@gmail.com",
+                            #"email": "luciacsoria5@gmail.com",
                             "frecuencia_km":5000,
                             "marca":"generico",
                             "modelo":"generico"}
@@ -284,7 +284,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "fecha_inicio": "2023-9-21",
                             "hora_inicio": "10:00:00",
                             "taller_id": 11,
-                            "email": "luciacsoria5@gmail.com",
+                            #"email": "luciacsoria5@gmail.com",
                             "frecuencia_km":5000,
                             "marca":"generico",
                             "modelo":"generico"}
@@ -295,11 +295,11 @@ class CrearTurnoTestCase(TestSetUp):
         turno_incorrecto = {"patente": "AS123FD",
                             "fecha_inicio": "2023-10-23",
                             "hora_inicio": "12:30:00",
-                            "taller_id": 10,
-                            "email": "luciacsoria5@gmail.com",
                             "frecuencia_km":5000,
-                            "marca":"generico",
-                            "modelo":"generico"}
+                            "taller_id": 10}
+                            ##"email": "luciacsoria5@gmail.com",
+                            #"marca":"generico",
+                            #"modelo":"generico"}
         
         self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)   
     
@@ -307,11 +307,11 @@ class CrearTurnoTestCase(TestSetUp):
         turno_incorrecto = {"patente": "AS123FD",
                             "fecha_inicio": "2023-10-23",
                             "hora_inicio": "7:00:00",
-                            "taller_id": 10,
-                            "email": "luciacsoria5@gmail.com",
                             "frecuencia_km":5000,
-                            "marca":"generico",
-                            "modelo":"generico"}
+                            "taller_id": 10}
+                            ##"email": "luciacsoria5@gmail.com",
+                            #"marca":"generico",
+                            #"modelo":"generico"}
         
         self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)       
         
@@ -319,11 +319,11 @@ class CrearTurnoTestCase(TestSetUp):
         turno_incorrecto = {"patente": "AS123FD",
                             "fecha_inicio": "2023-10-22",
                             "hora_inicio": "7:00:00",
-                            "taller_id": 10,
-                            "email": "luciacsoria5@gmail.com",
                             "frecuencia_km":5000,
-                            "marca":"generico",
-                            "modelo":"generico"}
+                            "taller_id": 10}
+                            ##"email": "luciacsoria5@gmail.com",
+                            #"marca":"generico",
+                            #"modelo":"generico"}
         
         self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)                  
         
@@ -384,6 +384,7 @@ class CrearTurnoTestCase(TestSetUp):
                           "hora_inicio": "12:00:00",
                           "taller_id": 10,
                           "origen": "evaluacion"}
+        
         self.assertEqual(self.post_response_crear_turno_reparacion(turno_incorrecto).status_code, 400)        
     
     def test_reparacion_extraordinario_patente_no_evaluada(self):    
@@ -392,6 +393,7 @@ class CrearTurnoTestCase(TestSetUp):
                           "hora_inicio": "12:00:00",
                           "taller_id": 10,
                           "origen": "extraordinario"}              
+        
         self.assertEqual(self.post_response_crear_turno_reparacion(turno_incorrecto).status_code, 400)        
 
 # ----------------------------------------------------------------------------------------------- #    
@@ -474,7 +476,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": "AS123FD",
                           "fecha_inicio": "2023-9-29",
                           "hora_inicio": "08:00:00",
-                          "email": "luciacsoria5@gmail.com",
+                          #"email": "luciacsoria5@gmail.com",
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -498,7 +500,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": "AS123FD",
                           "fecha_inicio": "2023-9-29",
                           "hora_inicio": "10:00:00",
-                          "email": "luciacsoria5@gmail.com",
+                          #"email": "luciacsoria5@gmail.com",
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -522,7 +524,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": "AS123FD",
                           "fecha_inicio": "2023-9-29",
                           "hora_inicio": "13:00:00",
-                          "email": "luciacsoria5@gmail.com",
+                          #"email": "luciacsoria5@gmail.com",
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -546,7 +548,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": "AS123FD",
                           "fecha_inicio": "2023-9-29",
                           "hora_inicio": "15:00:00",
-                          "email": "luciacsoria5@gmail.com",
+                          #"email": "luciacsoria5@gmail.com",
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
