@@ -161,8 +161,15 @@ class CrearActualizarTurnosViewSet(ViewSet):
             return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
         
         if km > 5000:
-            if obtener_ultimo_service(patente) + 5000 != km:
+            ultimo_service = obtener_ultimo_service(patente)
+            # si tenemos un service anterior, corroboramos que sea efectivament el anterior
+            if ultimo_service != -1 and ultimo_service + 5000 != km:
                 self.informar_perdida_de_garantia(patente)
+            # si no hay un service anterior, corroboramos que este sea el primero que le tocaba
+            if ultimo_service == -1:
+                inicial = obtener_km_de_venta(patente)
+                if inicial + 5000 != km:
+                    self.informar_perdida_de_garantia(patente)
         
         # eliminamos el email y los datos del service del request
         datos = request.data.copy()
