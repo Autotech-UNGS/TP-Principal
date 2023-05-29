@@ -12,4 +12,6 @@ urlpatterns = [
     path('actualizar-estado/<int:id_service>/',ActualizarEstado.as_view(), name = 'actualizar-estado-service'),
     path('listar/checklist/',ChecklistEvaluacionListar.as_view(), name = 'visualizar-checklist'),
     path('listar/checklist/<int:id_service>/', VisualizarTareasService.as_view(), name='visualizar-tarea-service'),
+    path('listar/registros-pendientes/<int:id_tecnico>/', ListarTurnosRegistroPendienteTecnico.as_view(), name='visualizar-registros-service-pendientes'),
+
 ]
