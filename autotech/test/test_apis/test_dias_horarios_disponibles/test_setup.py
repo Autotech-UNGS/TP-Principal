@@ -36,20 +36,20 @@ class TestSetUp(APITestCase):
         
         # vamos a saturar todo el dia 2023/06/26 del taller 102 --> no debería aparecer en el response
         self.turno_test_15 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(8,0,0), fecha_fin=date(2023,6,26), hora_fin=time(9,0,0), estado='pendiente')
-        self.turno_test_15 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(9,0,0), fecha_fin=date(2023,6,26), hora_fin=time(10,0,0), estado='pendiente')
-        self.turno_test_15 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(10,0,0), fecha_fin=date(2023,6,26), hora_fin=time(11,0,0), estado='pendiente')
-        self.turno_test_15 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(11,0,0), fecha_fin=date(2023,6,26), hora_fin=time(12,0,0), estado='pendiente')
-        self.turno_test_15 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(12,0,0), fecha_fin=date(2023,6,26), hora_fin=time(13,0,0), estado='pendiente')
-        self.turno_test_15 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(13,0,0), fecha_fin=date(2023,6,26), hora_fin=time(14,0,0), estado='pendiente')
-        self.turno_test_15 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(14,0,0), fecha_fin=date(2023,6,26), hora_fin=time(15,0,0), estado='pendiente')
-        self.turno_test_15 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(15,0,0), fecha_fin=date(2023,6,26), hora_fin=time(16,0,0), estado='pendiente')
-        self.turno_test_15 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(16,0,0), fecha_fin=date(2023,6,26), hora_fin=time(17,0,0), estado='pendiente')
+        self.turno_test_16 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(9,0,0), fecha_fin=date(2023,6,26), hora_fin=time(10,0,0), estado='pendiente')
+        self.turno_test_17 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(10,0,0), fecha_fin=date(2023,6,26), hora_fin=time(11,0,0), estado='pendiente')
+        self.turno_test_18 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(11,0,0), fecha_fin=date(2023,6,26), hora_fin=time(12,0,0), estado='pendiente')
+        self.turno_test_19 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(12,0,0), fecha_fin=date(2023,6,26), hora_fin=time(13,0,0), estado='pendiente')
+        self.turno_test_20 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(13,0,0), fecha_fin=date(2023,6,26), hora_fin=time(14,0,0), estado='pendiente')
+        self.turno_test_21 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(14,0,0), fecha_fin=date(2023,6,26), hora_fin=time(15,0,0), estado='pendiente')
+        self.turno_test_22 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(15,0,0), fecha_fin=date(2023,6,26), hora_fin=time(16,0,0), estado='pendiente')
+        self.turno_test_23 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(16,0,0), fecha_fin=date(2023,6,26), hora_fin=time(17,0,0), estado='pendiente')
         
         self.service1 = G(Service, id_service= 200, costo_base = 0.0, costo_total = 0.0, marca="generico", modelo = "generico", frecuencia_km=5000, duracion_total=180)
         
         # patente LCS262 es la evaluada
-        self.turno_evaluacion = G(Turno_taller, id_turno = 400, taller_id = 101, patente = 'LCS262', tipo='evaluacion', estado="terminado")
-        self.turno_extraordinario = G(Turno_taller, id_turno = 500, taller_id = 101, patente = 'LCS262', tipo='extraordinario', estado="terminado")
+        self.turno_evaluacion = G(Turno_taller, id_turno = 400, taller_id = 101, patente = 'LCS262', tipo='evaluacion', estado="terminado", fecha_inicio=date(2023,6,25), hora_inicio=time(15,0,0), fecha_fin=date(2023,6,25), hora_fin=time(16,0,0))
+        self.turno_extraordinario = G(Turno_taller, id_turno = 500, taller_id = 101, patente = 'LCS262', tipo='extraordinario', estado="terminado", fecha_inicio=date(2023,6,25), hora_inicio=time(15,0,0), fecha_fin=date(2023,6,25), hora_fin=time(16,0,0))
         # patente CBS291 es la no evaluada
         
         task = ["10", "20"]
