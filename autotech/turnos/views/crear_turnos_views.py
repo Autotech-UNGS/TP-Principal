@@ -292,3 +292,16 @@ class CrearActualizarTurnosViewSet(ViewSet):
     
     def informar_perdida_de_garantia(self, patente:str):
         return True
+
+# ------------------------------------------------------------------------------------------------ #
+# --------------------------------------- actualizar turno --------------------------------------- #
+# ------------------------------------------------------------------------------------------------ #
+
+    @action(detail=False, methods=['post'])
+    def turnoUpdate(self, request, id_turno):    
+        turno= Turno_taller.objects.get(id_turno=id_turno)
+        serializer=TurnoTallerSerializer(instance=turno,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+    
+        return Response(serializer.data)
