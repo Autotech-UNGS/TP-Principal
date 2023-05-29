@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from administracion.models import Turno_taller, Registro_reparacion, Registro_extraordinario, Registro_evaluacion, Registro_evaluacion_para_admin, Checklist_evaluacion
-from administracion.serializers import ChecklistEvaluacionSerializer
+from administracion.serializers import ChecklistEvaluacionSerializer, TurnoTallerSerializer
 from .validadores import ValidadorTurno, ValidadorRegistroReparacion
 
 
@@ -251,4 +251,23 @@ class RegistroReparacionViewSet(ViewSet):
         except Registro_reparacion.DoesNotExist:
             return Response({'error': 'No se encontró un registro de reparación para el turno especificado'}, status=status.HTTP_400_BAD_REQUEST)
         
-    
+# ---------------------------------------------------------------------------------------------------------------------------
+
+    @action(detail=False, methods=['get'])
+    def listar_turnos_registro_pendiente(self, request, id_tecnico):
+        turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='reparacion')
+        id_turnos = list(turnos.values_list('id_turno', flat=True))
+
+        # El técnico no tiene registros reparacion guardados
+        if not Registro_reparacion.objects.filter(id_turno__in = id_turnos):
+            serializer = TurnoTallerSerializer(turnos, many=True)
+            # Si no tiene turnos registrados de reparacion entonces devuelvo todos los turnos que tenga 
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        
+        registros = Registro_reparacion.objects.filter(id_turno__in = id_turnos) 
+        id_turnos_registros = list(registros.values_list('id_turno', flat=True))
+
+        turnos_pendientes_de_registro = Turno_taller.objects.filter(id_turno__in = id_turnos).exclude(id_turno__in = id_turnos_registros)
+        serializer = TurnoTallerSerializer(turnos_pendientes_de_registro, many=True)
+
+        return Response(serializer.data,status=status.HTTP_200_OK)
