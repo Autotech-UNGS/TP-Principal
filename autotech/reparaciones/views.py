@@ -251,23 +251,39 @@ class RegistroReparacionViewSet(ViewSet):
         except Registro_reparacion.DoesNotExist:
             return Response({'error': 'No se encontró un registro de reparación para el turno especificado'}, status=status.HTTP_400_BAD_REQUEST)
         
+    @action(detail=True, methods=['patch'])
+    def finalizar_registro(self, request, id_turno):
+        try:
+            # Obtenemos el registro de reparación perteneciente al turno
+            turno = Turno_taller.objects.get(id_turno=id_turno)
+            registro_reparacion = Registro_reparacion.objects.get(id_turno=turno)
+
+            if registro_reparacion.estado == 'terminado':
+                return Response({'error': 'El registro ya se encuentra en estado terminado'}, status=status.HTTP_400_BAD_REQUEST)
+            if len(registro_reparacion.tasks_pendientes) != 0:
+                return Response({'error': 'El registro aun tiene tareas pendientes a completar. El turno no puede finalizar aun'},status=status.HTTP_400_BAD_REQUEST)
+            
+            registro_reparacion.estado = 'terminado'
+            registro_reparacion.save()
+            return Response({'message': 'Registro finalizado exitosamente'}, status=status.HTTP_200_OK)
+        except Turno_taller.DoesNotExist:
+            return Response({'error': 'No se encontró un turno con el ID especificado'}, status=status.HTTP_400_BAD_REQUEST)
+              
+        except Registro_reparacion.DoesNotExist:
+            return Response({'error': 'No se encontró un registro de reparación para el turno especificado'}, status=status.HTTP_400_BAD_REQUEST)
+        
 # ---------------------------------------------------------------------------------------------------------------------------
 
-    @action(detail=False, methods=['get'])
+    @action(detail=True, methods=['get'])
     def listar_turnos_registro_pendiente(self, request, id_tecnico):
         turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='reparacion')
         id_turnos = list(turnos.values_list('id_turno', flat=True))
 
-        # El técnico no tiene registros reparacion guardados
-        if not Registro_reparacion.objects.filter(id_turno__in = id_turnos):
-            serializer = TurnoTallerSerializer(turnos, many=True)
-            # Si no tiene turnos registrados de reparacion entonces devuelvo todos los turnos que tenga 
-            return Response(serializer.data,status=status.HTTP_200_OK)
+        # El tecnico tiene registros reparacion guardados
+        turnos_registros = Registro_reparacion.objects.filter(id_turno__in = id_turnos, estado='en_proceso')
+        id_turnos_en_proceso = [registro.id_turno for registro in turnos_registros]
+        serializer = TurnoTallerSerializer(id_turnos_en_proceso, many=True)
         
-        registros = Registro_reparacion.objects.filter(id_turno__in = id_turnos) 
-        id_turnos_registros = list(registros.values_list('id_turno', flat=True))
-
-        turnos_pendientes_de_registro = Turno_taller.objects.filter(id_turno__in = id_turnos).exclude(id_turno__in = id_turnos_registros)
-        serializer = TurnoTallerSerializer(turnos_pendientes_de_registro, many=True)
-
+        # devuelvo todos los turnos que tenga como pendiente el completar el registro
         return Response(serializer.data,status=status.HTTP_200_OK)
+        
