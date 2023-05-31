@@ -10,8 +10,8 @@ from datetime import *
 class VisualizarTalleresViewSet(ViewSet):
     @action(detail=False, methods=['get'])
     def talleresList(self, request):
-        turnos= Taller.objects.all()
-        serializer= TallerSerializer(turnos, many=True)
+        talleres= Taller.objects.all()
+        serializer= TallerSerializer(talleres, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
@@ -23,3 +23,9 @@ class VisualizarTalleresViewSet(ViewSet):
         else:
             serializer= TallerSerializer(taller,many=False)
             return Response(serializer.data)
+        
+    @action(detail=False, methods=['get'])
+    def talleresActivosList(self, request):
+        talleres_activos = Taller.objects.filter(estado=True)
+        serializer = TallerSerializer(talleres_activos, many=True)
+        return Response(serializer.data)
