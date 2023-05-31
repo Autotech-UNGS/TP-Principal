@@ -9,6 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from reparaciones.views import RegistroReparacionViewSet
 from ..validaciones_crear_turno import validaciones
+from ..garantias import GestionGarantias
 
 class CrearActualizarTurnosViewSet(ViewSet):
 
@@ -126,28 +127,23 @@ class CrearActualizarTurnosViewSet(ViewSet):
         patente
         fecha_inicio
         hora_inicio
-        #email
         frecuencia_km
-        #marca
-        #modelo
         """
         # datos que necesitamos
         taller_id = request.data.get("taller_id")
-        #email = request.data.get("email")
         email = obtener_email_usuario()
         patente = request.data.get("patente")
         dia_inicio_date = datetime.strptime(request.data.get("fecha_inicio"), '%Y-%m-%d').date()
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
-        #marca = request.data.get("marca")
-        #modelo = request.data.get("modelo")
-        marca = obtener_marca(patente)
-        modelo = obtener_modelo(patente)
         km = request.data.get("frecuencia_km")
         
-        duracion = obtener_duracion_service(marca=marca, modelo=modelo, km=km)
-        if duracion == -1:
-            return HttpResponse("error: no existe un service con los datos especificados", status=400)
+        frecuencia_service = obtener_frecuencia_service(patente, km)
+        ultimo_service = obtener_frecuencia_ultimo_service(patente)
+        duracion = obtener_duracion_service_vehiculo(patente, km=km)
         
+        if duracion == 0:
+            return HttpResponse("error: no existe un service con los datos especificados", status=400)
+                
         fecha_hora_fin = obtener_fecha_hora_fin(dia_inicio_date, horario_inicio_time, duracion)
         
         resultado_validacion = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='service', 
@@ -156,35 +152,25 @@ class CrearActualizarTurnosViewSet(ViewSet):
         if resultado_validacion.status_code == 400:
             return resultado_validacion
         if not validaciones.patente_registrada(patente):
-            return HttpResponse("error: la patente no está registrada  perteneciente a un cliente", status=400)
+            return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
         if km == None:
             return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
+        if ultimo_service != 0 and ultimo_service >= frecuencia_service:
+            return HttpResponse("error: el service ingresado ya se había realizado antes.", status=400)        
         
-        ultimo_service = obtener_ultimo_service(patente)
-        # el ultimo service es mayor al service que está pidiendo ahora
-        if ultimo_service != -1 and ultimo_service > km:
-            return HttpResponse("error: el service ingresado ya se había realizado antes.", status=400)
-        # corroboramos que el ultimo service sea el anterior, o sea, que no se haya salteado ninguno
-        elif ultimo_service != -1 and ultimo_service + 5000 != km:
-            self.informar_perdida_de_garantia(patente)
-            # agregar campo de perdida de garantia
-        # si no hay un service anterior, corroboramos que este sea el primero que le tocaba
-        elif ultimo_service == -1:
-            inicial = obtener_km_de_venta(patente)
-            if inicial + 5000 != km:
-                self.informar_perdida_de_garantia(patente)
+        garantia_vigente = GestionGarantias.garantia_vigente(patente=patente, fecha_turno=dia_inicio_date, ultimo_service=ultimo_service, service_actual=frecuencia_service)
+        if not garantia_vigente:
+            GestionGarantias.informar_perdida_garantia(patente)
+                # informar que se debe cobrar el service
         
-        # eliminamos el email y los datos del service del request
         datos = request.data.copy()
-        #del datos['email']
-        #del datos['marca']
-        #del datos['modelo']
         datos['papeles_en_regla'] = True
         datos['tipo'] = 'service'
         datos['estado'] = 'pendiente'
         datos['fecha_fin'] = fecha_hora_fin[0].strftime("%Y-%m-%d")
         datos['hora_fin'] = fecha_hora_fin[1].strftime("%H:%M:%S")
         datos['tecnico_id'] = None
+        datos['frecuencia_km'] = frecuencia_service
         
         serializer = TurnoTallerSerializer(data=datos)
         # Actualizamos el serializer y enviamos un email
@@ -217,7 +203,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         origen = request.data.get("origen")
         
         duracion =  obtener_duracion_extraordinario(patente) if origen == 'extraordinario' else obtener_duracion_reparacion(patente)
-        if duracion == -1:
+        if duracion == 0:
             return HttpResponse("error: la patente no pertenece a la de un auto que ya haya sido evaluado en el taller.", status=400)
         
         fecha_hora_fin = obtener_fecha_hora_fin(dia_inicio_date, horario_inicio_time, duracion)

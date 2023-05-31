@@ -6,7 +6,7 @@ class TestSetUp(APITestCase):
 
     def setUp(self):
         # Instancias modelos
-        self.taller = G(Taller, id_taller=1)      
+        self.taller = G(Taller, id_taller=1, estado=True)      
         self.turno_taller = G(Turno_taller, tecnico_id=1, estado='en_proceso', taller_id=self.taller) # con id 1  
         self.turno_taller2 = G(Turno_taller, tecnico_id=1, estado='terminado', taller_id=self.taller) # con id 2
         

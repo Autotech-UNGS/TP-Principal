@@ -9,8 +9,8 @@ from datetime import date, time
 
 class TestSetUp(APITestCase):
     def setUp(self):
-        self.taller1 = G(Taller, id_taller=1, capacidad=15)
-        self.taller2 = G(Taller,id_taller=3)
+        self.taller1 = G(Taller, id_taller=1, capacidad=15, estado=True)
+        self.taller2 = G(Taller,id_taller=3, estado= True)
         
         # asignado al 1 --> 8-9
         self.turno1 = G(Turno_taller, id_turno= 11, taller_id=1, tipo= 'evaluacion', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(8,0,0), fecha_fin=date(2023,9,21), hora_fin=time(9,0,0), papeles_en_regla=True)

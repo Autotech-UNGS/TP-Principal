@@ -194,7 +194,7 @@ class CrearTurnoTestCase(TestSetUp):
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
                           #"email": "luciacsoria5@gmail.com",
-                          "frecuencia_km": 5000,
+                          "frecuencia_km": 10000,
                           #"marca":"generico",
                           #"modelo":"generico",
                           "taller_id": 10}
@@ -208,7 +208,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "hora_inicio": "12:00:00",
                             "fecha_fin": "2023-10-23",
                             "hora_fin": "15:00:00",
-                            "frecuencia_km": 5000,
+                            "frecuencia_km": 10000,
                             "papeles_en_regla": True,
                             "taller_id": 10}
         

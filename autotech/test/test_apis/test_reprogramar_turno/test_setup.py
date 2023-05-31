@@ -11,7 +11,7 @@ import json
 
 class TestSetUp(APITestCase):
     def setUp(self):
-        self.taller1 = G(Taller, id_taller=10, capacidad=10)
+        self.taller1 = G(Taller, id_taller=10, capacidad=10, estado=True)
         
         # evaluacion --> 2023/06/29, 10-11hs
         self.turno_evaluacion_valido1 = G(Turno_taller, id_turno=100, tipo='evaluacion', estado='cancelado', taller_id=10, tecnico_id=None, patente='ABC111', fecha_inicio=date(2023,6,29), hora_inicio=time(10,0,0), fecha_fin=date(2023,6,29), hora_fin=time(11,0,0),frecuencia_km=None, papeles_en_regla=True)

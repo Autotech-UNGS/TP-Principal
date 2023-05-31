@@ -4,19 +4,28 @@ from math import ceil
 import json
 
 def obtener_email_usuario():
+    #TODO
     #return 'forozco@campus.ungs.edu.ar'
     return 'luciacsoria5@gmail.com'
 
 def obtener_marca(patente:str):
+    #TODO
     return "generico"
 
 def obtener_modelo(patente:str):
+    #TODO
     return "generico"
 
 def obtener_km_de_venta(patente):
+    #TODO
     return 0
 
-def obtener_ultimo_service(patente:str):
+def obtener_frecuencia_service(patente:str, kilometraje: int):
+    km_de_venta = obtener_km_de_venta(patente)
+    frecuencia_service = kilometraje - km_de_venta
+    return frecuencia_service
+
+def obtener_frecuencia_ultimo_service(patente:str): # retorna 5000, 10000, 15000, etc
     try:
     # tengo que encontrar todos los turnos de services de esa patente, y quedarme con el último
     # con ese ultimo turno de tipo service, tengo que encontrar el Registro_service que le corresponde
@@ -27,7 +36,7 @@ def obtener_ultimo_service(patente:str):
         ultimo_service = Service.objects.get(id_service=registro_de_ultimo_service.id_service.id_service)
         return ultimo_service.frecuencia_km
     except:
-        return -1
+        return 0
 
 def obtener_turno(id_turno):
     try:
@@ -79,16 +88,25 @@ def obtener_fecha_hora_fin(dia_inicio:date, horario_inicio:time, duracion:int) -
     
     return fecha_hora_fin
 
-# retorna -1 si el service no existe
+# retorna 0 si el service no existe
+def obtener_duracion_service_vehiculo(patente:str, km:int):
+    try:
+        marca = obtener_marca(patente)
+        modelo = obtener_modelo(patente)
+        service = Service.objects.get(marca=marca, modelo=modelo, frecuencia_km=km)
+        return ceil(service.duracion_total / 60)
+    except:
+        return 0
+        
 def obtener_duracion_service(marca:str, modelo:str, km:int):
     try:
         service = Service.objects.get(marca=marca, modelo=modelo, frecuencia_km=km)
         return ceil(service.duracion_total / 60)
     except:
-        return -1
+        return 0    
 
 # viene de venta        
-# retorna -1 si no existe un turno para evaluacion para esa patente
+# retorna 0 si no existe un turno para evaluacion para esa patente
 def obtener_duracion_reparacion(patente:str): 
     try:
         # 1) obtenemos el turno para evaluacion correspondiente a la reparacion que queremos hacer
@@ -98,10 +116,10 @@ def obtener_duracion_reparacion(patente:str):
         registro_admin = Registro_evaluacion_para_admin.objects.get(id_turno=turno.id_turno)
         return ceil(registro_admin.duracion_total_reparaciones / 60)
     except:
-        return -1
+        return 0
     
 # viene de extraordinario    
-# retorna -1 si no existe un turno para evaluacion para esa patente
+# retorna 0 si no existe un turno para evaluacion para esa patente
 def obtener_duracion_extraordinario(patente:str):
     try:
         # 1) obtenemos el turno para evaluacion correspondiente a la reparacion que queremos hacer
@@ -117,5 +135,5 @@ def obtener_duracion_extraordinario(patente:str):
             duracion += item.duracion_reemplazo
         return ceil(duracion / 60) 
     except:
-        return -1
+        return 0
 

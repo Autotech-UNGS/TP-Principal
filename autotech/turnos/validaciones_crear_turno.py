@@ -1,8 +1,9 @@
 from django.http import HttpResponse
 from administracion.models import *
 from .obtener_datos import *
-from .validaciones_views import * 
+#from .validaciones_asignar_tecnico import * 
 from datetime import *
+from .gestion_agenda.gestionar_agenda import *
 
 class validaciones:  
     @classmethod  
@@ -22,6 +23,8 @@ class validaciones:
     def validar_taller(cls, taller_id:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time) -> HttpResponse:
         if not cls.existe_taller(taller_id):
             return HttpResponse("error: el id ingresado no pertenece a ningún taller en el sistema", status=400)
+        if not cls.taller_es_valido(taller_id):
+            return HttpResponse("error: el id ingresado pertenece a un taller inactivo", status=400)
         if not cls.taller_esta_disponible(taller_id, dia_inicio, horario_inicio, dia_fin, horario_fin):
             return HttpResponse("error: ese dia no esta disponible en ese horario", status=400)
         return HttpResponse("Taller correcto", status=200)
@@ -50,15 +53,18 @@ class validaciones:
             return HttpResponse("error: la patente ingresada ya tiene un turno para ese mismo dia y horario en el sistema", status=400)
         return HttpResponse("Patente correcta", status=200)
     
+    @classmethod
     def existe_turno_evaluacion(patente):
         turnos = Turno_taller.objects.filter(patente=patente, tipo = 'evaluacion', estado='terminado')
         return turnos.count() != 0
 
-    #TODO
-    def patente_registrada(patente):
+    @classmethod
+    def patente_registrada(cls, patente):
+        #TODO
         return True
 
-    def existe_taller(taller_id:int):
+    @classmethod
+    def existe_taller(cls, taller_id:int):
         try:
             taller = Taller.objects.get(id_taller= taller_id)
         except:
@@ -66,17 +72,25 @@ class validaciones:
         else:
             return True
         
-    def horarios_exactos(hora_inicio:time, hora_fin:time):
+    @classmethod
+    def taller_es_valido(cls, taller_id):
+        taller = Taller.objects.get(id_taller= taller_id)
+        return taller.estado == True
+        
+    @classmethod
+    def horarios_exactos(cls, hora_inicio:time, hora_fin:time):
         return hora_inicio.minute == 0 and hora_fin.minute == 0 and hora_inicio.second == 0 and hora_fin.second == 0 # and hora_inicio <= hora_fin
             
-    def horarios_dentro_de_rango(dia:date, horario_inicio:time):
+    @classmethod
+    def horarios_dentro_de_rango(cls, dia:date, horario_inicio:time):
         if dia.weekday() == 6: # domigo
             horario_inicio_valido = horario_inicio.hour >= 8 and horario_inicio.hour <= 11 # podemos dar turnos de 8 a 11
         else:
             horario_inicio_valido = horario_inicio.hour >= 8 and horario_inicio.hour <= 16 # podemos dar turnos de 8 a 16
         return horario_inicio_valido
         
-    def dia_hora_coherentes(dia_inicio: date, horario_inicio: time, dia_fin: date , horario_fin: time):
+    @classmethod
+    def dia_hora_coherentes(cls, dia_inicio: date, horario_inicio: time, dia_fin: date , horario_fin: time):
         if dia_inicio < dia_fin:
             es_valido = True
         elif dia_inicio == dia_fin:
@@ -84,9 +98,11 @@ class validaciones:
         else:
             es_valido = False
         return es_valido
-        
-    def dia_valido(dia: date):
+    
+    @classmethod
+    def dia_valido(cls, dia: date):
         return dia >= date.today()
 
-    def taller_esta_disponible(id_taller: int, fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time):
+    @classmethod
+    def taller_esta_disponible(cls, id_taller: int, fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time):
         return taller_esta_disponible_agenda(fecha_inicio, hora_inicio, fecha_fin, hora_fin, id_taller)
