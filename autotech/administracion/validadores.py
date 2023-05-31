@@ -80,3 +80,7 @@ class OrigenReparacion(models.TextChoices):
 class EstadoRegistroReparacion(models.TextChoices):
     EN_PROCESO = "en_proceso",("En proceso")
     TERMINADO = "terminado",("Terminado")
+    
+class EstadoTaller(models.TextChoices):
+    ACTIVO ="activo",("Activo")
+    INACTIVO = "inactivo",("Inactivo")

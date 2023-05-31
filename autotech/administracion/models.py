@@ -4,7 +4,7 @@ from .validadores import *
 
 # ----------------------------------------------------------------------------------------------------#
 class Taller(models.Model):
-    id_taller = models.IntegerField(primary_key=True)
+    id_taller = models.AutoField(primary_key=True, default=3)
     nombre = models.CharField(max_length=30, validators=[nombre_taller_regex])
     direccion = models.CharField(max_length=30)
     localidad = models.CharField(max_length=30)
@@ -14,6 +14,8 @@ class Taller(models.Model):
     telefono = models.CharField(max_length=15, validators=[telefono_regex])
     capacidad = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(15)])
     cant_tecnicos = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(45)])
+    id_sucursal = models.IntegerField(validators=[MinValueValidator(0)])
+    estado = models.BooleanField(default=False)
 
 # ----------------------------------------------------------------------------------------------------#
 class Turno_taller(models.Model):
