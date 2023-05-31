@@ -14,9 +14,6 @@ urlpatterns = [
     path('actualizar/<int:id_sucursal>/', modificar_talleres.ActualizarTallerAdmin.as_view(), name = 'actualizar-taller'),
     path('cambiar-estado/<int:id_taller>/', modificar_talleres.ActualizarEstado.as_view(), name = 'cambiar-estado-taller'),
 
-    
-
-
-
+    path('existe/<int:id_sucursal>/', visualizar_sucursales.SucursalTieneTaller.as_view(), name = 'sucursal-tiene-taller'),
 
 ]
