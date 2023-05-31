@@ -13,14 +13,14 @@ def taller_esta_disponible_agenda(fecha_inicio:date, hora_inicio:time, fecha_fin
         return True
     else:
         agenda = crear_agenda_taller(id_taller)
-        cargar_turnos_taller(fecha_inicio, agenda, id_taller)
+        cargar_turnos_taller(agenda, id_taller)
         duracion = calcular_duracion(fecha_inicio, hora_inicio, fecha_fin, hora_fin)
         
         return agenda.esta_disponible(fecha_inicio, hora_inicio.hour, duracion)
 
 def dias_disponibles_desde_hoy_a_treinta_dias(id_taller: int, cant_horas:int):
     agenda = crear_agenda_taller(id_taller)
-    cargar_turnos_taller(date.today(), agenda, id_taller)
+    cargar_turnos_taller(agenda, id_taller)
     #cargar_turnos_desde_hoy_a_treinta_dias(agenda, id_taller)
     dias_horarios_disponibles = {}
     dias_horarios_disponibles = agenda.dias_horarios_disponibles_de_treinta_dias(date.today(), cant_horas)
@@ -28,7 +28,7 @@ def dias_disponibles_desde_hoy_a_treinta_dias(id_taller: int, cant_horas:int):
 
 def dias_disponibles_desde_hoy_a_cuarentaycinco_dias(id_taller: int, cant_horas:int):
     agenda = crear_agenda_taller(id_taller)
-    cargar_turnos_taller(date.today(), agenda, id_taller)
+    cargar_turnos_taller(agenda, id_taller)
     #cargar_turnos_desde_hoy_a_cuarentaycinco_dias(agenda, id_taller)
     dias_horarios_disponibles = {}
     dias_horarios_disponibles = agenda.dias_horarios_disponibles_de_cuarentaycinco_dias(date.today(), cant_horas)
@@ -42,19 +42,19 @@ def crear_agenda_taller(_id_taller: int):
 def cargar_turnos_desde_hoy_a_treinta_dias(agenda:Agenda, id_taller:int):
     dia = date.today()
     for i in range(32):
-        cargar_turnos_taller(dia, agenda, id_taller)
+        cargar_turnos_taller(agenda, id_taller)
         dia = dia + timedelta(days=1) 
         
 def cargar_turnos_desde_hoy_a_cuarentaycinco_dias(agenda:Agenda, id_taller:int):
     dia = date.today()
     for i in range(47):
-        cargar_turnos_taller(dia, agenda, id_taller)
+        cargar_turnos_taller(agenda, id_taller)
         dia = dia + timedelta(days=1)         
 
-def cargar_turnos_taller(dia:date, agenda:Agenda, id_taller:int):
+def cargar_turnos_taller(agenda:Agenda, id_taller:int):
     condiciones_exclusion = Q(estado='terminado') | Q(estado='cancelado') | Q(estado='rechazado') | Q(estado='ausente')
     #turnos = Turno_taller.objects.filter(fecha_inicio=dia, taller_id=id_taller).exclude(condiciones_exclusion)
-    turnos = Turno_taller.objects.filter(fecha_inicio__gte=dia, taller_id=id_taller).exclude(condiciones_exclusion)
+    turnos = Turno_taller.objects.filter(taller_id=id_taller).exclude(condiciones_exclusion)
     
     for turno in turnos:
         duracion = calcular_duracion(turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin)

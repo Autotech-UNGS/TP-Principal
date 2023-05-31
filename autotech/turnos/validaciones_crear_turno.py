@@ -22,6 +22,8 @@ class validaciones:
     def validar_taller(cls, taller_id:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time) -> HttpResponse:
         if not cls.existe_taller(taller_id):
             return HttpResponse("error: el id ingresado no pertenece a ningún taller en el sistema", status=400)
+        #if not cls.taller_es_valido(taller_id):
+            #return HttpResponse("error: el id ingresado pertenece a un taller inactivo", status=400)
         if not cls.taller_esta_disponible(taller_id, dia_inicio, horario_inicio, dia_fin, horario_fin):
             return HttpResponse("error: ese dia no esta disponible en ese horario", status=400)
         return HttpResponse("Taller correcto", status=200)
@@ -65,6 +67,10 @@ class validaciones:
             return False
         else:
             return True
+        
+    #def taller_es_valido(taller_id):
+     #   taller = Taller.objects.get(id_taller= taller_id)
+      #  return taller.estado == True
         
     def horarios_exactos(hora_inicio:time, hora_fin:time):
         return hora_inicio.minute == 0 and hora_fin.minute == 0 and hora_inicio.second == 0 and hora_fin.second == 0 # and hora_inicio <= hora_fin
