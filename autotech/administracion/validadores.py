@@ -77,6 +77,10 @@ class OrigenReparacion(models.TextChoices):
     EVALUACION ="evaluacion",("Evaluacion")
     EXTRAORDINARIO = "extraordinario",("Extraordinario")
 
+class EstadoRegistroReparacion(models.TextChoices):
+    EN_PROCESO = "en_proceso",("En proceso")
+    TERMINADO = "terminado",("Terminado")
+    
 class EstadoTaller(models.TextChoices):
     ACTIVO ="activo",("Activo")
     INACTIVO = "inactivo",("Inactivo")

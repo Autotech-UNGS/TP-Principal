@@ -44,6 +44,7 @@ class Registro_reparacion(models.Model):
     detalle = models.TextField(blank=True, null=True)
     detalle_evaluacion = models.TextField(blank=True, null=True)
     origen = models.TextField(choices=OrigenReparacion.choices, null=True, blank=True)
+    estado = models.CharField(max_length=10, choices=EstadoRegistroReparacion.choices, default=EstadoRegistroReparacion.EN_PROCESO)
 # ----------------------------------------------------------------------------------------------------#
 class Registro_extraordinario(models.Model): 
     id_turno = models.OneToOneField(Turno_taller, on_delete=models.PROTECT)

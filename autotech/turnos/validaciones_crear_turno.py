@@ -40,12 +40,14 @@ class validaciones:
      
     @classmethod     
     def validar_patente(cls, patente:str, tipo:str, fecha_turno: date, hora_turno:time):
-        turnos_ese_dia_ese_tipo = Turno_taller.objects.filter(patente=patente, tipo=tipo, fecha_inicio= fecha_turno)
-        if turnos_ese_dia_ese_tipo.count() != 0:
-            return HttpResponse("error: la patente ingresada ya tiene un turno del mismo tipo para ese mismo dia", status=400)
+        hoy = date.today()
+        condiciones_exclusion = Q(estado='terminado') | Q(estado='cancelado') | Q(estado='rechazado') | Q(estado='ausente')
+        turnos_ese_tipo = Turno_taller.objects.filter(patente=patente, tipo=tipo, fecha_inicio__gte=hoy).exclude(condiciones_exclusion)
+        if turnos_ese_tipo.count() != 0:
+            return HttpResponse("error: la patente ingresada ya tiene un turno de ese tipo registrado en el sistema.", status=400)
         turnos_ese_dia_horario = Turno_taller.objects.filter(patente=patente, fecha_inicio= fecha_turno, hora_inicio=hora_turno)
         if turnos_ese_dia_horario.count() != 0:
-            return HttpResponse("error: la patente ingresada ya tiene un turno para ese mismo dia y horario", status=400)
+            return HttpResponse("error: la patente ingresada ya tiene un turno para ese mismo dia y horario en el sistema", status=400)
         return HttpResponse("Patente correcta", status=200)
     
     def existe_turno_evaluacion(patente):

@@ -30,7 +30,7 @@ class CrearTurnoTestCase(TestSetUp):
 # ------------------------------------- turno evaluacion: web ------------------------------------ #
 # ------------------------------------------------------------------------------------------------ #    
     def test_evaluacion_web_correcto(self):
-        turno_correcto = {"patente": "AS123FD",
+        turno_correcto = {"patente": "ABC123",
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
                           ##"email": "luciacsoria5@gmail.com",
@@ -40,7 +40,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "tipo": "evaluacion",
                             "estado": "pendiente",
                             "tecnico_id": None,
-                            "patente": "AS123FD",
+                            "patente": "ABC123",
                             "fecha_inicio": "2023-10-23",
                             "hora_inicio": "12:00:00",
                             "fecha_fin": "2023-10-23",
@@ -110,7 +110,7 @@ class CrearTurnoTestCase(TestSetUp):
 # ------------------------------------- turno evaluacion: presencial ------------------------------------ #        
 # ------------------------------------------------------------------------------------------------------- #
     def test_evaluacion_presencial_correcto(self):
-        turno_correcto = {"patente": "AS123FD",
+        turno_correcto = {"patente": "ABC123",
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
                           ##"email": "luciacsoria5@gmail.com",
@@ -120,7 +120,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "tipo": "evaluacion",
                             "estado": "pendiente",
                             "tecnico_id": None,
-                            "patente": "AS123FD",
+                            "patente": "ABC123",
                             "fecha_inicio": "2023-10-23",
                             "hora_inicio": "12:00:00",
                             "fecha_fin": "2023-10-23",
@@ -195,8 +195,8 @@ class CrearTurnoTestCase(TestSetUp):
                           "hora_inicio": "12:00:00",
                           #"email": "luciacsoria5@gmail.com",
                           "frecuencia_km": 5000,
-                          "marca":"generico",
-                          "modelo":"generico",
+                          #"marca":"generico",
+                          #"modelo":"generico",
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -222,8 +222,8 @@ class CrearTurnoTestCase(TestSetUp):
                           "hora_inicio": "12:00:00",
                           #"email": "luciacsoria5@gmail.com",
                           "frecuencia_km": 10000,
-                          "marca":"generico",
-                          "modelo":"generico",
+                          #"marca":"generico",
+                          #"modelo":"generico",
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -241,7 +241,61 @@ class CrearTurnoTestCase(TestSetUp):
         
         response = self.post_response_crear_turno_service(turno_correcto)
         self.assertEqual(response.status_code, 200)
-        self.assertDictEqual(response.json(), response_esperado)        
+        self.assertDictEqual(response.json(), response_esperado)  
+        
+    def test_service_correcto_3_dos_dias(self):
+        turno_correcto = {"patente": "AS123FF",
+                          "fecha_inicio": "2023-10-23",
+                          "hora_inicio": "16:00:00",
+                          #"email": "luciacsoria5@gmail.com",
+                          "frecuencia_km": 10000,
+                          #"marca":"generico",
+                          #"modelo":"generico",
+                          "taller_id": 10}
+        
+        response_esperado = { "id_turno": 501,
+                            "tipo": "service",
+                            "estado": "pendiente",
+                            "tecnico_id": None,
+                            "patente": "AS123FF",
+                            "fecha_inicio": "2023-10-23",
+                            "hora_inicio": "16:00:00",
+                            "fecha_fin": "2023-10-24",
+                            "hora_fin": "10:00:00",
+                            "frecuencia_km": 10000,
+                            "papeles_en_regla": True,
+                            "taller_id": 10}
+        
+        response = self.post_response_crear_turno_service(turno_correcto)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), response_esperado)  
+        
+    def test_service_correcto_4_dos_dias_fin_de_mes(self):
+        turno_correcto = {"patente": "AS123FF",
+                          "fecha_inicio": "2023-05-31",
+                          "hora_inicio": "16:00:00",
+                          #"email": "luciacsoria5@gmail.com",
+                          "frecuencia_km": 10000,
+                          #"marca":"generico",
+                          #"modelo":"generico",
+                          "taller_id": 10}
+        
+        response_esperado = { "id_turno": 501,
+                            "tipo": "service",
+                            "estado": "pendiente",
+                            "tecnico_id": None,
+                            "patente": "AS123FF",
+                            "fecha_inicio": "2023-05-31",
+                            "hora_inicio": "16:00:00",
+                            "fecha_fin": "2023-06-01",
+                            "hora_fin": "10:00:00",
+                            "frecuencia_km": 10000,
+                            "papeles_en_regla": True,
+                            "taller_id": 10}
+        
+        response = self.post_response_crear_turno_service(turno_correcto)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), response_esperado)                     
         
     def test_service_no_existe(self):
         turno_incorrecto = {"taller_id": 23,
@@ -249,9 +303,9 @@ class CrearTurnoTestCase(TestSetUp):
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
                           #"email": "luciacsoria5@gmail.com",
-                          "frecuencia_km":15000,
-                          "marca":"generico",
-                          "modelo":"generico"}
+                          "frecuencia_km":15000}
+                          #"marca":"generico",
+                          #"modelo":"generico"}
         
         self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)        
         
@@ -261,9 +315,9 @@ class CrearTurnoTestCase(TestSetUp):
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
                           #"email": "luciacsoria5@gmail.com",
-                          "frecuencia_km": 5000,
-                          "marca":"generico",
-                          "modelo":"generico"}
+                          "frecuencia_km": 5000}
+                          #"marca":"generico",
+                          #"modelo":"generico"}
         
         self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)
         
@@ -273,9 +327,9 @@ class CrearTurnoTestCase(TestSetUp):
                             "hora_inicio": "10:00:00",
                             "taller_id": 11,
                             #"email": "luciacsoria5@gmail.com",
-                            "frecuencia_km":5000,
-                            "marca":"generico",
-                            "modelo":"generico"}
+                            "frecuencia_km":5000}
+                            #"marca":"generico",
+                            #"modelo":"generico"}
         
         self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)        
         
@@ -285,9 +339,9 @@ class CrearTurnoTestCase(TestSetUp):
                             "hora_inicio": "10:00:00",
                             "taller_id": 11,
                             #"email": "luciacsoria5@gmail.com",
-                            "frecuencia_km":5000,
-                            "marca":"generico",
-                            "modelo":"generico"}
+                            "frecuencia_km":5000}
+                            #"marca":"generico",
+                            #"modelo":"generico"}
         
         self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400) 
         
@@ -473,7 +527,7 @@ class CrearTurnoTestCase(TestSetUp):
 # ------------------------ extra: turnos en horarios con turnos inválidos ----------------------- #    
 # ----------------------------------------------------------------------------------------------- #         
     def test_turno_sobre_terminado(self):
-        turno_correcto = {"patente": "AS123FD",
+        turno_correcto = {"patente": "ABC123",
                           "fecha_inicio": "2023-9-29",
                           "hora_inicio": "08:00:00",
                           #"email": "luciacsoria5@gmail.com",
@@ -483,7 +537,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "tipo": "evaluacion",
                             "estado": "pendiente",
                             "tecnico_id": None,
-                            "patente": "AS123FD",
+                            "patente": "ABC123",
                             "fecha_inicio": "2023-09-29",
                             "hora_inicio": "08:00:00",
                             "fecha_fin": "2023-09-29",
@@ -497,7 +551,7 @@ class CrearTurnoTestCase(TestSetUp):
         self.assertDictEqual(response.json(), response_esperado) 
         
     def test_turno_sobre_cancelado(self):
-        turno_correcto = {"patente": "AS123FD",
+        turno_correcto = {"patente": "ABC123",
                           "fecha_inicio": "2023-9-29",
                           "hora_inicio": "10:00:00",
                           #"email": "luciacsoria5@gmail.com",
@@ -507,7 +561,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "tipo": "evaluacion",
                             "estado": "pendiente",
                             "tecnico_id": None,
-                            "patente": "AS123FD",
+                            "patente": "ABC123",
                             "fecha_inicio": "2023-09-29",
                             "hora_inicio": "10:00:00",
                             "fecha_fin": "2023-09-29",
@@ -521,7 +575,7 @@ class CrearTurnoTestCase(TestSetUp):
         self.assertDictEqual(response.json(), response_esperado)         
         
     def test_turno_sobre_rechazado(self):
-        turno_correcto = {"patente": "AS123FD",
+        turno_correcto = {"patente": "ABC123",
                           "fecha_inicio": "2023-9-29",
                           "hora_inicio": "13:00:00",
                           #"email": "luciacsoria5@gmail.com",
@@ -531,7 +585,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "tipo": "evaluacion",
                             "estado": "pendiente",
                             "tecnico_id": None,
-                            "patente": "AS123FD",
+                            "patente": "ABC123",
                             "fecha_inicio": "2023-09-29",
                             "hora_inicio": "13:00:00",
                             "fecha_fin": "2023-09-29",
@@ -545,7 +599,7 @@ class CrearTurnoTestCase(TestSetUp):
         self.assertDictEqual(response.json(), response_esperado)         
         
     def test_turno_sobre_ausente(self):
-        turno_correcto = {"patente": "AS123FD",
+        turno_correcto = {"patente": "ABC123",
                           "fecha_inicio": "2023-9-29",
                           "hora_inicio": "15:00:00",
                           #"email": "luciacsoria5@gmail.com",
@@ -555,7 +609,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "tipo": "evaluacion",
                             "estado": "pendiente",
                             "tecnico_id": None,
-                            "patente": "AS123FD",
+                            "patente": "ABC123",
                             "fecha_inicio": "2023-09-29",
                             "hora_inicio": "15:00:00",
                             "fecha_fin": "2023-09-29",
