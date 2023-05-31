@@ -4,23 +4,7 @@ from datetime import date, time
 from .gestion_agenda.gestionar_agenda import *
 from empleados.api_client.client_tecnico import ClientTecnicos
 
-# -------- dias y horarios disponibles -------- #
-def dias_horarios_disponibles_treinta_dias(id_taller:int, cant_horas:int):
-    return dias_disponibles_desde_hoy_a_treinta_dias(id_taller, cant_horas)
-
-def dias_horarios_disponibles_cuarentaycinco_dias(id_taller, cant_horas:int):
-    return dias_disponibles_desde_hoy_a_cuarentaycinco_dias(id_taller, cant_horas)
-
-def existe_taller(taller_id:int):
-        try:
-            taller = Taller.objects.get(id_taller= taller_id)
-        except:
-            return False
-        else:
-            return True
-
 # -------- tecnicos disponibles -------- #
-
 # devuelve una lista con los id de los tecnicos que podrían encargarse del turno
 def obtener_tecnicos_disponibles(id_turno: int, id_taller: int) -> list:
     tecnicos_disponibles = []
@@ -40,7 +24,6 @@ def obtener_id_tecnicos(id_taller: int) -> list:
     return id_tecnicos
 
 # -------- asignar tecnico -------- #
-    
 def se_puede_asignar_tecnico(tipo_turno: str, papeles_en_regla_turno: bool):
     if tipo_turno != "evaluacion":
         es_valido = True

@@ -213,7 +213,6 @@ class CrearTurnoTestCase(TestSetUp):
                             "taller_id": 10}
         
         response = self.post_response_crear_turno_service(turno_correcto)
-        print(response.content.decode())
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.json(), response_esperado) 
         

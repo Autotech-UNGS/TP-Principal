@@ -6,7 +6,7 @@ from administracion.models import Taller
 
 class TestSetUp(APITestCase):
     def setUp(self):
-        self.taller1 = G(Taller, id_taller=10, capacidad=20)
+        self.taller1 = G(Taller, id_taller=10, capacidad=20, estado=True)
         
         # Tiene que pasar de papeles_en_regla = False a papeles_en_regla = True
         self.turno_test_1_1 = G(Turno_taller, patente= "AAA100", taller_id=10, tipo='evaluacion', estado="pendiente", papeles_en_regla=False)

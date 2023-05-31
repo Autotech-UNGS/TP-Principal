@@ -6,7 +6,7 @@ from datetime import date, timedelta
 class TestSetUp(APITestCase):
     def setUp(self):
         # Instancias modelos
-        self.taller = G(Taller, id_taller=1)
+        self.taller = G(Taller, id_taller=1, estado=True)
         ayer = date.today() - timedelta(days=1)
         hoy = date.today() # --> empieza hoy
         mañana = date.today() + timedelta(days=1)

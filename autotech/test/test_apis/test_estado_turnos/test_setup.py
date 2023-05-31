@@ -9,7 +9,7 @@ class TestSetUp(APITestCase):
         ayer = date.today() - timedelta(days=1)
         
         # Instancias modelos
-        self.taller = G(Taller, id_taller=1)      
+        self.taller = G(Taller, id_taller=1, estado=True)      
         self.turno_taller1 = G(Turno_taller, tipo='service', tecnico_id=None, estado='pendiente', taller_id=self.taller,papeles_en_regla=True ) # id 1
         self.turno_taller2 = G(Turno_taller, tipo='evaluacion', tecnico_id=None, estado='pendiente', taller_id=self.taller, papeles_en_regla=False) # id 2
         self.turno_taller3 = G(Turno_taller, tipo='evaluacion', tecnico_id=None, estado='pendiente', taller_id=self.taller, papeles_en_regla=True) # id 3

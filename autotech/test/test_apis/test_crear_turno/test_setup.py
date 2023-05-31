@@ -10,8 +10,8 @@ import json
 
 class TestSetUp(APITestCase):
     def setUp(self):
-        self.taller1 = G(Taller, id_taller=10, capacidad=3)
-        self.taller2 = G(Taller,id_taller=11, capacidad=2)
+        self.taller1 = G(Taller, id_taller=10, capacidad=3, estado=True)
+        self.taller2 = G(Taller,id_taller=11, capacidad=2, estado=True)
         
         # en el taller 10, no hay mas espacio a las 10 y 11 el dia 2023/9/21
         self.turno_test_1 = G(Turno_taller, patente = 'AS123FD', id_turno= 1, taller_id=11, tipo='evaluacion', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(12,0,0), papeles_en_regla=True)
@@ -48,8 +48,8 @@ class TestSetUp(APITestCase):
         
         # reparaciones:
         # esta patente tiene un turno de evaluacion, y también uno extraordinario:
-        self.turno_evaluacion = G(Turno_taller, patente = 'LCS262', id_turno= 400, tipo='evaluacion', estado="terminado", fecha_inicio=date(2023,4,20), hora_inicio=time(10,0,0))
-        self.turno_extraordinario = G(Turno_taller, patente = 'LCS262', id_turno= 401, tipo='extraordinario', estado="terminado", fecha_inicio=date(2023,4,20), hora_inicio=time(10,0,0))
+        self.turno_evaluacion = G(Turno_taller, taller_id = 10, patente = 'LCS262', id_turno= 400, tipo='evaluacion', estado="terminado", fecha_inicio=date(2023,4,20), hora_inicio=time(10,0,0))
+        self.turno_extraordinario = G(Turno_taller, taller_id = 10, patente = 'LCS262', id_turno= 401, tipo='extraordinario', estado="terminado", fecha_inicio=date(2023,4,20), hora_inicio=time(10,0,0))
         
         task = ["10", "20"]
         #task_json = json.dumps(task)
