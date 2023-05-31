@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import visualizar_talleres, alta_talleres, visualizar_sucursales, modificar_talleres
+from .views import visualizar_talleres, alta_talleres, visualizar_sucursales, modificar_talleres, reasignar_taller
 
 urlpatterns = [
     path('talleres-list/', visualizar_talleres.VisualizarTalleresViewSet.as_view({'get':'talleresList'}), name='talleres-list'),
@@ -9,6 +9,14 @@ urlpatterns = [
     path('sucursales-validas-activas/', visualizar_sucursales.VisualizarSucursalesConTallerValidas.as_view(), name = 'sucursales-list'),
     path('sucursales-validas-activas/<int:id_sucursal>/', visualizar_sucursales.VisualizarUnaSucursalConTallerValida.as_view(), name = 'sucursales-list-una'),
     path('sucursales-sin-taller/', visualizar_sucursales.VisualizarSucursalesSinTaller.as_view(), name = 'sucursales-list-sin-taller'),
+
+    path('reasignar/', reasignar_taller.ReasignarTaller.as_view(), name = 'reasignar-taller'),
+    path('actualizar/<int:id_sucursal>/', modificar_talleres.ActualizarTallerAdmin.as_view(), name = 'actualizar-taller'),
+    path('cambiar-estado/<int:id_taller>/', modificar_talleres.ActualizarEstado.as_view(), name = 'cambiar-estado-taller'),
+
+    
+
+
 
 
 ]

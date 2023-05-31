@@ -76,3 +76,7 @@ class Frecuencia_km(models.IntegerChoices):
 class OrigenReparacion(models.TextChoices):
     EVALUACION ="evaluacion",("Evaluacion")
     EXTRAORDINARIO = "extraordinario",("Extraordinario")
+
+class EstadoTaller(models.TextChoices):
+    ACTIVO ="activo",("Activo")
+    INACTIVO = "inactivo",("Inactivo")

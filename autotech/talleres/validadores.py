@@ -10,7 +10,7 @@ class ValidadorTaller:
 
     def validar_taller(self, id_sucursal):
         
-        taller_existente = Taller.objects.filter(id_taller = id_sucursal).exists()
+        taller_existente = Taller.objects.filter(id_sucursal = id_sucursal).exists()
         if taller_existente:
               raise ValidationError(f'Ya existe un taller para la sucursal {id_sucursal}') 
 
@@ -59,4 +59,28 @@ class ValidadorTaller:
         
         if not isinstance(cant_tecnicos, int):
             raise ValidationError(f'La cantidad de técnicos debe ser un número entero')
+        return True
+    
+
+
+    def validar_datos_reasignacion(self, request):
+        # id (sucursal),nombre, direccion, mail, telefono, capacidad, cant_tecnicos
+        
+        id_sucursal_vieja = request.data.get("id_sucursal_vieja")
+        id_sucursal_nueva = request.data.get("id_sucursal_nueva")
+        
+
+        try:
+            cliente = ClientSucursales.obtener_sucursal(id_sucursal_vieja)
+        except Exception as e:
+            error_messages = str(e)
+            raise ValidationError(f'error: {error_messages}')
+        
+        try:
+            cliente = ClientSucursales.obtener_sucursal(id_sucursal_nueva)
+        except Exception as e:
+            error_messages = str(e)
+            raise ValidationError(f'error: {error_messages}')
+        
+        
         return True
