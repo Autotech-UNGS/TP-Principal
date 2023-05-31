@@ -66,14 +66,4 @@ class ClientSucursales():
                     sucursales_sin_taller.append(sucursal)
 
         return sucursales_sin_taller
-    
-
-    @classmethod
-    def tiene_taller(cls, id_sucursal):
-
-        sucursales = cls._obtener_datos(cls.BASE_URL)
-
-        
-
-        return tiene
   
