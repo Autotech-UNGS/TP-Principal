@@ -8,10 +8,12 @@ import re
 class ValidadorTaller:
     
 
-    def validar_taller(self, id_sucursal):
+    def validar_taller(self, id_sucursal, id_taller):
         
         taller_existente = Taller.objects.filter(id_sucursal = id_sucursal).exists()
-        if taller_existente:
+        taller = Taller.objects.get(id_taller = id_taller)
+        
+        if  taller_existente and not (taller.id_sucursal == id_sucursal):
               raise ValidationError(f'Ya existe un taller para la sucursal {id_sucursal}') 
 
         return True
@@ -63,15 +65,16 @@ class ValidadorTaller:
     
 
 
-    def validar_datos_reasignacion(self, request):
+    def validar_datos_reasignacion(self, request, id_taller):
         # id (sucursal),nombre, direccion, mail, telefono, capacidad, cant_tecnicos
         
-        id_sucursal_vieja = request.data.get("id_sucursal_vieja")
-        id_sucursal_nueva = request.data.get("id_sucursal_nueva")
+        taller = Taller.objects.get(id_taller=id_taller)
+        id_sucursal_taller = taller.id_sucursal
+        id_sucursal_nueva = request.data.get("id_sucursal")
         
 
         try:
-            cliente = ClientSucursales.obtener_sucursal(id_sucursal_vieja)
+            cliente = ClientSucursales.obtener_sucursal(id_sucursal_taller)
         except Exception as e:
             error_messages = str(e)
             raise ValidationError(f'error: {error_messages}')

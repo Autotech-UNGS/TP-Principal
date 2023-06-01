@@ -105,7 +105,6 @@ class RegistroReparacionViewSet(ViewSet):
     def modificar_registro_tarea_hecha(self, request):
         id_turno = request.data.get('id_turno')
         id_task = request.data.get('id_task')
-        detalle = request.data.get('detalle')
 
         if id_turno is None:
             return Response({'error': 'El campo "id_turno" es requerido'}, status=status.HTTP_400_BAD_REQUEST)
@@ -131,7 +130,6 @@ class RegistroReparacionViewSet(ViewSet):
                     tareas_hechas.append(id_task)
                     registro_reparacion.tasks_pendientes = tareas_pendientes
                     registro_reparacion.tasks_hechas = tareas_hechas
-                    registro_reparacion.detalle = detalle
                     registro_reparacion.save()
                     return Response({'message': 'Registro modificado exitosamente'}, status=status.HTTP_200_OK)
                 else:
@@ -171,6 +169,8 @@ class RegistroReparacionViewSet(ViewSet):
                 if id_task in tareas_hechas:
                     # Realizar las modificaciones necesarias
                     tareas_hechas.remove(id_task)
+                    tareas_pendientes.append(id_task)
+                    registro_reparacion.tasks_pendientes = tareas_pendientes
                     registro_reparacion.tasks_hechas = tareas_hechas
                     registro_reparacion.save()
                     return Response({'message': 'Registro modificado exitosamente'}, status=status.HTTP_200_OK)
@@ -275,7 +275,7 @@ class RegistroReparacionViewSet(ViewSet):
 # ---------------------------------------------------------------------------------------------------------------------------
 
     @action(detail=True, methods=['get'])
-    def listar_turnos_registro_pendiente(self, request, id_tecnico):
+    def listar_turnos_registro_en_proceso(self, request, id_tecnico):
         turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='reparacion')
         id_turnos = list(turnos.values_list('id_turno', flat=True))
 

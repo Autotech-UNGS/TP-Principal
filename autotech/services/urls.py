@@ -3,6 +3,7 @@ from .views.visualizar_service import *
 from .views.alta_service import *
 from .views.alta_checklist_service import *
 from .views.cambiar_estado_service import *
+from .views.visualizar_service_admin import RegistroServiceAdminViewSet
 
 
 urlpatterns = [
@@ -14,4 +15,7 @@ urlpatterns = [
     path('listar/checklist/<int:id_service>/', VisualizarTareasService.as_view(), name='visualizar-tarea-service'),
     path('listar/registros-pendientes/<int:id_tecnico>/', ListarTurnosRegistroPendienteTecnico.as_view(), name='visualizar-registros-service-pendientes'),
 
+     # -------------------------------------- PARA ADMIN ----------------------------------------------- #
+    path('registros/',RegistroServiceAdminViewSet.as_view(actions={'get': 'list'}), name = 'admin-service'),
+    path('registro/patente/<str:patente>/',RegistroServiceAdminViewSet.as_view(actions={'get': 'obtener_ultimo_registro_patente'}), name = 'registros-x-patente-service'),
 ]

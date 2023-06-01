@@ -50,7 +50,7 @@ def obtener_frecuencia_service_solicitado(patente:str, kilometraje_actual: int):
 def obtener_frecuencia_ultimo_service(patente:str):
     try:
         # ultimo turno de service de x patente --> Registro_service de ese turno --> Service
-        ultimo_turno_service = Turno_taller.objects.filter(patente=patente, tipo='service').latest('fecha_inicio')
+        ultimo_turno_service = Turno_taller.objects.filter(patente=patente, tipo='service', estado="terminado").latest('fecha_inicio')
         registro_de_ultimo_service = Registro_service.objects.get(id_turno=ultimo_turno_service.id_turno)
         ultimo_service = Service.objects.get(id_service=registro_de_ultimo_service.id_service.id_service)
         return ultimo_service.frecuencia_km
@@ -136,7 +136,7 @@ def obtener_duracion_service(marca:str, modelo:str, km:int):
 # retorna 0 si no existe un turno para evaluacion para esa patente
 def obtener_duracion_reparacion(patente:str): 
     try:
-        turno = Turno_taller.objects.filter(patente=patente, tipo= 'evaluacion').latest('fecha_inicio')
+        turno = Turno_taller.objects.filter(patente=patente, tipo= 'evaluacion', estado="terminado").latest('fecha_inicio')
         registro_admin = Registro_evaluacion_para_admin.objects.get(id_turno=turno.id_turno)
         return ceil(registro_admin.duracion_total_reparaciones / 60)
     except:
@@ -146,7 +146,7 @@ def obtener_duracion_reparacion(patente:str):
 # retorna 0 si no existe un turno para evaluacion para esa patente
 def obtener_duracion_extraordinario(patente:str):
     try:
-        turno = Turno_taller.objects.filter(patente=patente, tipo= 'extraordinario').latest('fecha_inicio')
+        turno = Turno_taller.objects.filter(patente=patente, tipo= 'extraordinario', estado="terminado").latest('fecha_inicio')
         registro_extraordinario = Registro_extraordinario.objects.get(id_turno=turno.id_turno)
         lista_task = registro_extraordinario.id_tasks
         duracion = 0
