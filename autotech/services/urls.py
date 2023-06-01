@@ -17,5 +17,5 @@ urlpatterns = [
 
      # -------------------------------------- PARA ADMIN ----------------------------------------------- #
     path('registros/',RegistroServiceAdminViewSet.as_view(actions={'get': 'list'}), name = 'admin-service'),
-    path('registros/<str:patente>/',RegistroServiceAdminViewSet.as_view(actions={'get': 'obtener_ultimos_registros_por_patente'}), name = 'registros-x-patente-service'),
+    path('registro/patente/<str:patente>/',RegistroServiceAdminViewSet.as_view(actions={'get': 'obtener_ultimo_registro_patente'}), name = 'registros-x-patente-service'),
 ]

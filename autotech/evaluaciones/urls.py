@@ -20,7 +20,7 @@ urlpatterns = [
 
     # -------------------------------------- PARA ADMIN ----------------------------------------------- #
     path('registros/',RegistroEvaluacionAdminViewSet.as_view(actions={'get': 'list'}), name = 'admin-evaluaciones'),
-    path('registros/<str:patente>/',RegistroEvaluacionAdminViewSet.as_view(actions={'get': 'obtener_ultimos_registros_por_patente'}), name = 'registros-x-patente-evaluaciones'),
+    path('registro/patente/<str:patente>/',RegistroEvaluacionAdminViewSet.as_view(actions={'get': 'obtener_ultimo_registro_patente'}), name = 'registros-x-patente-evaluaciones'),
 
     
 ]

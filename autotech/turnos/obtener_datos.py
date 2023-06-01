@@ -110,6 +110,9 @@ def obtener_duracion_service(marca:str, modelo:str, km:int):
 def obtener_duracion_reparacion(patente:str): 
     try:
         # 1) obtenemos el turno para evaluacion correspondiente a la reparacion que queremos hacer
+
+        # turno = Turno_taller.objects.filter(patente=patente, tipo= 'evaluacion', estado='terminado).latest('fecha_inicio') <- falta agregar especificar que el filtrado sea con estado='terminado' esto debido a que dado el caso en el que tengamos un turno cancelado para una fecha posterior a un turno evaluación que tiene un registro evaluación, este igual va a a filtrar el ultimo turno evaluación que está cancelado y esto no sería correcto.
+
         turno = Turno_taller.objects.filter(patente=patente, tipo= 'evaluacion').latest('fecha_inicio')
        
         # 2) con ese turno, nos traemos el turno para admin correspondiente, el cual tiene la duracion que necesitamos

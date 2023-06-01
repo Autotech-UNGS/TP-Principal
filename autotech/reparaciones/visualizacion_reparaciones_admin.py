@@ -15,10 +15,7 @@ class RegistroReparacionAdminViewSet(ViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['get'])
-    def obtener_ultimos_registros_por_patente(self, request, patente):
-        if not patente:
-            return Response({'error': 'La patente es requerida'}, status=status.HTTP_400_BAD_REQUEST)
-        
+    def obtener_ultimo_registro_patente(self, request, patente):
         registros = Registro_reparacion.objects.filter(id_turno__patente=patente, id_turno__estado='terminado').annotate(
             max_fecha_registro=Max('fecha_registro')
         ).filter(fecha_registro=F('max_fecha_registro'))
