@@ -7,8 +7,12 @@ from vehiculos.api_client.vehiculos import *
 # ---------------------------------------- envío de emails --------------------------------------- #
 # ------------------------------------------------------------------------------------------------ # 
 
-def obtener_email_usuario(patente):
-    #TODO
+def obtener_email_usuario(patente:str):
+    # dni = ClientVehiculos.obtener_dni_cliente(patente)
+    # if dni:
+        # email = ClientClientes.obtener_email(dni)
+        # return email
+    # return None
     return 'luciacsoria5@gmail.com'
   
 def obtener_direccion_taller(taller_id) -> str:
@@ -36,10 +40,10 @@ def redondear_a_multiplo_de_cincomil(km):
 # ------------------------------------ frecuencia de services ------------------------------------ #
 # ------------------------------------------------------------------------------------------------ # 
 
-def obtener_frecuencia_service_solicitado(patente:str, kilometraje: int):
+def obtener_frecuencia_service_solicitado(patente:str, kilometraje_actual: int):
     km_de_venta = obtener_km_de_venta(patente)
     # kilometraje actual - kilometraje inicial = diferencia de km (o sea, km del nuevo service)
-    frecuencia_service = kilometraje - km_de_venta
+    frecuencia_service = kilometraje_actual - km_de_venta
     return frecuencia_service
 
 def obtener_frecuencia_ultimo_service(patente:str):

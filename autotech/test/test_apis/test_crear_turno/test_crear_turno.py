@@ -213,6 +213,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "taller_id": 10}
         
         response = self.post_response_crear_turno_service(turno_correcto)
+        print(response.content.decode("utf-8"))
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.json(), response_esperado) 
         
@@ -240,6 +241,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "taller_id": 10}
         
         response = self.post_response_crear_turno_service(turno_correcto)
+        print(response.content.decode("utf-8"))
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.json(), response_esperado)  
         
@@ -267,6 +269,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "taller_id": 10}
         
         response = self.post_response_crear_turno_service(turno_correcto)
+        print(response.content.decode("utf-8"))
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.json(), response_esperado)  
         
@@ -274,10 +277,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": "AS123FF",
                           "fecha_inicio": "2023-05-31",
                           "hora_inicio": "16:00:00",
-                          #"email": "luciacsoria5@gmail.com",
                           "frecuencia_km": 10000,
-                          #"marca":"generico",
-                          #"modelo":"generico",
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -294,6 +294,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "taller_id": 10}
         
         response = self.post_response_crear_turno_service(turno_correcto)
+        print(response.content.decode("utf-8"))
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.json(), response_esperado)                     
         
@@ -429,6 +430,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "taller_id": 10}
         
         response = self.post_response_crear_turno_reparacion(turno_correcto)
+        print(response.content.decode("utf-8"))
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.json(), response_esperado)  
         
@@ -473,6 +475,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "taller_id": 10}
         
         response = self.post_response_crear_turno_extraordinario(turno_correcto)
+        print(response.content.decode("utf-8"))
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.json(), response_esperado) 
         

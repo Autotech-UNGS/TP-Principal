@@ -23,7 +23,7 @@ class validaciones:
     def validaciones_service(cls, taller_id:str, patente:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time, km: int, frecuencia_ultimo_service:int , frecuencia_service_solicitado:int ) -> HttpResponse:
         resultado_validacion_general = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='service', 
                                                                    dia_inicio=dia_inicio, horario_inicio=horario_inicio,
-                                                                   dia_fin= dia_fin[0], horario_fin=horario_fin[1])
+                                                                   dia_fin= dia_fin, horario_fin=horario_fin)
         if resultado_validacion_general.status_code == 400:
             return resultado_validacion_general
         if not validaciones.patente_registrada(patente):
@@ -38,7 +38,7 @@ class validaciones:
     def validaciones_reparacion(cls, taller_id:str, patente:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time, origen:str) -> HttpResponse:
         resultado_validacion_general = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='reparacion', 
                                                                    dia_inicio=dia_inicio, horario_inicio=horario_inicio,
-                                                                   dia_fin= dia_fin[0], horario_fin=horario_fin[1])
+                                                                   dia_fin= dia_fin, horario_fin=horario_fin)
         if resultado_validacion_general.status_code == 400:
             return resultado_validacion_general
         if origen == 'extraordinario':
@@ -47,10 +47,10 @@ class validaciones:
         return HttpResponse("Datos correctos", status=200)
     
     @classmethod  
-    def validaciones_extraordinario(cls, taller_id:str, patente:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time, origen:str) -> HttpResponse:
+    def validaciones_extraordinario(cls, taller_id:str, patente:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time) -> HttpResponse:
         resultado_validacion_general = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='extraordinario', 
                                                                    dia_inicio=dia_inicio, horario_inicio=horario_inicio,
-                                                                   dia_fin= dia_fin[0], horario_fin=horario_fin[1])
+                                                                   dia_fin= dia_fin, horario_fin=horario_fin)
         if resultado_validacion_general.status_code == 400:
             return resultado_validacion_general
         if not validaciones.patente_registrada(patente=patente): 
@@ -92,11 +92,11 @@ class validaciones:
         return HttpResponse("Patente correcta", status=200)
     
     # ------------------------------------------------------------------------------------------------ #
-    # -------------------------------------- auxiliares y solitarias -------------------------------------- #
+    # ----------------------------------- auxiliares y solitarias ------------------------------------ #
     # ------------------------------------------------------------------------------------------------ # 
 
     @classmethod
-    def patente_registrada(cls, patente):
+    def patente_registrada(cls, patente:str):
         existe_patente = ClientVehiculos.obtener_km_de_venta(patente=patente)
         return existe_patente
 
@@ -110,7 +110,7 @@ class validaciones:
             return True
         
     @classmethod
-    def taller_es_valido(cls, taller_id):
+    def taller_es_valido(cls, taller_id:int):
         taller = Taller.objects.get(id_taller= taller_id)
         return taller.estado == True
         
@@ -121,9 +121,9 @@ class validaciones:
     @classmethod
     def horarios_dentro_de_rango(cls, dia:date, horario_inicio:time):
         if dia.weekday() == 6: # domigo
-            horario_inicio_valido = horario_inicio.hour >= 8 and horario_inicio.hour <= 11 # podemos dar turnos de 8 a 11
+            horario_inicio_valido = horario_inicio.hour >= 8 and horario_inicio.hour <= 11
         else:
-            horario_inicio_valido = horario_inicio.hour >= 8 and horario_inicio.hour <= 16 # podemos dar turnos de 8 a 16
+            horario_inicio_valido = horario_inicio.hour >= 8 and horario_inicio.hour <= 16
         return horario_inicio_valido
         
     @classmethod

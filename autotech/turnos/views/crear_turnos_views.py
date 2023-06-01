@@ -16,6 +16,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
 # ------------------------------------------------------------------------------------------------ #
 # ------------------------------------- turno evaluacion: web ------------------------------------ #
 # ------------------------------------------------------------------------------------------------ #
+
     # papeles en regla == False        
     @action(detail=False, methods=['post'])
     def crear_turno_evaluacion_web(self, request):
@@ -56,7 +57,8 @@ class CrearActualizarTurnosViewSet(ViewSet):
             serializer.save()
             direccion_taller = obtener_direccion_taller(taller_id)
             email = obtener_email_usuario(patente)
-            EnvioDeEmail.enviar_correo('evaluacion', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
+            if email:
+                EnvioDeEmail.enviar_correo('evaluacion', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
             return Response(serializer.data)        
         else:
             return HttpResponse("error: request inválido", status=400)
@@ -105,7 +107,8 @@ class CrearActualizarTurnosViewSet(ViewSet):
             serializer.save()
             direccion_taller = obtener_direccion_taller(taller_id)
             email = obtener_email_usuario(patente)
-            EnvioDeEmail.enviar_correo('evaluacion', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
+            if email:
+                EnvioDeEmail.enviar_correo('evaluacion', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
             return Response(serializer.data)        
         else:
             return HttpResponse("error: request inválido", status=400)
@@ -129,14 +132,17 @@ class CrearActualizarTurnosViewSet(ViewSet):
         km = request.data.get("frecuencia_km")
         dia_inicio_date = datetime.strptime(request.data.get("fecha_inicio"), '%Y-%m-%d').date()
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
-        frecuencia_service_solicitado = obtener_frecuencia_service_solicitado(patente, km)
-        frecuencia_ultimo_service = obtener_frecuencia_ultimo_service(patente)
-        duracion = obtener_duracion_service_vehiculo(patente, km=km)
         
-        # duracion y fecha/hora fin:
+        # frecuencias de services, duracion y fecha/hora fin:
+        if not validaciones.patente_registrada(patente=patente):
+            return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
+        duracion = obtener_duracion_service_vehiculo(patente, km=km)
         if duracion == 0:
             return HttpResponse("error: no existe un service con los datos especificados", status=400)
+        
         fecha_hora_fin = obtener_fecha_hora_fin(dia_inicio_date, horario_inicio_time, duracion)
+        frecuencia_service_solicitado = obtener_frecuencia_service_solicitado(patente, km)
+        frecuencia_ultimo_service = obtener_frecuencia_ultimo_service(patente) 
         
         # validaciones:
         resultado_validacion = validaciones.validaciones_service(taller_id=taller_id, patente=patente, 
@@ -167,7 +173,8 @@ class CrearActualizarTurnosViewSet(ViewSet):
             serializer.save()
             direccion_taller = obtener_direccion_taller(taller_id)
             email = obtener_email_usuario(patente)
-            EnvioDeEmail.enviar_correo('service', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
+            if email:
+                EnvioDeEmail.enviar_correo('service', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
             return Response(serializer.data)        
         else:
             return HttpResponse("error: request inválido", status=400)

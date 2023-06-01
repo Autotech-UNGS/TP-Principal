@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'services',
     'reparaciones',
     'vehiculos',
+    'clientes',
     #'django_crontab',
 ]
 
