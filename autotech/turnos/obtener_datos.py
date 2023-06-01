@@ -9,12 +9,16 @@ from clientes.api_client.clientes import *
 # ------------------------------------------------------------------------------------------------ # 
 
 def obtener_email_usuario(patente:str):
+    return "luciacsoria5@gmail.com"
+"""
     try:
         dni = ClientVehiculos.obtener_dni_cliente(patente)
         email = ClientClientes.obtener_email(dni)
         return email
     except:
         return None
+    """
+  
   
 def obtener_direccion_taller(taller_id) -> str:
     taller = Taller.objects.get(id_taller= taller_id)
