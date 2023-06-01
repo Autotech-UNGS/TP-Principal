@@ -57,7 +57,7 @@ class SucursalTieneTaller(APIView):
         existe_taller = Taller.objects.filter(id_sucursal=id_sucursal, estado = True).exists()
         print(existe_taller)
         if existe_taller:
-            return Response({'mensaje': 'El taller existe para la sucursal especificada', 'valor':True}, status=status.HTTP_200_OK)
+            return Response({'mensaje': f'Existe un taller activo para la sucursal {id_sucursal}', 'valor':True}, status=status.HTTP_200_OK)
         else:
-            return Response({'mensaje': 'No existe un taller para la sucursal especificada','valor':False}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'mensaje': f'No existe un taller activo para la sucursal {id_sucursal}','valor':False}, status=status.HTTP_404_NOT_FOUND)
 
