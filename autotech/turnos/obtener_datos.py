@@ -33,7 +33,7 @@ def obtener_km_de_venta(patente) -> int:
     return km
 
 def redondear_a_multiplo_de_cincomil(km):
-    resultado = round(km / 5000) * 5000
+    resultado = round(int(km) / 5000) * 5000
     return resultado if resultado != 0 else 5000
 
 # ------------------------------------------------------------------------------------------------ #
@@ -115,8 +115,12 @@ def obtener_duracion_service_vehiculo(patente:str, km:int):
         marca, modelo = obtener_marca_modelo(patente)
         service = Service.objects.get(marca=marca, modelo=modelo, frecuencia_km=km)
         return ceil(service.duracion_total / 60)
-    except:
-        return 0
+    except Service.DoesNotExist:
+        try:
+            service = Service.objects.get(marca="generico", modelo="generico", frecuencia_km=km)
+            return ceil(service.duracion_total / 60)
+        except Service.DoesNotExist:
+            return 0
         
 # para obtener la duracion de un service en específico
 # retorna 0 si el service no existe        

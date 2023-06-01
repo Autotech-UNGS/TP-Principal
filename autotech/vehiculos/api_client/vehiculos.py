@@ -18,7 +18,7 @@ class ClientVehiculos():
     def patente_registrada(cls, patente:str):
         datos_vehiculo = cls.obtener_datos_vehiculo(patente)
         if datos_vehiculo:
-             if datos_vehiculo['status'] == 'VENDIDO':
+             if datos_vehiculo.get("status") == 'VENDIDO':
                 return True
         return False
     

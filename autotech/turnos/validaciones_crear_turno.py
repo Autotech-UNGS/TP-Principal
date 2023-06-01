@@ -27,11 +27,13 @@ class validaciones:
         if resultado_validacion_general.status_code == 400:
             return resultado_validacion_general
         if not validaciones.patente_registrada(patente):
-            return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
+            return HttpResponse(f"error: la patente no está registrada como perteneciente a un cliente: {patente}", status=400)
         if km == None:
             return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
+        if frecuencia_service_solicitado < 0:
+            return HttpResponse(f"error: el service ingresado no es valido: {frecuencia_service_solicitado}, {patente}", status=400)
         if frecuencia_ultimo_service != 0 and frecuencia_ultimo_service >= frecuencia_service_solicitado:
-            return HttpResponse("error: el service ingresado ya se había realizado antes.", status=400)
+            return HttpResponse(f"error: el service ingresado ya se había realizado antes: {frecuencia_ultimo_service}, {frecuencia_service_solicitado}, {patente}", status=400)
         return HttpResponse("Datos correctos", status=200)
     
     @classmethod  
@@ -43,7 +45,7 @@ class validaciones:
             return resultado_validacion_general
         if origen == 'extraordinario':
             if not validaciones.patente_registrada(patente=patente):
-                return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)  
+                return HttpResponse(f"error: la patente no está registrada como perteneciente a un cliente: {patente}", status=400)
         return HttpResponse("Datos correctos", status=200)
     
     @classmethod  
@@ -54,29 +56,29 @@ class validaciones:
         if resultado_validacion_general.status_code == 400:
             return resultado_validacion_general
         if not validaciones.patente_registrada(patente=patente): 
-            return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
+            return HttpResponse(f"error: la patente no está registrada como perteneciente a un cliente: {patente}", status=400)
         return HttpResponse("Datos correctos", status=200)
     
     @classmethod  
     def validar_taller(cls, taller_id:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time) -> HttpResponse:
         if not cls.existe_taller(taller_id):
-            return HttpResponse("error: el id ingresado no pertenece a ningún taller en el sistema", status=400)
+            return HttpResponse(f"error: el id ingresado no pertenece a ningún taller en el sistema: {taller_id}", status=400)
         if not cls.taller_es_valido(taller_id):
-            return HttpResponse("error: el id ingresado pertenece a un taller inactivo", status=400)
+            return HttpResponse(f"error: el id ingresado pertenece a un taller inactivo: {taller_id}", status=400)
         if not cls.taller_esta_disponible(taller_id, dia_inicio, horario_inicio, dia_fin, horario_fin):
-            return HttpResponse("error: ese dia no esta disponible en ese horario", status=400)
+            return HttpResponse(f"error: ese dia no esta disponible en ese horario:{dia_inicio}, {horario_inicio}", status=400)
         return HttpResponse("Taller correcto", status=200)
         
     @classmethod          
     def validar_dias_horarios(cls, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time) -> HttpResponse:
         if not cls.horarios_exactos(horario_inicio, horario_fin):
-            return HttpResponse("error: los horarios de comienzo y fin de un turno deben ser horas exactas", status=400)
+            return HttpResponse(f"error: los horarios de comienzo y fin de un turno deben ser horas exactas: {horario_inicio}, {horario_fin}", status=400)
         if not cls.horarios_dentro_de_rango(dia_inicio, horario_inicio):
-            return HttpResponse("error: los horarios superan el limite de la jornada laboral", status=400)
+            return HttpResponse(f"error: los horarios superan el limite de la jornada laboral: {horario_inicio}, {horario_fin}", status=400)
         if not cls.dia_valido(dia_inicio):
-            return HttpResponse("error: no se puede sacar un turno para una fecha que ya paso.", status=400)
+            return HttpResponse(f"error: no se puede sacar un turno para una fecha que ya paso: {dia_inicio}, {horario_inicio}", status=400)
         if not cls.dia_hora_coherentes(dia_inicio, horario_inicio, dia_fin, horario_fin):
-            return HttpResponse("error: un turno no puede terminar antes de que empiece", status=400)
+            return HttpResponse(f"error: un turno no puede terminar antes de que empiece: {dia_inicio}-{horario_inicio}", status=400)
         return HttpResponse("Dias horarios correctos", status=200)
      
     @classmethod     
@@ -85,10 +87,10 @@ class validaciones:
         condiciones_exclusion = Q(estado='terminado') | Q(estado='cancelado') | Q(estado='rechazado') | Q(estado='ausente')
         turnos_ese_tipo = Turno_taller.objects.filter(patente=patente, tipo=tipo, fecha_inicio__gte=hoy).exclude(condiciones_exclusion)
         if turnos_ese_tipo.count() != 0:
-            return HttpResponse("error: la patente ingresada ya tiene un turno de ese tipo registrado en el sistema.", status=400)
+            return HttpResponse(f"error: la patente ingresada ya tiene un turno de ese tipo registrado en el sistema: {patente}", status=400)
         turnos_ese_dia_horario = Turno_taller.objects.filter(patente=patente, fecha_inicio= fecha_turno, hora_inicio=hora_turno)
         if turnos_ese_dia_horario.count() != 0:
-            return HttpResponse("error: la patente ingresada ya tiene un turno para ese mismo dia y horario en el sistema", status=400)
+            return HttpResponse(f"error: la patente ingresada ya tiene un turno para ese mismo dia y horario en el sistema: {patente}", status=400)
         return HttpResponse("Patente correcta", status=200)
     
     # ------------------------------------------------------------------------------------------------ #
@@ -97,7 +99,7 @@ class validaciones:
 
     @classmethod
     def patente_registrada(cls, patente:str):
-        existe_patente = ClientVehiculos.obtener_km_de_venta(patente=patente)
+        existe_patente = ClientVehiculos.patente_registrada(patente=patente)
         return existe_patente
 
     @classmethod

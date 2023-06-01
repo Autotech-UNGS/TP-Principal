@@ -135,14 +135,15 @@ class CrearActualizarTurnosViewSet(ViewSet):
         
         # frecuencias de services, duracion y fecha/hora fin:
         if not validaciones.patente_registrada(patente=patente):
-            return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
-        duracion = obtener_duracion_service_vehiculo(patente, km=km)
+            return HttpResponse(f"error: la patente no está registrada como perteneciente a un cliente: {patente}", status=400)
+        
+        frecuencia_service_solicitado = obtener_frecuencia_service_solicitado(patente, km)
+        frecuencia_ultimo_service = obtener_frecuencia_ultimo_service(patente) 
+        duracion = obtener_duracion_service_vehiculo(patente, km=frecuencia_service_solicitado)
         if duracion == 0:
             return HttpResponse("error: no existe un service con los datos especificados", status=400)
         
         fecha_hora_fin = obtener_fecha_hora_fin(dia_inicio_date, horario_inicio_time, duracion)
-        frecuencia_service_solicitado = obtener_frecuencia_service_solicitado(patente, km)
-        frecuencia_ultimo_service = obtener_frecuencia_ultimo_service(patente) 
         
         # validaciones:
         resultado_validacion = validaciones.validaciones_service(taller_id=taller_id, patente=patente, 
@@ -166,7 +167,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         datos['fecha_fin'] = fecha_hora_fin[0].strftime("%Y-%m-%d")
         datos['hora_fin'] = fecha_hora_fin[1].strftime("%H:%M:%S")
         datos['tecnico_id'] = None
-        datos['frecuencia_km'] = frecuencia_service_solicitado
+        datos['frecuencia_km'] = str(frecuencia_service_solicitado)
         
         serializer = TurnoTallerSerializer(data=datos)
         if serializer.is_valid():
