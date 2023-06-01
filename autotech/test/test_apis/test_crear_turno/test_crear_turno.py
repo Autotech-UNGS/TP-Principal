@@ -184,7 +184,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": self.patente_cliente,
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
-                          "frecuencia_km": 25000,
+                          "frecuencia_km": 25189, #25000
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -208,7 +208,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": self.patente_cliente,
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
-                          "frecuencia_km": 25000,
+                          "frecuencia_km": 26467, # 25000
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -232,7 +232,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": self.patente_cliente,
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "16:00:00",
-                          "frecuencia_km": 25000,
+                          "frecuencia_km": 27230, # 25000
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -256,7 +256,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": self.patente_cliente,
                           "fecha_inicio": "2023-10-31",
                           "hora_inicio": "16:00:00",
-                          "frecuencia_km": 25000,
+                          "frecuencia_km": 24895, # 25000
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,

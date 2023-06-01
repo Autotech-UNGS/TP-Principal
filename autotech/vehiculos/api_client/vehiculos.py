@@ -4,12 +4,13 @@ import json
 class ClientVehiculos():
     BASE_URL_PATENTE = 'https://gadmin-backend-production.up.railway.app/api/v1/vehicle/getByPlate/'
     
-    """
     @classmethod
     def obtener_dni_cliente(cls, patente:str):
-        datos_vehiculo = cls.obtener_datos_vehiculo(patente)
+        return "1234568"
+    
+    """datos_vehiculo = cls.obtener_datos_vehiculo(patente)
         if datos_vehiculo:
-            dni = datos_vehiculo['dni']
+            dni = datos_vehiculo.get("dni_cliente")
             return dni
         return None
     """
@@ -25,19 +26,19 @@ class ClientVehiculos():
     @classmethod
     def obtener_marca_modelo(cls, patente:str):
         datos_vehiculo = cls.obtener_datos_vehiculo(patente)
-        if datos_vehiculo:
+        if datos_vehiculo and datos_vehiculo.get("status") == 'VENDIDO':
             marca = datos_vehiculo.get("brand")
             modelo = datos_vehiculo.get("model")
             return marca, modelo
-        raise ValueError("Patente no existente")
+        raise ValueError(f"Patente no existente: {patente}")
     
     @classmethod
     def obtener_km_de_venta(cls, patente:str):
         datos_vehiculo = cls.obtener_datos_vehiculo(patente)
-        if datos_vehiculo:
+        if datos_vehiculo and datos_vehiculo.get("status") == 'VENDIDO':
             km = datos_vehiculo.get("kilometers")
             return km
-        raise ValueError("Patente no existente")
+        raise ValueError(f"La patente no pertenece a un vehiculo vendido a un cliente: {patente}")
         
     @classmethod    
     def obtener_datos_vehiculo(cls, patente: str):

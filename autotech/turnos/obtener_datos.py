@@ -2,18 +2,19 @@ from administracion.models import Taller, Service, Turno_taller, Registro_evalua
 from datetime import date, time, timedelta
 from math import ceil
 from vehiculos.api_client.vehiculos import *
+from clientes.api_client.clientes import *
 
 # ------------------------------------------------------------------------------------------------ #
 # ---------------------------------------- envío de emails --------------------------------------- #
 # ------------------------------------------------------------------------------------------------ # 
 
 def obtener_email_usuario(patente:str):
-    # dni = ClientVehiculos.obtener_dni_cliente(patente)
-    # if dni:
-        # email = ClientClientes.obtener_email(dni)
-        # return email
-    # return None
-    return 'luciacsoria5@gmail.com'
+    try:
+        dni = ClientVehiculos.obtener_dni_cliente(patente)
+        email = ClientClientes.obtener_email(dni)
+        return email
+    except:
+        return None
   
 def obtener_direccion_taller(taller_id) -> str:
     taller = Taller.objects.get(id_taller= taller_id)

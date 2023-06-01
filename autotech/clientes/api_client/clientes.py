@@ -7,8 +7,10 @@ class ClientClientes:
     @classmethod
     def obtener_email(cls, dni):
         cliente = cls.obtener_datos_cliente(dni)
-        email = cliente.get("email")
-        return email
+        if cliente:
+            email = cliente.get("email")
+            return email
+        raise ValueError(f"Cliente no existente: {dni}")
         
     @classmethod    
     def obtener_datos_cliente(cls, dni: str):
@@ -18,5 +20,4 @@ class ClientClientes:
             raise requests.HTTPError({'message error': response.status_code})
 
         datos_cliente = response.json()
-        
         return datos_cliente

@@ -59,6 +59,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
             email = obtener_email_usuario(patente)
             if email:
                 EnvioDeEmail.enviar_correo('evaluacion', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
+                print("email enviado a: ", email)
             return Response(serializer.data)        
         else:
             return HttpResponse("error: request inválido", status=400)
@@ -109,6 +110,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
             email = obtener_email_usuario(patente)
             if email:
                 EnvioDeEmail.enviar_correo('evaluacion', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
+                print("email enviado a: ", email)
             return Response(serializer.data)        
         else:
             return HttpResponse("error: request inválido", status=400)
@@ -129,7 +131,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
-        km = request.data.get("frecuencia_km")
+        km = redondear_a_multiplo_de_cincomil(request.data.get("frecuencia_km"))
         dia_inicio_date = datetime.strptime(request.data.get("fecha_inicio"), '%Y-%m-%d').date()
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
         
@@ -176,6 +178,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
             email = obtener_email_usuario(patente)
             if email:
                 EnvioDeEmail.enviar_correo('service', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
+                print("email enviado a: ", email)
             return Response(serializer.data)        
         else:
             return HttpResponse("error: request inválido", status=400)
