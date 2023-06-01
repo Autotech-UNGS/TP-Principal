@@ -9,6 +9,6 @@ urlpatterns = [
     path('listar-registradas/<int:id_turno>/', views.RegistroReparacionViewSet.as_view({'get': 'listar_tareas_registradas'}), name='listar-registradas'),
     path('ver-detalle-evaluacion/<int:id_turno>/', views.RegistroReparacionViewSet.as_view({'get': 'mostrar_detalle_evaluacion_realizada'}), name='mostrar-detalle-evaluacion'),
     path('modificar-detalle-reparacion/', views.RegistroReparacionViewSet.as_view({'patch': 'modificar_detalle_reparacion'}), name='mostrar-detalle-evaluacion'),
-    path('listar-pendientes/<int:id_tecnico>/', views.RegistroReparacionViewSet.as_view({'get': 'listar_turnos_registro_pendiente'}), name='listar-pendientes'),
+    path('listar-en-proceso/<int:id_tecnico>/', views.RegistroReparacionViewSet.as_view({'get': 'listar_turnos_registro_en_proceso'}), name='listar-en-proceso'),
     path('finalizar/<int:id_turno>/', views.RegistroReparacionViewSet.as_view({'patch': 'finalizar_registro'}), name='finalizar-registro'),
 ]
