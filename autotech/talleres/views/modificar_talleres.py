@@ -11,12 +11,19 @@ from talleres.validadores import ValidadorTaller
 
 from talleres.api_client.cliente_sucursales import ClientSucursales
 
+import warnings
+
 
 class ModificarTaller(APIView):
     permission_classes = [permissions.AllowAny]
 
     def put(self, request, id_taller):
         validador = ValidadorTaller()
+
+        response_data = {
+                    "resultado": [],
+                    "warnings": []
+        }
 
         # ------------------------------------------------------------------------------------------------------ #
         try:
@@ -36,8 +43,11 @@ class ModificarTaller(APIView):
         turnos_pendientes = Turno_taller.objects.filter(taller_id=id_taller, estado__in=["en_proceso","pendiente"]).exists()
 
         if turnos_pendientes and taller.estado:
-            return Response({'error': 'No se puede cambiar el estado. Aún hay turnos asociados a este taller.'}, status=status.HTTP_400_BAD_REQUEST)
-        elif turnos_pendientes and not taller.estado:
+            warning_message = f'Tener en cuenta que está haciendo INACTIVO un taller con turnos pendientes y/o en procreso (taller = {id_taller}). No se podrá sacar turnos en el taller hasta que esté ACTIVO nuevamente'
+            # warnings.warn(warning_message, UserWarning)
+            response_data["warnings"].append(warning_message)
+        
+        if turnos_pendientes and not taller.estado:
             taller.estado = True
         elif taller.estado:
             taller.estado = False
@@ -72,15 +82,27 @@ class ModificarTaller(APIView):
         serializer = TallerSerializer(taller, data=request.data, partial=True)
         if serializer.is_valid():
             # Excluir los campos de localidad, provincia , código postal, y el id del taller
-            serializer.validated_data.pop('id_taller', None)
-            serializer.validated_data.pop('localidad', None)
-            serializer.validated_data.pop('provincia', None)
-            serializer.validated_data.pop('codigo_postal', None)
+            excluded_fields = ['id_taller', 'localidad', 'provincia','cod_postal']
+            for field in excluded_fields:
+                serializer.validated_data.pop(field, None)
 
+            # Guardar los cambios en el taller
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            response_data["resultado"].append(serializer.data)
+   
+            return Response(response_data, status=status.HTTP_200_OK)
         else:
+            response_data["resultado"].append(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
+
+
+
+
+
+
 
 
 class ActualizarTallerAdmin(APIView):
