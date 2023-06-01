@@ -18,6 +18,7 @@ class ModificarTaller(APIView):
     def put(self, request, id_taller):
         validador = ValidadorTaller()
 
+        # ------------------------------------------------------------------------------------------------------ #
         try:
             taller = Taller.objects.get(id_taller=id_taller)
         except Taller.DoesNotExist:
@@ -28,6 +29,45 @@ class ModificarTaller(APIView):
         except ValidationError as e:
             error_messages = [str(error) for error in e.detail]
             return Response({'error': error_messages}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+        # ------------------------------------------------------------------------------------------------------ #
+        print(taller.estado)
+        turnos_pendientes = Turno_taller.objects.filter(taller_id=id_taller, estado__in=["en_proceso","pendiente"]).exists()
+
+        if turnos_pendientes and taller.estado:
+            return Response({'error': 'No se puede cambiar el estado. Aún hay turnos asociados a este taller.'}, status=status.HTTP_400_BAD_REQUEST)
+        elif turnos_pendientes and not taller.estado:
+            taller.estado = True
+        elif taller.estado:
+            taller.estado = False
+        else:
+            taller.estado = True
+
+
+        # ------------------------------------------------------------------------------------------------------ #
+        id_sucursal_nueva = request.data.get("id_sucursal")
+        id_sucursal_taller = taller.id_sucursal
+
+        try:
+            taller = Taller.objects.get(id_sucursal=id_sucursal_taller)
+        except Taller.DoesNotExist:
+            return Response({'error': f'No existe un taller para la sucursal {id_sucursal_taller}'}, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            validador.validar_datos_reasignacion(request, id_taller)
+        except ValidationError as e:
+            error_messages = [str(error) for error in e.detail]
+            return Response({'error': error_messages}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            validador.validar_taller(id_sucursal_nueva, id_taller)
+        except ValidationError as e:
+            error_messages = [str(error) for error in e.detail]
+            return Response({'error': error_messages}, status=status.HTTP_400_BAD_REQUEST)
+
+        taller.id_sucursal = id_sucursal_nueva
+        # ------------------------------------------------------------------------------------------------------ #
 
         serializer = TallerSerializer(taller, data=request.data, partial=True)
         if serializer.is_valid():
