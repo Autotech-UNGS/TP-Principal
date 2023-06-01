@@ -1,9 +1,9 @@
 from django.http import HttpResponse
 from administracion.models import *
 from .obtener_datos import *
-#from .validaciones_asignar_tecnico import * 
 from datetime import *
 from .gestion_agenda.gestionar_agenda import *
+from vehiculos.api_client.vehiculos import *
 
 class validaciones:  
     @classmethod  
@@ -17,6 +17,44 @@ class validaciones:
         patente_valida = cls.validar_patente(patente, tipo, fecha_turno=dia_inicio, hora_turno=horario_inicio)
         if patente_valida.status_code == 400:
             return patente_valida
+        return HttpResponse("Datos correctos", status=200)
+    
+    @classmethod  
+    def validaciones_service(cls, taller_id:str, patente:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time, km: int, frecuencia_ultimo_service:int , frecuencia_service_solicitado:int ) -> HttpResponse:
+        resultado_validacion_general = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='service', 
+                                                                   dia_inicio=dia_inicio, horario_inicio=horario_inicio,
+                                                                   dia_fin= dia_fin[0], horario_fin=horario_fin[1])
+        if resultado_validacion_general.status_code == 400:
+            return resultado_validacion_general
+        if not validaciones.patente_registrada(patente):
+            return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
+        if km == None:
+            return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
+        if frecuencia_ultimo_service != 0 and frecuencia_ultimo_service >= frecuencia_service_solicitado:
+            return HttpResponse("error: el service ingresado ya se había realizado antes.", status=400)
+        return HttpResponse("Datos correctos", status=200)
+    
+    @classmethod  
+    def validaciones_reparacion(cls, taller_id:str, patente:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time, origen:str) -> HttpResponse:
+        resultado_validacion_general = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='reparacion', 
+                                                                   dia_inicio=dia_inicio, horario_inicio=horario_inicio,
+                                                                   dia_fin= dia_fin[0], horario_fin=horario_fin[1])
+        if resultado_validacion_general.status_code == 400:
+            return resultado_validacion_general
+        if origen == 'extraordinario':
+            if not validaciones.patente_registrada(patente=patente):
+                return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)  
+        return HttpResponse("Datos correctos", status=200)
+    
+    @classmethod  
+    def validaciones_extraordinario(cls, taller_id:str, patente:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time, origen:str) -> HttpResponse:
+        resultado_validacion_general = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='extraordinario', 
+                                                                   dia_inicio=dia_inicio, horario_inicio=horario_inicio,
+                                                                   dia_fin= dia_fin[0], horario_fin=horario_fin[1])
+        if resultado_validacion_general.status_code == 400:
+            return resultado_validacion_general
+        if not validaciones.patente_registrada(patente=patente): 
+            return HttpResponse("error: la patente no está registrada como perteneciente a un cliente", status=400)
         return HttpResponse("Datos correctos", status=200)
     
     @classmethod  
@@ -53,15 +91,14 @@ class validaciones:
             return HttpResponse("error: la patente ingresada ya tiene un turno para ese mismo dia y horario en el sistema", status=400)
         return HttpResponse("Patente correcta", status=200)
     
-    @classmethod
-    def existe_turno_evaluacion(patente):
-        turnos = Turno_taller.objects.filter(patente=patente, tipo = 'evaluacion', estado='terminado')
-        return turnos.count() != 0
+    # ------------------------------------------------------------------------------------------------ #
+    # -------------------------------------- auxiliares y solitarias -------------------------------------- #
+    # ------------------------------------------------------------------------------------------------ # 
 
     @classmethod
     def patente_registrada(cls, patente):
-        #TODO
-        return True
+        existe_patente = ClientVehiculos.obtener_km_de_venta(patente=patente)
+        return existe_patente
 
     @classmethod
     def existe_taller(cls, taller_id:int):

@@ -1,76 +1,63 @@
 from administracion.models import Taller, Service, Turno_taller, Registro_evaluacion_para_admin, Checklist_evaluacion, Registro_extraordinario, Registro_service
 from datetime import date, time, timedelta
 from math import ceil
-import json
+from vehiculos.api_client.vehiculos import *
 
-def obtener_email_usuario():
+# ------------------------------------------------------------------------------------------------ #
+# ---------------------------------------- envío de emails --------------------------------------- #
+# ------------------------------------------------------------------------------------------------ # 
+
+def obtener_email_usuario(patente):
     #TODO
-    #return 'forozco@campus.ungs.edu.ar'
     return 'luciacsoria5@gmail.com'
+  
+def obtener_direccion_taller(taller_id) -> str:
+    taller = Taller.objects.get(id_taller= taller_id)
+    return f'{taller.direccion}, {taller.localidad}, {taller.provincia}.'
 
-def obtener_marca(patente:str):
-    #TODO
-    return "generico"
+# ------------------------------------------------------------------------------------------------ #
+# -------------------------------------- datos del vehículo -------------------------------------- #
+# ------------------------------------------------------------------------------------------------ # 
 
-def obtener_modelo(patente:str):
-    #TODO
-    return "generico"
+def obtener_marca_modelo(patente:str) -> str:
+    marca, modelo = ClientVehiculos.obtener_marca_modelo(patente=patente)
+    return marca, modelo
 
-def obtener_km_de_venta(patente):
-    #TODO
-    return 0
+def obtener_km_de_venta(patente) -> int:
+    km = ClientVehiculos.obtener_km_de_venta(patente=patente)
+    km = redondear_a_multiplo_de_cincomil(km)
+    return km
 
-def obtener_frecuencia_service(patente:str, kilometraje: int):
+def redondear_a_multiplo_de_cincomil(km):
+    resultado = round(km / 5000) * 5000
+    return resultado if resultado != 0 else 5000
+
+# ------------------------------------------------------------------------------------------------ #
+# ------------------------------------ frecuencia de services ------------------------------------ #
+# ------------------------------------------------------------------------------------------------ # 
+
+def obtener_frecuencia_service_solicitado(patente:str, kilometraje: int):
     km_de_venta = obtener_km_de_venta(patente)
+    # kilometraje actual - kilometraje inicial = diferencia de km (o sea, km del nuevo service)
     frecuencia_service = kilometraje - km_de_venta
     return frecuencia_service
 
-def obtener_frecuencia_ultimo_service(patente:str): # retorna 5000, 10000, 15000, etc
+def obtener_frecuencia_ultimo_service(patente:str):
     try:
-    # tengo que encontrar todos los turnos de services de esa patente, y quedarme con el último
-    # con ese ultimo turno de tipo service, tengo que encontrar el Registro_service que le corresponde
-    # con el id_service de ese Registro_service, tengo que encontrar el Service correspondiente
-    # con ese Service, obtengo la frecuencia_km, y la retorno
+        # ultimo turno de service de x patente --> Registro_service de ese turno --> Service
         ultimo_turno_service = Turno_taller.objects.filter(patente=patente, tipo='service').latest('fecha_inicio')
         registro_de_ultimo_service = Registro_service.objects.get(id_turno=ultimo_turno_service.id_turno)
         ultimo_service = Service.objects.get(id_service=registro_de_ultimo_service.id_service.id_service)
         return ultimo_service.frecuencia_km
     except:
         return 0
-
-def obtener_turno(id_turno):
-    try:
-        turno = Turno_taller.objects.get(id_turno= id_turno)
-        return turno
-    except:
-        return None
     
-# cuando esta funciónn se invoca, ya sabemos que el taller existe    
-def obtener_direccion_taller(taller_id) -> str:
-    taller = Taller.objects.get(id_taller= taller_id)
-    return f'{taller.direccion}, {taller.localidad}, {taller.provincia}.'
+# ------------------------------------------------------------------------------------------------ #
+# ------------------------------------ fecha/hora final, turno ----------------------------------- #
+# ------------------------------------------------------------------------------------------------ # 
 
-def obtener_duracion(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time):
-    if fecha_inicio == fecha_fin:
-        return hora_fin.hour - hora_inicio.hour
-    else:
-        duracion = 0
-        fecha = fecha_inicio
-        hora = hora_inicio
-        seguir = True
-        while seguir:
-            hora = time(hora.hour + 1, 0, 0)
-            duracion += 1
-            # si llegamos al dia y a la hora del fin del turno, terminamos el ciclo
-            if fecha == fecha_fin and hora == hora_fin:
-                seguir = False
-            # si llegamos al final de la jornada, reiniciamos la hora y avanzamos un dia
-            if (hora.hour == 17 and fecha.weekday() != 6) or (hora.hour == 12 and fecha.weekday() == 6):
-                hora = time(8,0,0)
-                fecha = fecha + timedelta(days=1)
-    return duracion
-
-def obtener_fecha_hora_fin(dia_inicio:date, horario_inicio:time, duracion:int) -> list: #[fecha_fin, hora_fin]
+#[fecha_fin, hora_fin]
+def obtener_fecha_hora_fin(dia_inicio:date, horario_inicio:time, duracion:int) -> list: 
     fin_horario_de_trabajo = 17
     fin_horario_de_trabajo_domingos = 12
     
@@ -88,16 +75,47 @@ def obtener_fecha_hora_fin(dia_inicio:date, horario_inicio:time, duracion:int) -
     
     return fecha_hora_fin
 
+def obtener_turno(id_turno):
+    try:
+        turno = Turno_taller.objects.get(id_turno= id_turno)
+        return turno
+    except:
+        return None
+
+# ------------------------------------------------------------------------------------------------ #
+# -------------------------------------- duracion de turnos -------------------------------------- #
+# ------------------------------------------------------------------------------------------------ # 
+
+def obtener_duracion(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time):
+    if fecha_inicio == fecha_fin:
+        return hora_fin.hour - hora_inicio.hour
+    else:
+        duracion = 0
+        fecha = fecha_inicio
+        hora = hora_inicio
+        seguir = True
+        while seguir:
+            hora = time(hora.hour + 1, 0, 0)
+            duracion += 1
+            if fecha == fecha_fin and hora == hora_fin:
+                seguir = False
+            if (hora.hour == 17 and fecha.weekday() != 6) or (hora.hour == 12 and fecha.weekday() == 6):
+                hora = time(8,0,0)
+                fecha = fecha + timedelta(days=1)
+    return duracion
+
+# para crear un turno
 # retorna 0 si el service no existe
 def obtener_duracion_service_vehiculo(patente:str, km:int):
     try:
-        marca = obtener_marca(patente)
-        modelo = obtener_modelo(patente)
+        marca, modelo = obtener_marca_modelo(patente)
         service = Service.objects.get(marca=marca, modelo=modelo, frecuencia_km=km)
         return ceil(service.duracion_total / 60)
     except:
         return 0
         
+# para obtener la duracion de un service en específico
+# retorna 0 si el service no existe        
 def obtener_duracion_service(marca:str, modelo:str, km:int):
     try:
         service = Service.objects.get(marca=marca, modelo=modelo, frecuencia_km=km)
@@ -109,10 +127,7 @@ def obtener_duracion_service(marca:str, modelo:str, km:int):
 # retorna 0 si no existe un turno para evaluacion para esa patente
 def obtener_duracion_reparacion(patente:str): 
     try:
-        # 1) obtenemos el turno para evaluacion correspondiente a la reparacion que queremos hacer
         turno = Turno_taller.objects.filter(patente=patente, tipo= 'evaluacion').latest('fecha_inicio')
-       
-        # 2) con ese turno, nos traemos el turno para admin correspondiente, el cual tiene la duracion que necesitamos
         registro_admin = Registro_evaluacion_para_admin.objects.get(id_turno=turno.id_turno)
         return ceil(registro_admin.duracion_total_reparaciones / 60)
     except:
@@ -122,18 +137,13 @@ def obtener_duracion_reparacion(patente:str):
 # retorna 0 si no existe un turno para evaluacion para esa patente
 def obtener_duracion_extraordinario(patente:str):
     try:
-        # 1) obtenemos el turno para evaluacion correspondiente a la reparacion que queremos hacer
         turno = Turno_taller.objects.filter(patente=patente, tipo= 'extraordinario').latest('fecha_inicio')
-        # 2) con ese turno, nos traemos el registro_extraordinario correspondiente
         registro_extraordinario = Registro_extraordinario.objects.get(id_turno=turno.id_turno)
-        # 3) con ese registro, ya tenemos las tareas que deben realizarse
         lista_task = registro_extraordinario.id_tasks
-        # 4) recorremos los task para obtener el tiempo de cada uno
         duracion = 0
         for id in lista_task:
             item = Checklist_evaluacion.objects.get(id_task = id)
             duracion += item.duracion_reemplazo
         return ceil(duracion / 60) 
-    except:
+    except Exception:
         return 0
-

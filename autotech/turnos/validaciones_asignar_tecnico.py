@@ -4,14 +4,17 @@ from datetime import date, time
 from .gestion_agenda.gestionar_agenda import *
 from empleados.api_client.client_tecnico import ClientTecnicos
 
-# -------- tecnicos disponibles -------- #
+
+# ------------------------------------------------------------------------------------------------ #
+# ------------------------------------- tecnicos disponibles ------------------------------------- #
+# ------------------------------------------------------------------------------------------------ # 
+
 # devuelve una lista con los id de los tecnicos que podrían encargarse del turno
 def obtener_tecnicos_disponibles(id_turno: int, id_taller: int) -> list:
     tecnicos_disponibles = []
-    id_tecnicos = obtener_id_tecnicos(id_taller)    # sólo consideramos los tecnicos que trabajan en ese taller
-    turno = Turno_taller.objects.get(id_turno=id_turno) # obtenemos el turno en cuestion, porque necesitamos sus horarios
+    id_tecnicos = obtener_id_tecnicos(id_taller)
+    turno = Turno_taller.objects.get(id_turno=id_turno)
     for id_tecnico in id_tecnicos:
-        # esta disponible ==  tiene ese espacio disponible en su agenda, sin contar turnos terminados/cancelados/rechazados
         if tecnico_esta_disponible_agenda(turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin, id_tecnico):
             tecnicos_disponibles.append(id_tecnico)
     return tecnicos_disponibles
@@ -23,7 +26,10 @@ def obtener_id_tecnicos(id_taller: int) -> list:
         id_tecnicos.append(tecnico['id'])
     return id_tecnicos
 
-# -------- asignar tecnico -------- #
+# ------------------------------------------------------------------------------------------------ #
+# --------------------------------------- asignar tecnico ---------------------------------------- #
+# ------------------------------------------------------------------------------------------------ # 
+
 def se_puede_asignar_tecnico(tipo_turno: str, papeles_en_regla_turno: bool):
     if tipo_turno != "evaluacion":
         es_valido = True
