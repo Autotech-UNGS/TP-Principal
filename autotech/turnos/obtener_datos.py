@@ -31,7 +31,7 @@ def obtener_frecuencia_ultimo_service(patente:str): # retorna 5000, 10000, 15000
     # con ese ultimo turno de tipo service, tengo que encontrar el Registro_service que le corresponde
     # con el id_service de ese Registro_service, tengo que encontrar el Service correspondiente
     # con ese Service, obtengo la frecuencia_km, y la retorno
-        ultimo_turno_service = Turno_taller.objects.filter(patente=patente, tipo='service').latest('fecha_inicio')
+        ultimo_turno_service = Turno_taller.objects.filter(patente=patente, tipo='service', estado="terminado").latest('fecha_inicio')
         registro_de_ultimo_service = Registro_service.objects.get(id_turno=ultimo_turno_service.id_turno)
         ultimo_service = Service.objects.get(id_service=registro_de_ultimo_service.id_service.id_service)
         return ultimo_service.frecuencia_km
@@ -113,7 +113,7 @@ def obtener_duracion_reparacion(patente:str):
 
         # turno = Turno_taller.objects.filter(patente=patente, tipo= 'evaluacion', estado='terminado).latest('fecha_inicio') <- falta agregar especificar que el filtrado sea con estado='terminado' esto debido a que dado el caso en el que tengamos un turno cancelado para una fecha posterior a un turno evaluación que tiene un registro evaluación, este igual va a a filtrar el ultimo turno evaluación que está cancelado y esto no sería correcto.
 
-        turno = Turno_taller.objects.filter(patente=patente, tipo= 'evaluacion').latest('fecha_inicio')
+        turno = Turno_taller.objects.filter(patente=patente, tipo= 'evaluacion', estado="terminado").latest('fecha_inicio')
        
         # 2) con ese turno, nos traemos el turno para admin correspondiente, el cual tiene la duracion que necesitamos
         registro_admin = Registro_evaluacion_para_admin.objects.get(id_turno=turno.id_turno)
@@ -126,7 +126,7 @@ def obtener_duracion_reparacion(patente:str):
 def obtener_duracion_extraordinario(patente:str):
     try:
         # 1) obtenemos el turno para evaluacion correspondiente a la reparacion que queremos hacer
-        turno = Turno_taller.objects.filter(patente=patente, tipo= 'extraordinario').latest('fecha_inicio')
+        turno = Turno_taller.objects.filter(patente=patente, tipo= 'extraordinario', estado="terminado").latest('fecha_inicio')
         # 2) con ese turno, nos traemos el registro_extraordinario correspondiente
         registro_extraordinario = Registro_extraordinario.objects.get(id_turno=turno.id_turno)
         # 3) con ese registro, ya tenemos las tareas que deben realizarse
