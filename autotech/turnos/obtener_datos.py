@@ -26,9 +26,13 @@ def obtener_direccion_taller(taller_id) -> str:
 # -------------------------------------- datos del vehículo -------------------------------------- #
 # ------------------------------------------------------------------------------------------------ # 
 
-def obtener_marca_modelo(patente:str) -> str:
-    marca, modelo = ClientVehiculos.obtener_marca_modelo(patente=patente)
-    return marca, modelo
+def obtener_marca(patente:str) -> str:
+    marca = ClientVehiculos.obtener_marca(patente=patente)
+    return marca
+
+def obtener_modelo(patente:str) -> str:
+    modelo = ClientVehiculos.obtener_modelo(patente=patente)
+    return modelo
 
 def obtener_km_de_venta(patente) -> int:
     km = ClientVehiculos.obtener_km_de_venta(patente=patente)
@@ -115,7 +119,8 @@ def obtener_duracion(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_f
 # retorna 0 si el service no existe
 def obtener_duracion_service_vehiculo(patente:str, km:int):
     try:
-        marca, modelo = obtener_marca_modelo(patente)
+        marca = obtener_marca(patente)
+        modelo = obtener_modelo(patente)
         service = Service.objects.get(marca=marca, modelo=modelo, frecuencia_km=km)
         return ceil(service.duracion_total / 60)
     except Service.DoesNotExist:

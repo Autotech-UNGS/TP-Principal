@@ -20,6 +20,17 @@ class validaciones:
         return HttpResponse("Datos correctos", status=200)
     
     @classmethod  
+    def validaciones_evaluacion(cls, taller_id:str, patente:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time) -> HttpResponse:
+        resultado_validacion_general = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='evaluacion', 
+                                                                   dia_inicio=dia_inicio, horario_inicio=horario_inicio,
+                                                                   dia_fin= dia_fin, horario_fin=horario_fin)
+        if resultado_validacion_general.status_code == 400:
+            return resultado_validacion_general
+        if not validaciones.patente_esperando_revision_tecnica(patente):
+            return HttpResponse(f"error: la patente no está esperando revisión tecnica: {patente}", status=400)
+        return HttpResponse("Datos correctos", status=200)
+    
+    @classmethod  
     def validaciones_service(cls, taller_id:str, patente:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time, km: int, frecuencia_ultimo_service:int , frecuencia_service_solicitado:int ) -> HttpResponse:
         resultado_validacion_general = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='service', 
                                                                    dia_inicio=dia_inicio, horario_inicio=horario_inicio,
@@ -28,8 +39,6 @@ class validaciones:
             return resultado_validacion_general
         if not validaciones.patente_registrada(patente):
             return HttpResponse(f"error: la patente no está registrada como perteneciente a un cliente: {patente}", status=400)
-        if km == None:
-            return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
         if frecuencia_service_solicitado < 0:
             return HttpResponse(f"error: el service ingresado no es valido: {frecuencia_service_solicitado}, {patente}", status=400)
         if frecuencia_ultimo_service != 0 and frecuencia_ultimo_service >= frecuencia_service_solicitado:
@@ -94,12 +103,52 @@ class validaciones:
         return HttpResponse("Patente correcta", status=200)
     
     # ------------------------------------------------------------------------------------------------ #
+    # ----------------------------------- validacion de los campos ------------------------------------ #
+    # ------------------------------------------------------------------------------------------------ #    
+    """@classmethod     
+    def validar_campos_evaluacion(cls, request) -> HttpResponse :
+        required_fields = ['taller_id', 'patente', 'fecha_inicio', 'hora_inicio']
+        for field in required_fields:
+            if field not in request.POST:
+                return HttpResponse(f"error: el campo {field} es necesario", status=400)
+        return HttpResponse("Datos correctos", status=200)
+                
+    @classmethod    
+    def validar_campos_service(cls, request) -> HttpResponse:
+        required_fields = ['taller_id', 'patente', 'fecha_inicio', 'hora_inicio', 'frecuencia_km']
+        for field in required_fields:
+            if field not in request.POST:
+                return HttpResponse(f"error: el campo {field} es necesario", status=400)
+        return HttpResponse("Datos correctos", status=200)
+
+    @classmethod     
+    def validar_campos_reparacion(cls, request) -> HttpResponse:
+        required_fields = ['taller_id', 'patente', 'fecha_inicio', 'hora_inicio', 'origen']
+        for field in required_fields:
+            if field not in request.POST:
+                return HttpResponse(f"error: el campo {field} es necesario", status=400)
+        return HttpResponse("Datos correctos", status=200)
+
+    @classmethod     
+    def validar_campos_extraordinario(cls, request) -> HttpResponse:
+        required_fields = ['taller_id', 'patente', 'fecha_inicio', 'hora_inicio']
+        for field in required_fields:
+            if field not in request.POST:
+                return HttpResponse(f"error: el campo {field} es necesario", status=400)
+        return HttpResponse("Datos correctos", status=200)                    
+    """
+    # ------------------------------------------------------------------------------------------------ #
     # ----------------------------------- auxiliares y solitarias ------------------------------------ #
     # ------------------------------------------------------------------------------------------------ # 
 
     @classmethod
     def patente_registrada(cls, patente:str):
-        existe_patente = ClientVehiculos.patente_registrada(patente=patente)
+        existe_patente = ClientVehiculos.patente_registrada_vendido(patente=patente)
+        return existe_patente
+    
+    @classmethod
+    def patente_esperando_revision_tecnica(cls, patente:str):
+        existe_patente = ClientVehiculos.patente_esperando_revision_tecnica(patente=patente)
         return existe_patente
 
     @classmethod

@@ -26,6 +26,11 @@ class CrearActualizarTurnosViewSet(ViewSet):
         fecha_inicio
         hora_inicio
         """
+        """
+        datos_completos = validaciones.validar_campos_evaluacion(request)
+        if datos_completos.status_code == 400:
+            return datos_completos
+            """
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
@@ -37,7 +42,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         fecha_hora_fin = obtener_fecha_hora_fin(dia_inicio_date, horario_inicio_time, duracion)
         
         # validaciones:
-        resultado_validacion = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='evaluacion', 
+        resultado_validacion = validaciones.validaciones_evaluacion(taller_id=taller_id, patente=patente, 
                                                                    dia_inicio=dia_inicio_date, horario_inicio=horario_inicio_time,
                                                                    dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
         if resultado_validacion.status_code == 400:
@@ -77,6 +82,11 @@ class CrearActualizarTurnosViewSet(ViewSet):
         fecha_inicio
         hora_inicio
         """
+        """
+        datos_completos = validaciones.validar_campos_evaluacion(request)
+        if datos_completos.status_code == 400:
+            return datos_completos   
+            """     
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
@@ -88,7 +98,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         fecha_hora_fin = obtener_fecha_hora_fin(dia_inicio_date, horario_inicio_time, duracion)
         
         # validaciones:
-        resultado_validacion = validaciones.validaciones_generales(taller_id=taller_id, patente=patente, tipo='evaluacion', 
+        resultado_validacion = validaciones.validaciones_evaluacion(taller_id=taller_id, patente=patente, 
                                                                    dia_inicio=dia_inicio_date, horario_inicio=horario_inicio_time,
                                                                    dia_fin= fecha_hora_fin[0], horario_fin=fecha_hora_fin[1])
         if resultado_validacion.status_code == 400:
@@ -128,17 +138,26 @@ class CrearActualizarTurnosViewSet(ViewSet):
         hora_inicio
         frecuencia_km
         """
+        """
+        datos_completos = validaciones.validar_campos_service(request)
+        if datos_completos.status_code == 400:
+            return datos_completos    
+            """    
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
-        km = redondear_a_multiplo_de_cincomil(request.data.get("frecuencia_km"))
+        km = request.data.get("frecuencia_km")
+        if not validaciones.patente_registrada(patente=patente):
+            return HttpResponse(f"error: la patente no está registrada como perteneciente a un cliente: {patente}", status=400)
+        if km == None:
+            return HttpResponse("error: el service debe tener un kilometraje asociado", status=400)
+        
+        km = redondear_a_multiplo_de_cincomil(km)
+        
         dia_inicio_date = datetime.strptime(request.data.get("fecha_inicio"), '%Y-%m-%d').date()
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
         
         # frecuencias de services, duracion y fecha/hora fin:
-        if not validaciones.patente_registrada(patente=patente):
-            return HttpResponse(f"error: la patente no está registrada como perteneciente a un cliente: {patente}", status=400)
-        
         frecuencia_service_solicitado = obtener_frecuencia_service_solicitado(patente, km)
         frecuencia_ultimo_service = obtener_frecuencia_ultimo_service(patente) 
         duracion = obtener_duracion_service_vehiculo(patente, km=frecuencia_service_solicitado)
@@ -196,6 +215,11 @@ class CrearActualizarTurnosViewSet(ViewSet):
         hora_inicio
         origen
         """
+        """
+        datos_completos = validaciones.validar_campos_reparacion(request)
+        if datos_completos.status_code == 400:
+            return datos_completos      
+            """  
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
@@ -246,6 +270,11 @@ class CrearActualizarTurnosViewSet(ViewSet):
         fecha_inicio
         hora_inicio
         """
+        """
+        datos_completos = validaciones.validar_campos_extraordinario(request)
+        if datos_completos.status_code == 400:
+            return datos_completos        
+            """
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
