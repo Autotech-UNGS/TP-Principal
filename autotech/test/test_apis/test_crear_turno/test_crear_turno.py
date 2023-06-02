@@ -7,7 +7,7 @@ from test.factories.usuario_factorie import *
 class CrearTurnoTestCase(TestSetUp):
     patente_cliente = "STT811"
     patente_evaluada = "LCS262"
-    patente_evaluacion = "ABC123"
+    patente_evaluacion = "STT811"
     
     def post_response_crear_turno_evaluacion_web(self, turno):
         url = reverse('crear-turno-evaluacion-web')
@@ -126,6 +126,8 @@ class CrearTurnoTestCase(TestSetUp):
                             "taller_id": 10}
         
         response = self.post_response_crear_turno_evaluacion_presencial(turno_correcto)
+        error_message = response.content.decode('utf-8')
+        print(f"Error 400: {error_message}")
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.json(), response_esperado) 
         
