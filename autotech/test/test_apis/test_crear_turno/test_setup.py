@@ -10,7 +10,7 @@ import json
 
 class TestSetUp(APITestCase):
     def setUp(self):
-        self.patente_cliente = "PPW825"
+        self.patente_cliente = "STT811"
         self.patente_evaluada = "LCS262"
         
         self.taller1 = G(Taller, id_taller=10, capacidad=3, estado=True)

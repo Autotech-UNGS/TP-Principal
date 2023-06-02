@@ -5,7 +5,7 @@ from turnos.views.crear_turnos_views import *
 from test.factories.usuario_factorie import *
 
 class CrearTurnoTestCase(TestSetUp):
-    patente_cliente = "PPW825"
+    patente_cliente = "STT811"
     patente_evaluada = "LCS262"
     patente_evaluacion = "ABC123"
     
@@ -184,7 +184,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": self.patente_cliente,
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
-                          "frecuencia_km": 25189, #25000
+                          "frecuencia_km": 60000, #25000
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -208,7 +208,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": self.patente_cliente,
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
-                          "frecuencia_km": 26467, # 25000
+                          "frecuencia_km": 60000, # 25000
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -232,7 +232,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": self.patente_cliente,
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "16:00:00",
-                          "frecuencia_km": 27230, # 25000
+                          "frecuencia_km": 60000, # 25000
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -256,7 +256,7 @@ class CrearTurnoTestCase(TestSetUp):
         turno_correcto = {"patente": self.patente_cliente,
                           "fecha_inicio": "2023-10-31",
                           "hora_inicio": "16:00:00",
-                          "frecuencia_km": 24895, # 25000
+                          "frecuencia_km": 60000, # 25000
                           "taller_id": 10}
         
         response_esperado = { "id_turno": 501,
@@ -281,7 +281,7 @@ class CrearTurnoTestCase(TestSetUp):
                           "patente": self.patente_cliente,
                           "fecha_inicio": "2023-10-23",
                           "hora_inicio": "12:00:00",
-                          "frecuencia_km":15000}
+                          "frecuencia_km":1000000}
         
         self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)        
         

@@ -6,14 +6,12 @@ class ClientVehiculos():
     
     @classmethod
     def obtener_dni_cliente(cls, patente:str):
-        return "1234568"
-    
-    """datos_vehiculo = cls.obtener_datos_vehiculo(patente)
+        #return "1234568"    
+        datos_vehiculo = cls.obtener_datos_vehiculo(patente)
         if datos_vehiculo:
-            dni = datos_vehiculo.get("dni_cliente")
+            dni = datos_vehiculo.get("dni")
             return dni
         return None
-    """
         
     @classmethod
     def patente_registrada(cls, patente:str):
