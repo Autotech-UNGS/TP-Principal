@@ -4,6 +4,7 @@ from .obtener_datos import *
 from datetime import *
 from .gestion_agenda.gestionar_agenda import *
 from vehiculos.api_client.vehiculos import *
+from .gestion_agenda.gestionar_agenda import *
 
 class validaciones:  
     @classmethod  
@@ -14,7 +15,7 @@ class validaciones:
         dias_horarios_validos = cls.validar_dias_horarios(dia_inicio=dia_inicio, horario_inicio= horario_inicio, dia_fin= dia_fin, horario_fin=horario_fin)
         if dias_horarios_validos.status_code == 400:
             return dias_horarios_validos
-        patente_valida = cls.validar_patente(patente, tipo, fecha_turno=dia_inicio, hora_turno=horario_inicio)
+        patente_valida = cls.validar_patente(patente=patente, tipo=tipo, fecha_inicio=dia_inicio, hora_inicio=horario_inicio, fecha_fin=dia_fin, hora_fin=horario_fin)
         if patente_valida.status_code == 400:
             return patente_valida
         return HttpResponse("Datos correctos", status=200)
@@ -91,55 +92,25 @@ class validaciones:
         return HttpResponse("Dias horarios correctos", status=200)
      
     @classmethod     
-    def validar_patente(cls, patente:str, tipo:str, fecha_turno: date, hora_turno:time):
+    def validar_patente(cls, patente:str, tipo:str, fecha_inicio: date, hora_inicio:time, fecha_fin: date, hora_fin:time):
         hoy = date.today()
         condiciones_exclusion = Q(estado='terminado') | Q(estado='cancelado') | Q(estado='rechazado') | Q(estado='ausente')
         turnos_ese_tipo = Turno_taller.objects.filter(patente=patente, tipo=tipo, fecha_inicio__gte=hoy).exclude(condiciones_exclusion)
         if turnos_ese_tipo.count() != 0:
             return HttpResponse(f"error: la patente ingresada ya tiene un turno de ese tipo registrado en el sistema: {patente}", status=400)
-        turnos_ese_dia_horario = Turno_taller.objects.filter(patente=patente, fecha_inicio= fecha_turno, hora_inicio=hora_turno)
-        if turnos_ese_dia_horario.count() != 0:
-            return HttpResponse(f"error: la patente ingresada ya tiene un turno para ese mismo dia y horario en el sistema: {patente}", status=400)
+        turnos_ese_dia_horario = Turno_taller.objects.filter(patente=patente, fecha_inicio= fecha_inicio, hora_inicio=hora_inicio)
+        if turnos_ese_dia_horario.count() != 0 or cls.se_superpone_con_otro_turno(dia_inicio=fecha_inicio, hora_inicio=hora_inicio, dia_fin=fecha_fin, hora_fin=hora_fin, patente=patente):
+            return HttpResponse(f"error: la patente ingresada ya tiene un turno para ese mismo dia y horario en el sistema, o existe otro turno con el cual se superpone: {patente}", status=400)
         return HttpResponse("Patente correcta", status=200)
     
     # ------------------------------------------------------------------------------------------------ #
-    # ----------------------------------- validacion de los campos ------------------------------------ #
-    # ------------------------------------------------------------------------------------------------ #    
-    """@classmethod     
-    def validar_campos_evaluacion(cls, request) -> HttpResponse :
-        required_fields = ['taller_id', 'patente', 'fecha_inicio', 'hora_inicio']
-        for field in required_fields:
-            if field not in request.POST:
-                return HttpResponse(f"error: el campo {field} es necesario", status=400)
-        return HttpResponse("Datos correctos", status=200)
-                
-    @classmethod    
-    def validar_campos_service(cls, request) -> HttpResponse:
-        required_fields = ['taller_id', 'patente', 'fecha_inicio', 'hora_inicio', 'frecuencia_km']
-        for field in required_fields:
-            if field not in request.POST:
-                return HttpResponse(f"error: el campo {field} es necesario", status=400)
-        return HttpResponse("Datos correctos", status=200)
-
-    @classmethod     
-    def validar_campos_reparacion(cls, request) -> HttpResponse:
-        required_fields = ['taller_id', 'patente', 'fecha_inicio', 'hora_inicio', 'origen']
-        for field in required_fields:
-            if field not in request.POST:
-                return HttpResponse(f"error: el campo {field} es necesario", status=400)
-        return HttpResponse("Datos correctos", status=200)
-
-    @classmethod     
-    def validar_campos_extraordinario(cls, request) -> HttpResponse:
-        required_fields = ['taller_id', 'patente', 'fecha_inicio', 'hora_inicio']
-        for field in required_fields:
-            if field not in request.POST:
-                return HttpResponse(f"error: el campo {field} es necesario", status=400)
-        return HttpResponse("Datos correctos", status=200)                    
-    """
-    # ------------------------------------------------------------------------------------------------ #
     # ----------------------------------- auxiliares y solitarias ------------------------------------ #
     # ------------------------------------------------------------------------------------------------ # 
+
+    
+    @classmethod
+    def se_superpone_con_otro_turno(cls, dia_inicio:date, hora_inicio:date, dia_fin:date, hora_fin:date, patente:str):
+        return not vehiculo_puede_sacar_turno(fecha_inicio=dia_inicio, hora_inicio=hora_inicio, fecha_fin=dia_fin, hora_fin=hora_fin, patente=patente)    
 
     @classmethod
     def patente_registrada(cls, patente:str):

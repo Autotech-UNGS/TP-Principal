@@ -20,17 +20,6 @@ class CrearActualizarTurnosViewSet(ViewSet):
     # papeles en regla == False        
     @action(detail=False, methods=['post'])
     def crear_turno_evaluacion_web(self, request):
-        """
-        taller_id
-        patente
-        fecha_inicio
-        hora_inicio
-        """
-        """
-        datos_completos = validaciones.validar_campos_evaluacion(request)
-        if datos_completos.status_code == 400:
-            return datos_completos
-            """
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
@@ -75,18 +64,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         
     # papeles en regla == True
     @action(detail=False, methods=['post'])
-    def crear_turno_evaluacion_presencial(self, request):
-        """
-        taller_id
-        patente
-        fecha_inicio
-        hora_inicio
-        """
-        """
-        datos_completos = validaciones.validar_campos_evaluacion(request)
-        if datos_completos.status_code == 400:
-            return datos_completos   
-            """     
+    def crear_turno_evaluacion_presencial(self, request):   
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
@@ -130,19 +108,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
 # ------------------------------------------------------------------------------------------------ #
         
     @action(detail=False, methods=['post'])
-    def crear_turno_service(self, request):
-        """
-        taller_id
-        patente
-        fecha_inicio
-        hora_inicio
-        frecuencia_km
-        """
-        """
-        datos_completos = validaciones.validar_campos_service(request)
-        if datos_completos.status_code == 400:
-            return datos_completos    
-            """    
+    def crear_turno_service(self, request):   
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
@@ -207,19 +173,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
 # ------------------------------------------------------------------------------------------------ #        
         
     @action(detail=False, methods=['post'])
-    def crear_turno_reparacion(self, request):
-        """
-        taller_id
-        patente
-        fecha_inicio
-        hora_inicio
-        origen
-        """
-        """
-        datos_completos = validaciones.validar_campos_reparacion(request)
-        if datos_completos.status_code == 400:
-            return datos_completos      
-            """  
+    def crear_turno_reparacion(self, request): 
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
@@ -264,17 +218,6 @@ class CrearActualizarTurnosViewSet(ViewSet):
         
     @action(detail=False, methods=['post'])
     def crear_turno_extraordinario(self, request):
-        """
-        taller_id
-        patente
-        fecha_inicio
-        hora_inicio
-        """
-        """
-        datos_completos = validaciones.validar_campos_extraordinario(request)
-        if datos_completos.status_code == 400:
-            return datos_completos        
-            """
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")

@@ -4,7 +4,9 @@ from administracion.models import Taller
 from administracion.models import Turno_taller
 from django.db.models import Q
 
-# -------------- agenda de taller -------------- #
+# -------------------------------------------------------------------------------------------- #
+# ------------------------------------------ taller ------------------------------------------ #
+# -------------------------------------------------------------------------------------------- # 
 
 def taller_esta_disponible_agenda(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time, id_taller:int) -> bool:
     try:
@@ -60,7 +62,9 @@ def cargar_turnos_taller(agenda:Agenda, id_taller:int):
         duracion = calcular_duracion(turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin)
         agenda.cargar_turno(turno.fecha_inicio, turno.hora_inicio.hour, duracion)
         
-# -------------- agenda de tecnico -------------- #        
+# -------------------------------------------------------------------------------------------- #
+# ----------------------------------------- tecnicos ----------------------------------------- #
+# -------------------------------------------------------------------------------------------- #         
 
 def tecnico_esta_disponible_agenda(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time, id_tecnico:int) -> bool:
     try:
@@ -83,8 +87,24 @@ def cargar_turnos_tecnico(id_tecnico: int, agenda: Agenda, turnos_del_tecnico: l
     for turno in turnos_del_tecnico:
         duracion = calcular_duracion(turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin)
         agenda.cargar_turno(turno.fecha_inicio, turno.hora_inicio.hour, duracion)
+        
+# -------------------------------------------------------------------------------------------- #
+# ---------------------------------------- vechiculos ---------------------------------------- #
+# -------------------------------------------------------------------------------------------- #        
+        
+def vehiculo_puede_sacar_turno(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time, patente:str) -> bool:
+    turnos_de_vehiculo = Turno_taller.objects.filter(patente=patente)
+    agenda = Agenda(1)
+    for turno in turnos_de_vehiculo:
+        duracion = calcular_duracion(turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin)
+        agenda.cargar_turno(dia=turno.fecha_inicio, hora_inicio=turno.hora_inicio.hour, duracion=duracion)
+    duracion = calcular_duracion(fecha_inicio=fecha_inicio, hora_inicio=hora_inicio, fecha_fin=fecha_fin, hora_fin=hora_fin)
+    return agenda.esta_disponible(dia=fecha_inicio, horario=hora_inicio.hour, duracion=duracion)
+        
 
-# -------------- duracion -------------- #
+# -------------------------------------------------------------------------------------------- #
+# ----------------------------------------- duracion ----------------------------------------- #
+# -------------------------------------------------------------------------------------------- # 
 
 def calcular_duracion(fecha_inicio: date, hora_inicio: time, fecha_fin: date, hora_fin: time):
     if fecha_inicio == fecha_fin:
