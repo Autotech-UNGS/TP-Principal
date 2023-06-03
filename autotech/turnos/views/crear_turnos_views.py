@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from ..enviar_turno_email import EnvioDeEmail
 from ..obtener_datos import *
 from datetime import *
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from reparaciones.views import RegistroReparacionViewSet
@@ -181,11 +182,16 @@ class CrearActualizarTurnosViewSet(ViewSet):
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
         origen = request.data.get("origen")
         
-        # duracion y fecha/hora fin:
+      
         duracion =  obtener_duracion_extraordinario(patente) if origen == 'extraordinario' else obtener_duracion_reparacion(patente)
+    
+        if duracion == -1:
+           return HttpResponse(f'La patente {patente} pertenece a un vehiculo que ha sido evaluado y no necesita reparaciones.')
+        # duracion y fecha/hora fin:
         if duracion == 0:
             return HttpResponse("error: la patente no pertenece a la de un auto que ya haya sido evaluado en el taller.", status=400)
         fecha_hora_fin = obtener_fecha_hora_fin(dia_inicio_date, horario_inicio_time, duracion)
+        
         
         # validaciones:
         resultado_validacion = validaciones.validaciones_reparacion(taller_id=taller_id, patente=patente, 
