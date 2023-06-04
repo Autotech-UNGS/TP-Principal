@@ -186,7 +186,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         duracion =  obtener_duracion_extraordinario(patente) if origen == 'extraordinario' else obtener_duracion_reparacion(patente)
     
         if duracion == -1:
-           return HttpResponse(f'La patente {patente} pertenece a un vehiculo que ha sido evaluado y no necesita reparaciones.')
+           return HttpResponse(f'La patente {patente} pertenece a un vehiculo que ha sido evaluado y no necesita reparaciones.', status=400)
         # duracion y fecha/hora fin:
         if duracion == 0:
             return HttpResponse("error: la patente no pertenece a la de un auto que ya haya sido evaluado en el taller.", status=400)
