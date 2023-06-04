@@ -127,8 +127,8 @@ class EstadoTurnosViewSet(ViewSet):
           
         if turno.tipo == "reparacion":
             registro_reparacion = Registro_reparacion.objects.get(id_turno=turno.id_turno)
-            if registro_reparacion.tasks_pendientes is not None and len(registro_reparacion.tasks_pendientes) > 0:   
-                return HttpResponse('error: el turno aún contiene tareas pendientes no puede cancelarse', status=400)
+            if registro_reparacion.tasks_pendientes is not None and len(registro_reparacion.tasks_pendientes) > 0:  
+                return Response({'error': 'el turno aún contiene tareas pendientes no puede cancelarse'}, status=status.HTTP_400_BAD_REQUEST) 
         
         turno.estado = self.ESTADO_CANCELADO
         turno.save()   
