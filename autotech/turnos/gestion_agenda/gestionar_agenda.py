@@ -94,12 +94,14 @@ def cargar_turnos_tecnico(id_tecnico: int, agenda: Agenda, turnos_del_tecnico: l
         
 def vehiculo_puede_sacar_turno(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time, patente:str) -> bool:
     turnos_de_vehiculo = Turno_taller.objects.filter(patente=patente)
+    if turnos_de_vehiculo.count() == 0:
+        return True
     agenda = Agenda(1)
     for turno in turnos_de_vehiculo:
-        duracion = calcular_duracion(turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin)
-        agenda.cargar_turno(dia=turno.fecha_inicio, hora_inicio=turno.hora_inicio.hour, duracion=duracion)
-    duracion = calcular_duracion(fecha_inicio=fecha_inicio, hora_inicio=hora_inicio, fecha_fin=fecha_fin, hora_fin=hora_fin)
-    return agenda.esta_disponible(dia=fecha_inicio, horario=hora_inicio.hour, duracion=duracion)
+        duracion1 = calcular_duracion(turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin)
+        agenda.cargar_turno(dia=turno.fecha_inicio, hora_inicio=turno.hora_inicio.hour, duracion=duracion1)
+    duracion2 = calcular_duracion(fecha_inicio, hora_inicio, fecha_fin, hora_fin)
+    return agenda.esta_disponible(dia=fecha_inicio, horario=hora_inicio.hour, duracion=duracion2)
         
 
 # -------------------------------------------------------------------------------------------- #
@@ -119,7 +121,7 @@ def calcular_duracion(fecha_inicio: date, hora_inicio: time, fecha_fin: date, ho
             duracion += 1
             # si llegamos al dia y a la hora del fin del turno, terminamos el ciclo
             if fecha == fecha_fin and hora == hora_fin:
-                break
+                return duracion
             # si llegamos al final de la jornada, reiniciamos la hora y avanzamos un dia
             if (hora.hour == 17 and fecha.weekday() != 6) or (hora.hour == 12 and fecha.weekday() == 6):
                 hora = time(8,0,0)

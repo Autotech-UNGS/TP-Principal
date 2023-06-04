@@ -98,8 +98,9 @@ class validaciones:
         turnos_ese_tipo = Turno_taller.objects.filter(patente=patente, tipo=tipo, fecha_inicio__gte=hoy).exclude(condiciones_exclusion)
         if turnos_ese_tipo.count() != 0:
             return HttpResponse(f"error: la patente ingresada ya tiene un turno de ese tipo registrado en el sistema: {patente}", status=400)
-        turnos_ese_dia_horario = Turno_taller.objects.filter(patente=patente, fecha_inicio= fecha_inicio, hora_inicio=hora_inicio)
-        if turnos_ese_dia_horario.count() != 0 or cls.se_superpone_con_otro_turno(dia_inicio=fecha_inicio, hora_inicio=hora_inicio, dia_fin=fecha_fin, hora_fin=hora_fin, patente=patente):
+        #turnos_ese_dia_horario = Turno_taller.objects.filter(patente=patente, fecha_inicio= fecha_inicio, hora_inicio=hora_inicio)
+        #if turnos_ese_dia_horario.count() != 0 or 
+        if cls.se_superpone_con_otro_turno(dia_inicio=fecha_inicio, hora_inicio=hora_inicio, dia_fin=fecha_fin, hora_fin=hora_fin, patente=patente):
             return HttpResponse(f"error: la patente ingresada ya tiene un turno para ese mismo dia y horario en el sistema, o existe otro turno con el cual se superpone: {patente}", status=400)
         return HttpResponse("Patente correcta", status=200)
     
