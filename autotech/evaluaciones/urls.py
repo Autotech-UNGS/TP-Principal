@@ -17,6 +17,7 @@ urlpatterns = [
     path('checklist/listar/', ChecklistEvaluacionList.as_view(), name= 'listar_checklist_evaluacion'),
 
     path('registro-extraordinario/crear/', RegistroExtraordinarioCreate.as_view(), name= 'crear_registro_extraordinario'),
+    path('registros-extraordinario/listar/<int:id_tecnico>/', RegistroExtraordinarioListTecnico.as_view(), name= 'listar_registro_extraordinario'),
 
     # -------------------------------------- PARA ADMIN ----------------------------------------------- #
     path('registros/',RegistroEvaluacionAdminViewSet.as_view(actions={'get': 'list'}), name = 'admin-evaluaciones'),

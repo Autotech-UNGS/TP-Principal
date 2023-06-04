@@ -1,5 +1,5 @@
 import requests
-import json
+
 
 class ClientVehiculos():
     BASE_URL_PATENTE = 'https://gadmin-backend-production.up.railway.app/api/v1/vehicle/getByPlate/'

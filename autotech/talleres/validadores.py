@@ -18,6 +18,15 @@ class ValidadorTaller:
 
         return True
     
+    def validar_sucursal_taller(self, id_sucursal):
+        
+        taller_existente = Taller.objects.filter(id_sucursal = id_sucursal).exists()
+        
+        if  taller_existente:
+              raise ValidationError(f'Ya existe un taller para la sucursal {id_sucursal}') 
+
+        return True
+    
     def validar_datos(self, request):
         # id (sucursal),nombre, direccion, mail, telefono, capacidad, cant_tecnicos
         

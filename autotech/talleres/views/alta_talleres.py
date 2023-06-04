@@ -34,7 +34,7 @@ class TalleresCreate(APIView):
         cant_tecnicos = request.data.get("cant_tecnicos")
 
         try:
-            validador.validar_taller(id_sucursal)
+            validador.validar_sucursal_taller(id_sucursal)
         except ValidationError as e:
             error_messages = [str(error) for error in e.detail]
             return Response({'error': error_messages}, status=status.HTTP_400_BAD_REQUEST)

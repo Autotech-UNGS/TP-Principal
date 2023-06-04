@@ -1,5 +1,6 @@
 from administracion.models import Taller, Service, Turno_taller, Registro_evaluacion_para_admin, Checklist_evaluacion, Registro_extraordinario, Registro_service
 from datetime import date, time, timedelta
+from rest_framework.exceptions import ValidationError
 from math import ceil
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
@@ -155,10 +156,15 @@ def obtener_duracion_extraordinario(patente:str):
         turno = Turno_taller.objects.filter(patente=patente, tipo= 'extraordinario', estado="terminado").latest('fecha_inicio')
         registro_extraordinario = Registro_extraordinario.objects.get(id_turno=turno.id_turno)
         lista_task = registro_extraordinario.id_tasks
+        if (len(lista_task) == 0):
+             raise ValidationError(f'La patente {patente} pertenece a un vehiculo que ha sido evaluado y no necesita reparaciones.')
         duracion = 0
         for id in lista_task:
             item = Checklist_evaluacion.objects.get(id_task = id)
             duracion += item.duracion_reemplazo
         return ceil(duracion / 60) 
-    except Exception:
-        return 0
+    except (Turno_taller.DoesNotExist, Registro_extraordinario.DoesNotExist, Checklist_evaluacion.DoesNotExist):
+        return 0  # Error general en la búsqueda de datos
+
+    except ValidationError:
+        return -1  # Error de validación

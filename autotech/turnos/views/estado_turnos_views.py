@@ -7,6 +7,7 @@ from rest_framework.viewsets import ViewSet
 from administracion.models import Turno_taller
 from administracion.serializers import TurnoTallerSerializer
 import datetime
+from administracion.models import Registro_reparacion
 
 
 class EstadoTurnosViewSet(ViewSet):
@@ -115,7 +116,7 @@ class EstadoTurnosViewSet(ViewSet):
         return HttpResponse('El turno ha cambiado de estado a terminado exitosamente.')
     
     @action(detail=True, methods=['patch'])
-    def cancelar_turno_pendiente(self, request, id_turno):
+    def cancelar_turno(self, request, id_turno):
         try:
             turno = Turno_taller.objects.get(id_turno=id_turno)
         except Turno_taller.DoesNotExist:
@@ -123,6 +124,11 @@ class EstadoTurnosViewSet(ViewSet):
         
         if turno.estado not in [self.ESTADO_PENDIENTE, self.ESTADO_EN_PROCESO]:
             return HttpResponse('error: el turno no es un turno pendiente o no es un turno en proceso', status=400)
+          
+        if turno.tipo == "reparacion":
+            registro_reparacion = Registro_reparacion.objects.get(id_turno=turno.id_turno)
+            if registro_reparacion.tasks_pendientes is not None and len(registro_reparacion.tasks_pendientes) > 0:  
+                return Response({'error': 'El turno aún contiene tareas pendientes no puede cancelarse.'}, status=status.HTTP_400_BAD_REQUEST) 
         
         turno.estado = self.ESTADO_CANCELADO
         turno.save()   
