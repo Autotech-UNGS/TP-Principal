@@ -2,6 +2,8 @@ from administracion.models import Taller, Service, Turno_taller, Registro_evalua
 from datetime import date, time, timedelta
 from rest_framework.exceptions import ValidationError
 from math import ceil
+from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 from vehiculos.api_client.vehiculos import *
 from clientes.api_client.clientes import *
 
@@ -122,14 +124,11 @@ def obtener_duracion_service_vehiculo(patente:str, km:int):
     try:
         marca = obtener_marca(patente)
         modelo = obtener_modelo(patente)
-        service = Service.objects.get(marca=marca, modelo=modelo, frecuencia_km=km)
-        return ceil(service.duracion_total / 60)
-    except Service.DoesNotExist:
-        try:
-            service = Service.objects.get(marca="generico", modelo="generico", frecuencia_km=km)
-            return ceil(service.duracion_total / 60)
-        except Service.DoesNotExist:
-            return 0
+        service = Service.objects.get((Q(marca=marca) & Q(modelo=modelo) & Q(frecuencia_km=km)) | (Q(marca="generico") & Q(modelo="generico") & Q(frecuencia_km=km)), activo=True)
+    except ObjectDoesNotExist:
+        return 0
+    resultado = ceil(service.duracion_total / 60)
+    return resultado
         
 # para obtener la duracion de un service en específico
 # retorna 0 si el service no existe        
