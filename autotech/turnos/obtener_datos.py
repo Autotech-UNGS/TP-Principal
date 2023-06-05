@@ -31,11 +31,11 @@ def obtener_direccion_taller(taller_id) -> str:
 
 def obtener_marca(patente:str) -> str:
     marca = ClientVehiculos.obtener_marca(patente=patente)
-    return marca
+    return marca.lower()
 
 def obtener_modelo(patente:str) -> str:
     modelo = ClientVehiculos.obtener_modelo(patente=patente)
-    return modelo
+    return modelo.lower()
 
 def obtener_km_de_venta(patente) -> int:
     km = ClientVehiculos.obtener_km_de_venta(patente=patente)
