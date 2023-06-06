@@ -93,7 +93,8 @@ def cargar_turnos_tecnico(id_tecnico: int, agenda: Agenda, turnos_del_tecnico: l
 # -------------------------------------------------------------------------------------------- #        
         
 def vehiculo_puede_sacar_turno(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time, patente:str) -> bool:
-    turnos_de_vehiculo = Turno_taller.objects.filter(patente=patente)
+    condiciones_exclusion = Q(estado='terminado') | Q(estado='cancelado') | Q(estado='rechazado') | Q(estado='ausente')
+    turnos_de_vehiculo = Turno_taller.objects.filter(patente=patente).exclude(condiciones_exclusion)
     if turnos_de_vehiculo.count() == 0:
         return True
     agenda = Agenda(1)
