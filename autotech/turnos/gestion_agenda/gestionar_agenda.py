@@ -4,7 +4,9 @@ from administracion.models import Taller
 from administracion.models import Turno_taller
 from django.db.models import Q
 
-# -------------- agenda de taller -------------- #
+# -------------------------------------------------------------------------------------------- #
+# ------------------------------------------ taller ------------------------------------------ #
+# -------------------------------------------------------------------------------------------- # 
 
 def taller_esta_disponible_agenda(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time, id_taller:int) -> bool:
     try:
@@ -13,14 +15,14 @@ def taller_esta_disponible_agenda(fecha_inicio:date, hora_inicio:time, fecha_fin
         return True
     else:
         agenda = crear_agenda_taller(id_taller)
-        cargar_turnos_taller(fecha_inicio, agenda, id_taller)
+        cargar_turnos_taller(agenda, id_taller)
         duracion = calcular_duracion(fecha_inicio, hora_inicio, fecha_fin, hora_fin)
         
         return agenda.esta_disponible(fecha_inicio, hora_inicio.hour, duracion)
 
 def dias_disponibles_desde_hoy_a_treinta_dias(id_taller: int, cant_horas:int):
     agenda = crear_agenda_taller(id_taller)
-    cargar_turnos_taller(date.today(), agenda, id_taller)
+    cargar_turnos_taller(agenda, id_taller)
     #cargar_turnos_desde_hoy_a_treinta_dias(agenda, id_taller)
     dias_horarios_disponibles = {}
     dias_horarios_disponibles = agenda.dias_horarios_disponibles_de_treinta_dias(date.today(), cant_horas)
@@ -28,7 +30,7 @@ def dias_disponibles_desde_hoy_a_treinta_dias(id_taller: int, cant_horas:int):
 
 def dias_disponibles_desde_hoy_a_cuarentaycinco_dias(id_taller: int, cant_horas:int):
     agenda = crear_agenda_taller(id_taller)
-    cargar_turnos_taller(date.today(), agenda, id_taller)
+    cargar_turnos_taller(agenda, id_taller)
     #cargar_turnos_desde_hoy_a_cuarentaycinco_dias(agenda, id_taller)
     dias_horarios_disponibles = {}
     dias_horarios_disponibles = agenda.dias_horarios_disponibles_de_cuarentaycinco_dias(date.today(), cant_horas)
@@ -42,25 +44,27 @@ def crear_agenda_taller(_id_taller: int):
 def cargar_turnos_desde_hoy_a_treinta_dias(agenda:Agenda, id_taller:int):
     dia = date.today()
     for i in range(32):
-        cargar_turnos_taller(dia, agenda, id_taller)
+        cargar_turnos_taller(agenda, id_taller)
         dia = dia + timedelta(days=1) 
         
 def cargar_turnos_desde_hoy_a_cuarentaycinco_dias(agenda:Agenda, id_taller:int):
     dia = date.today()
     for i in range(47):
-        cargar_turnos_taller(dia, agenda, id_taller)
+        cargar_turnos_taller(agenda, id_taller)
         dia = dia + timedelta(days=1)         
 
-def cargar_turnos_taller(dia:date, agenda:Agenda, id_taller:int):
+def cargar_turnos_taller(agenda:Agenda, id_taller:int):
     condiciones_exclusion = Q(estado='terminado') | Q(estado='cancelado') | Q(estado='rechazado') | Q(estado='ausente')
     #turnos = Turno_taller.objects.filter(fecha_inicio=dia, taller_id=id_taller).exclude(condiciones_exclusion)
-    turnos = Turno_taller.objects.filter(fecha_inicio__gte=dia, taller_id=id_taller).exclude(condiciones_exclusion)
+    turnos = Turno_taller.objects.filter(taller_id=id_taller).exclude(condiciones_exclusion)
     
     for turno in turnos:
         duracion = calcular_duracion(turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin)
         agenda.cargar_turno(turno.fecha_inicio, turno.hora_inicio.hour, duracion)
         
-# -------------- agenda de tecnico -------------- #        
+# -------------------------------------------------------------------------------------------- #
+# ----------------------------------------- tecnicos ----------------------------------------- #
+# -------------------------------------------------------------------------------------------- #         
 
 def tecnico_esta_disponible_agenda(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time, id_tecnico:int) -> bool:
     try:
@@ -83,8 +87,27 @@ def cargar_turnos_tecnico(id_tecnico: int, agenda: Agenda, turnos_del_tecnico: l
     for turno in turnos_del_tecnico:
         duracion = calcular_duracion(turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin)
         agenda.cargar_turno(turno.fecha_inicio, turno.hora_inicio.hour, duracion)
+        
+# -------------------------------------------------------------------------------------------- #
+# ---------------------------------------- vechiculos ---------------------------------------- #
+# -------------------------------------------------------------------------------------------- #        
+        
+def vehiculo_puede_sacar_turno(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_fin:time, patente:str) -> bool:
+    condiciones_exclusion = Q(estado='terminado') | Q(estado='cancelado') | Q(estado='rechazado') | Q(estado='ausente')
+    turnos_de_vehiculo = Turno_taller.objects.filter(patente=patente).exclude(condiciones_exclusion)
+    if turnos_de_vehiculo.count() == 0:
+        return True
+    agenda = Agenda(1)
+    for turno in turnos_de_vehiculo:
+        duracion1 = calcular_duracion(turno.fecha_inicio, turno.hora_inicio, turno.fecha_fin, turno.hora_fin)
+        agenda.cargar_turno(dia=turno.fecha_inicio, hora_inicio=turno.hora_inicio.hour, duracion=duracion1)
+    duracion2 = calcular_duracion(fecha_inicio, hora_inicio, fecha_fin, hora_fin)
+    return agenda.esta_disponible(dia=fecha_inicio, horario=hora_inicio.hour, duracion=duracion2)
+        
 
-# -------------- duracion -------------- #
+# -------------------------------------------------------------------------------------------- #
+# ----------------------------------------- duracion ----------------------------------------- #
+# -------------------------------------------------------------------------------------------- # 
 
 def calcular_duracion(fecha_inicio: date, hora_inicio: time, fecha_fin: date, hora_fin: time):
     if fecha_inicio == fecha_fin:
@@ -99,7 +122,7 @@ def calcular_duracion(fecha_inicio: date, hora_inicio: time, fecha_fin: date, ho
             duracion += 1
             # si llegamos al dia y a la hora del fin del turno, terminamos el ciclo
             if fecha == fecha_fin and hora == hora_fin:
-                break
+                return duracion
             # si llegamos al final de la jornada, reiniciamos la hora y avanzamos un dia
             if (hora.hour == 17 and fecha.weekday() != 6) or (hora.hour == 12 and fecha.weekday() == 6):
                 hora = time(8,0,0)

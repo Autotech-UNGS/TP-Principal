@@ -10,11 +10,16 @@ import json
 
 class TestSetUp(APITestCase):
     def setUp(self):
-        self.taller1 = G(Taller, id_taller=10, capacidad=3)
-        self.taller2 = G(Taller,id_taller=11, capacidad=2)
+        self.patente_vendida = "RTT102"
+        self.patente_evaluada = "LCS262"
+        #self.patente_no_registrada = "LCS262"
+        self.patente_esperando_revision_tecnica = "LMY921"
+        
+        self.taller1 = G(Taller, id_taller=10, capacidad=3, estado=True)
+        self.taller2 = G(Taller, id_taller=11, capacidad=2, estado=True)
         
         # en el taller 10, no hay mas espacio a las 10 y 11 el dia 2023/9/21
-        self.turno_test_1 = G(Turno_taller, patente = 'AS123FD', id_turno= 1, taller_id=11, tipo='evaluacion', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(12,0,0), papeles_en_regla=True)
+        self.turno_test_1 = G(Turno_taller, patente = self.patente_vendida, id_turno= 1, taller_id=11, tipo='evaluacion', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(12,0,0), papeles_en_regla=True)
         self.turno_test_2 = G(Turno_taller, id_turno= 2, taller_id=11, tipo='evaluacion', estado="pendiente", tecnico_id= None, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(12,0,0), papeles_en_regla=True)
         
         # este turno dura dos dias, viernes y sabado
@@ -39,17 +44,19 @@ class TestSetUp(APITestCase):
         self.turno_test12 = G(Turno_taller, taller_id = 10, fecha_inicio=date(2023,9,29), hora_inicio=time(15,0,0), fecha_fin=date(2023,9,29), hora_fin=time(16,0,0), estado='ausente')
         
         
-        self.service1 = G(Service, id_service= 200, costo_base = 0.0, costo_total = 0.0, marca="generico", modelo = "generico", frecuencia_km=5000, duracion_total=180)
-        self.service2 = G(Service, id_service= 300, costo_base = 0.0, costo_total = 0.0, marca="generico", modelo = "generico", frecuencia_km=10000, duracion_total=180)
+        self.service1 = G(Service, id_service= 200, costo_base = 0.0, costo_total = 0.0, marca="generico", modelo = "generico", frecuencia_km=5000, duracion_total=180, activo=True)
+        self.service2 = G(Service, id_service= 300, costo_base = 0.0, costo_total = 0.0, marca="generico", modelo = "generico", frecuencia_km=10000, duracion_total=180, activo= True)
+        self.service3 = G(Service, id_service= 400, costo_base = 0.0, costo_total = 0.0, marca="generico", modelo = "generico", frecuencia_km=20000, duracion_total=180, activo= True)
+        self.service4 = G(Service, id_service= 500, costo_base = 0.0, costo_total = 0.0, marca="Ford", modelo = "Focus", frecuencia_km=10000, duracion_total=180, activo=False)
         
         # la patente esa ya hizo el service de 5k
-        self.turno_service = G(Turno_taller, patente = 'AS123FF', id_turno= 500, tipo='service', frecuencia_km= 5000, estado="terminado", tecnico_id= None, fecha_inicio=date(2023,4,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,4,21), hora_fin=time(12,0,0), papeles_en_regla=True)
+        self.turno_service = G(Turno_taller, patente = self.patente_vendida, id_turno= 500, tipo='service', frecuencia_km= 5000, estado="terminado", tecnico_id= None, fecha_inicio=date(2023,4,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,4,21), hora_fin=time(12,0,0), papeles_en_regla=True)
         self.registro_service = G(Registro_service, id_service=self.service1, id_turno=self.turno_service)
         
         # reparaciones:
         # esta patente tiene un turno de evaluacion, y también uno extraordinario:
-        self.turno_evaluacion = G(Turno_taller, patente = 'LCS262', id_turno= 400, tipo='evaluacion', estado="terminado", fecha_inicio=date(2023,4,20), hora_inicio=time(10,0,0))
-        self.turno_extraordinario = G(Turno_taller, patente = 'LCS262', id_turno= 401, tipo='extraordinario', estado="terminado", fecha_inicio=date(2023,4,20), hora_inicio=time(10,0,0))
+        self.turno_evaluacion = G(Turno_taller, taller_id = 10, patente = self.patente_evaluada, id_turno= 400, tipo='evaluacion', estado="terminado", fecha_inicio=date(2023,4,20), hora_inicio=time(10,0,0), fecha_fin=date(2023,4,20), hora_fin=time(11,0,0))
+        self.turno_extraordinario = G(Turno_taller, taller_id = 10, patente = self.patente_vendida, id_turno= 401, tipo='extraordinario', estado="terminado", fecha_inicio=date(2023,4,20), hora_inicio=time(10,0,0), fecha_fin=date(2023,4,20), hora_fin=time(11,0,0))
         
         task = ["10", "20"]
         #task_json = json.dumps(task)

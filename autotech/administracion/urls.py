@@ -13,7 +13,7 @@ urlpatterns = [
     path('cobro_hora/tecnicos/<str:categoria>/',CobroXHoraTecnicosCategoriaViewSet.as_view(actions={'get': 'list'}), name = 'cobro_x_hora_tecnicos_categoria'),
     path('cobro_hora/tecnicos/<str:categoria>/valor/',CobroXHoraTecnicosCategoriaCobroViewSet.as_view(), name = 'cobro_x_hora_tecnicos_categoria_valor'),
     path('cobro_hora/supervisores/valor/',CobroXHoraCobroViewSet.as_view(), name = 'cobro_x_hora_supervisor_valor'),
-    path('cobro_hora/supervisores/',CobroXHoraSupervisorViewSet.as_view(actions={'get': 'list'}), name = 'cobro_x_hora_supervisor')
+    path('cobro_hora/supervisores/',CobroXHoraSupervisorViewSet.as_view(actions={'get': 'list'}), name = 'cobro_x_hora_supervisor'),
 ]
 
 

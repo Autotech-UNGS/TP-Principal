@@ -291,3 +291,31 @@ class RegistroExtraordinarioCreate(APIView):
         serializer = RegistroExtraordinarioSerializer(registro_extraordinario)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+
+class RegistroExtraordinarioListTecnico(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, id_tecnico, format=None):
+        
+        # El técnico pasado no tiene turnos de evaluacionen proceso actualmente 
+        """  if not Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='evaluacion'):
+            return Response({'error': 'El ID del técnico no es válido con un turno de evaluación vigente'}, status=status.HTTP_400_BAD_REQUEST) """
+        
+        turnos = Turno_taller.objects.filter(tecnico_id=id_tecnico, estado='en_proceso', tipo='extraordinario')
+        id_turnos = list(turnos.values_list('id_turno', flat=True))
+
+        # El técnico no tiene registros extraordinarios guardados
+        if not Registro_extraordinario.objects.filter(id_turno__in = id_turnos):
+            serializer = TurnoTallerSerializer(turnos, many=True)
+            # Si no tiene turnos registrados extraordinario entonces devuelvo todos los turnos que tenga 
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        
+        registros = Registro_extraordinario.objects.filter(id_turno__in = id_turnos) 
+        id_turnos_registros = list(registros.values_list('id_turno', flat=True))
+
+        turnos_pendientes_de_registro = Turno_taller.objects.filter(id_turno__in = id_turnos).exclude(id_turno__in = id_turnos_registros)
+        serializer = TurnoTallerSerializer(turnos_pendientes_de_registro, many=True)
+
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    

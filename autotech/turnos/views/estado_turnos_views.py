@@ -7,6 +7,7 @@ from rest_framework.viewsets import ViewSet
 from administracion.models import Turno_taller
 from administracion.serializers import TurnoTallerSerializer
 import datetime
+from administracion.models import Registro_reparacion
 
 
 class EstadoTurnosViewSet(ViewSet):
@@ -115,7 +116,7 @@ class EstadoTurnosViewSet(ViewSet):
         return HttpResponse('El turno ha cambiado de estado a terminado exitosamente.')
     
     @action(detail=True, methods=['patch'])
-    def cancelar_turno_pendiente(self, request, id_turno):
+    def cancelar_turno(self, request, id_turno):
         try:
             turno = Turno_taller.objects.get(id_turno=id_turno)
         except Turno_taller.DoesNotExist:

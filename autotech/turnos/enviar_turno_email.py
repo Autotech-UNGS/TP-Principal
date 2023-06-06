@@ -34,7 +34,7 @@ class EnvioDeEmail:
         <body>
             <h1> Buenos días, {destinatario} </h1>
             <p> Solicitaste un turno con KarU para vender un vehículo con patente {patente}, para el día {fecha_inicio} a las {hora_inicio} </p>
-            <p> Te esperamos ese día en nuestro taller en {direccion_taller}. </p>
+            <p> Te esperamos ese día en nuestro taller en {direccion_taller} </p>
             <p> Recordá venir con treinta minutos de anticipación, y traer toda la documentación correspondiente, incluyendo la cedula verde del vehículo </p>
             <br>
             <p> Que tengas un buen dia! </p>

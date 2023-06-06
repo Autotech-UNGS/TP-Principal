@@ -34,15 +34,15 @@ urlpatterns = [
     path('cancelados/',  estado_turnos_views.EstadoTurnosViewSet.as_view({'get': 'turnos_cancelados'}), name='turnos-cancelados'),
     path('no-validos/',  estado_turnos_views.EstadoTurnosViewSet.as_view({'get': 'turnos_no_validos'}), name='no-validos'),
     path('actualizar-estado/<int:id_turno>/',  estado_turnos_views.EstadoTurnosViewSet.as_view({'patch': 'actualizar_estado_turno_en_proceso'}), name='actualizar-estado-turno'),
-    path('cancelar-turno/<int:id_turno>/', estado_turnos_views.EstadoTurnosViewSet.as_view({'patch': 'cancelar_turno_pendiente'}), name='cancelar-turno-pendiente'),
+    path('cancelar-turno/<int:id_turno>/', estado_turnos_views.EstadoTurnosViewSet.as_view({'patch': 'cancelar_turno'}), name='cancelar-turno-pendiente'),
 
     #--------------------------------------------------------------------------------------------------------------
     path('reprogramar-turno/', reprogramar_turno.ReprogramarTurnoViewSet.as_view({'post': 'reprogramar_turno'}), name='reprogramar-turno'),
     
     #--------------------------------------------------------------------------------------------------------------
     #path('crear-turno-vendedor/', vendedor_views.CrearTurnoVendedor.as_view({'post': 'crear_turno_vendedor'}), name='crear-turno-vendedor'),
-    path('aceptar-papeles/<str:patente>', vendedor_views.ModificarEstadosVendedor.as_view({'post': 'aceptar_papeles'}), name='aceptar-papeles'),
-    path('rechazar-papeles/<str:patente>', vendedor_views.ModificarEstadosVendedor.as_view({'post': 'rechazar_papeles'}), name='rechazar-papeles'),
+    path('aceptar-papeles/<str:patente>/', vendedor_views.ModificarEstadosVendedor.as_view({'post': 'aceptar_papeles'}), name='aceptar-papeles'),
+    path('rechazar-papeles/<str:patente>/', vendedor_views.ModificarEstadosVendedor.as_view({'post': 'rechazar_papeles'}), name='rechazar-papeles'),
     
     #--------------------------------------------------------------------------------------------------------------
     path('ejecutar-cron/', modificar_estado_cron_view.EjecutarCron.as_view({'post': 'ejecutar_cron'}), name='ejecutar-cron')

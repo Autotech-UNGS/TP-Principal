@@ -59,12 +59,11 @@ class ClientSucursales():
         sucursales = cls._obtener_datos(cls.BASE_URL)
         sucursales_sin_taller = []
 
-        talleres_ids = set(Taller.objects.values_list('id_taller', flat=True))
+        talleres_ids = set(Taller.objects.values_list('id_sucursal', flat=True))
 
         for sucursal in sucursales:
             if sucursal["id"] not in talleres_ids:
                     sucursales_sin_taller.append(sucursal)
 
         return sucursales_sin_taller
-
-        
+  

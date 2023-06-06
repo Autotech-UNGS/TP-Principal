@@ -13,7 +13,9 @@ class ModificarEstadosVendedor(TestSetUp):
     
     def test_aceptar_papeles(self):
         patente = "AAA100"
-        self.assertEqual(self.post_response_aceptar_papeles(patente).status_code, 200)
+        response = self.post_response_aceptar_papeles(patente)
+        self.assertEqual(response.status_code, 200)
+        
         turno = Turno_taller.objects.get(patente = patente)
         self.assertEqual(turno.papeles_en_regla, True)
         
@@ -35,7 +37,8 @@ class ModificarEstadosVendedor(TestSetUp):
         
     def test_rechazar_papeles(self):
         patente = "AAA200"
-        self.assertEqual(self.post_response_aceptar_papeles(patente).status_code, 200)
+        response = self.post_response_aceptar_papeles(patente)
+        self.assertEqual(response.status_code, 200)
         turno = Turno_taller.objects.get(patente = patente)
         self.assertEqual(turno.papeles_en_regla, True)
         

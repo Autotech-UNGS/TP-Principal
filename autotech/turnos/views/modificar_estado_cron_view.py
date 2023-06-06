@@ -2,7 +2,6 @@ from django.http import JsonResponse, HttpResponse
 from administracion.models import *
 from rest_framework.response import Response
 from ..obtener_datos import *
-from ..validaciones_views import * 
 from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from datetime import *

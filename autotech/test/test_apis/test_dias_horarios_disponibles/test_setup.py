@@ -11,9 +11,9 @@ import json
 class TestSetUp(APITestCase):
     def setUp(self):
         
-        self.taller1 = G(Taller, id_taller=100, capacidad=10)
-        self.taller3 = G(Taller,id_taller=101, capacidad=2)
-        self.taller4 = G(Taller,id_taller=102, capacidad=1)
+        self.taller1 = G(Taller, id_taller=100, capacidad=10, estado=True)
+        self.taller3 = G(Taller,id_taller=101, capacidad=2, estado=True)
+        self.taller4 = G(Taller,id_taller=102, capacidad=1, estado=True)
         
         # vamos a saturar los horarios 8, 10 y 15 del taller 101, el dia 2023/06/27
         self.turno_test1 = G(Turno_taller, taller_id = 101, fecha_inicio=date(2023,6,27), hora_inicio=time(8,0,0), fecha_fin=date(2023,6,27), hora_fin=time(9,0,0))

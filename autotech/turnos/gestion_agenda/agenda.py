@@ -71,6 +71,7 @@ class Agenda:
     
     def cargar_turno(self, dia:date, hora_inicio:int, duracion:int):
         if not self.esta_disponible(dia, hora_inicio, duracion):
+            print("NO DISPONIBLE")
             raise ValueError("error: no hay espacio disponible para ese turno")
         horarios_del_dia = self.obtener_horarios_del_dia(dia)
         fecha = dia

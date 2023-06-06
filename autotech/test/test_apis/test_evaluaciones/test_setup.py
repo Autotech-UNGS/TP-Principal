@@ -12,7 +12,7 @@ class TestSetUp(APITestCase):
 
 
         # Instancias modelos
-        self.taller = G(Taller, id_taller=1) 
+        self.taller = G(Taller, id_taller=1, estado=True) 
 
         # Para testear que el registro que se guarde en registro_evaluacion sea de un turno tipo 'evaluacion'     
         self.turno_taller1 = G(Turno_taller, tipo='evaluacion', tecnico_id=1, estado='en_proceso', taller_id=self.taller, papeles_en_regla=True ) # id=1

@@ -9,7 +9,7 @@ from datetime import date, time
 
 class TestSetUp(APITestCase):
     def setUp(self):
-        self.taller = G(Taller, id_taller= 1, capacidad=3)
+        self.taller = G(Taller, id_taller= 1, capacidad=3, estado=True)
         
         # test 1 --> un tecnico disponible
         self.turno20 = G(Turno_taller, id_turno= 20, taller_id=1, tipo= 'service', estado="pendiente", tecnico_id= 5, fecha_inicio=date(2023,5,27), hora_inicio=time(11,0,0), fecha_fin=date(2023,5,27), hora_fin=time(12,0,0))
