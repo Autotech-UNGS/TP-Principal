@@ -40,11 +40,7 @@ class validaciones:
             return resultado_validacion_general
         if not validaciones.patente_registrada(patente):
             return HttpResponse(f"error: la patente no está registrada como perteneciente a un cliente: {patente}", status=400)
-        if frecuencia_service_solicitado < 0:
-            return HttpResponse(f"error: el service ingresado no es valido: {frecuencia_service_solicitado}, {patente}", status=400)
-        if frecuencia_ultimo_service != 0 and frecuencia_ultimo_service >= frecuencia_service_solicitado:
-            return HttpResponse(f"error: el service ingresado ya se había realizado antes: {frecuencia_ultimo_service}, {frecuencia_service_solicitado}, {patente}", status=400)
-        return HttpResponse("Datos correctos", status=200)
+        return HttpResponse("Datos correctos", status=200)        
     
     @classmethod  
     def validaciones_reparacion(cls, taller_id:str, patente:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time, origen:str) -> HttpResponse:

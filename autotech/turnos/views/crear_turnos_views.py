@@ -128,8 +128,13 @@ class CrearActualizarTurnosViewSet(ViewSet):
         frecuencia_service_solicitado = obtener_frecuencia_service_solicitado(patente, km)
         frecuencia_ultimo_service = obtener_frecuencia_ultimo_service(patente) 
         duracion = obtener_duracion_service_vehiculo(patente, km=frecuencia_service_solicitado)
+
+        if km <= obtener_km_de_venta(patente=patente):
+                return HttpResponse(f"error: el service ingresado no es valido: se solicita un service de {km}km para un vehiculo vendido con {obtener_km_de_venta(patente)}km", status=400)            
+        if frecuencia_ultimo_service != 0 and frecuencia_ultimo_service >= frecuencia_service_solicitado:
+                return HttpResponse(f"error: el service ingresado ya se había realizado antes: service de {frecuencia_ultimo_service}, {patente}", status=400)
         if duracion == 0:
-            return HttpResponse("error: no existe un service con los datos especificados", status=400)
+            return HttpResponse(f"error: no existe un service con los datos especificados: {frecuencia_service_solicitado}", status=400)
         
         fecha_hora_fin = obtener_fecha_hora_fin(dia_inicio_date, horario_inicio_time, duracion)
         

@@ -320,7 +320,7 @@ class CrearTurnoTestCase(TestSetUp):
                           "taller_id": 23}
         
         response = self.post_response_crear_turno_service(turno_incorrecto)
-        #print(response.content.decode("utf-8"))
+        print(response.content.decode("utf-8"))
         self.assertEqual(response.status_code, 400)     
                 
     def test_service_patente_no_registrada(self):
@@ -331,6 +331,7 @@ class CrearTurnoTestCase(TestSetUp):
                           "frecuencia_km": 10000}
         
         response = self.post_response_crear_turno_service(turno_incorrecto)
+        print(response.content.decode("utf-8"))
         self.assertEqual(response.status_code, 400)                   
         
     def test_service_no_existe(self):
@@ -340,7 +341,9 @@ class CrearTurnoTestCase(TestSetUp):
                           "hora_inicio": "12:00:00",
                           "frecuencia_km":1000000}
         
-        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)        
+        response = self.post_response_crear_turno_service(turno_incorrecto)
+        print(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 400)      
         
     def test_service_taller_no_existe(self):
         turno_incorrecto = {"taller_id": 103,
@@ -349,7 +352,9 @@ class CrearTurnoTestCase(TestSetUp):
                           "hora_inicio": "12:00:00",
                           "frecuencia_km": 25000}
         
-        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)
+        response = self.post_response_crear_turno_service(turno_incorrecto)
+        print(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 400) 
         
     def test_service_taller_no_disponible_completo(self):
         turno_incorrecto = {"patente": self.patente_vendida,
@@ -358,7 +363,9 @@ class CrearTurnoTestCase(TestSetUp):
                             "taller_id": 11,
                             "frecuencia_km":25000}
         
-        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)        
+        response = self.post_response_crear_turno_service(turno_incorrecto)
+        print(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 400)         
         
     def test_service_taller_disponible_en_parte(self):
         turno_incorrecto = {"patente": self.patente_vendida,
@@ -367,7 +374,9 @@ class CrearTurnoTestCase(TestSetUp):
                             "taller_id": 11,
                             "frecuencia_km":25000}
         
-        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400) 
+        response = self.post_response_crear_turno_service(turno_incorrecto)
+        print(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 400) 
         
     def test_service_horarios_no_exactos(self):
         turno_incorrecto = {"patente": self.patente_vendida,
@@ -376,7 +385,9 @@ class CrearTurnoTestCase(TestSetUp):
                             "frecuencia_km":25000,
                             "taller_id": 10}
         
-        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)   
+        response = self.post_response_crear_turno_service(turno_incorrecto)
+        print(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 400) 
     
     def test_service_horarios_fuera_de_rango_inferior_semana(self):
         turno_incorrecto = {"patente": self.patente_vendida,
@@ -385,7 +396,9 @@ class CrearTurnoTestCase(TestSetUp):
                             "frecuencia_km":25000,
                             "taller_id": 10}
         
-        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)       
+        response = self.post_response_crear_turno_service(turno_incorrecto)
+        print(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 400)  
         
     def test_service_horarios_fuera_de_rango_inferior_domingo(self):
         turno_incorrecto = {"patente": self.patente_vendida,
@@ -394,7 +407,9 @@ class CrearTurnoTestCase(TestSetUp):
                             "frecuencia_km":25000,
                             "taller_id": 10}
         
-        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)     
+        response = self.post_response_crear_turno_service(turno_incorrecto)
+        print(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 400)    
     
     def test_service_sin_km(self):
         turno_incorrecto = {"patente": self.patente_vendida,
@@ -403,7 +418,9 @@ class CrearTurnoTestCase(TestSetUp):
                             "frecuencia_km": None,
                             "taller_id": 10}
         
-        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)      
+        response = self.post_response_crear_turno_service(turno_incorrecto)
+        print(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 400)    
         
     def test_service_km_invalido(self):
         turno_incorrecto = {"patente": self.patente_vendida,
@@ -412,16 +429,31 @@ class CrearTurnoTestCase(TestSetUp):
                             "frecuencia_km": -3000,
                             "taller_id": 10}
         
-        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400) 
+        response = self.post_response_crear_turno_service(turno_incorrecto)
+        print(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 400)
+        
+    def test_service_km_no_coincide_con_venta(self):
+        turno_incorrecto = {"patente": self.patente_vendida,
+                            "fecha_inicio": "2023-10-22",
+                            "hora_inicio": "8:00:00",
+                            "frecuencia_km": 15000,
+                            "taller_id": 10}
+        
+        response = self.post_response_crear_turno_service(turno_incorrecto)
+        print("este: ", response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 400)            
         
     def test_service_km_ya_hecho(self):
         turno_incorrecto = {"patente": self.patente_vendida,
                             "fecha_inicio": "2023-10-22",
                             "hora_inicio": "7:00:00",
-                            "frecuencia_km": 55000,
+                            "frecuencia_km": 22000,
                             "taller_id": 10}
         
-        self.assertEqual(self.post_response_crear_turno_service(turno_incorrecto).status_code, 400)                
+        response = self.post_response_crear_turno_service(turno_incorrecto)
+        print(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 400)              
         
 # ------------------------------------------------------------------------------------------- #            
 # ------------------------------------- turno reparacion ------------------------------------ #            
