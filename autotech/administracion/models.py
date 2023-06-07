@@ -100,6 +100,9 @@ class Registro_service(models.Model):
     costo_total = models.FloatField(validators=[MinValueValidator(0)])
     duracion_total = models.PositiveIntegerField()
     fecha_registro =  models.DateField(auto_now_add=True)
+    garantia = models.BooleanField(default=False)
+    id_tasks_reemplazadas = models.JSONField()
+
 
 class Service_tasks(models.Model):
     id_id_tasks = models.AutoField(primary_key=True)

@@ -1,4 +1,5 @@
 import json
+import requests
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -97,6 +98,34 @@ def generar_reporte_administracion(sender, instance, created, **kwargs):
                                                  duracion_total_reparaciones=duracion_total_reparaciones, puntaje_total=puntaje_total)
         
         reporte.save()
+
+        # ----------------------- ARREGLO INTEGRACION GRUPO 4 ----------------------------------------------------------- #
+        checklist = Checklist_evaluacion.objects.all()
+        turno_instancia = Turno_taller.objects.get(id_turno = reporte.id_turno)
+        patente = turno_instancia.patente
+        puntaje_maximo_tasks = 0
+        for registro in checklist:
+            puntaje_maximo_tasks += registro.puntaje_max
+
+
+        porcentaje = ((reporte.puntaje_total / puntaje_maximo_tasks)/puntaje_maximo_tasks)*100
+
+        url = 'https://gadmin-backend-production.up.railway.app/api/v1/vehicle/saveTechInfo'
+        data = {
+                "plate": patente
+                ,"score": porcentaje
+                ,"repairCost":reporte.costo_total
+                ,"message": reporte.detalle
+                }  # Datos adicionales que quieras enviar en el post
+        
+        response = requests.post(url, data=data)
+        
+        if response.status_code == 200:
+            return Response('¡Registro enviado existosamente!', response.status_code)
+        else:
+            return Response('Ocurrió un error al enviar el registro a admnistración', response.status_code)
+
+
 # -----------------------------------------------------------------------------------------------------
 #------------------------------------REGISTRO EVALUACION LEER TODOS------------------------------------
 # -----------------------------------------------------------------------------------------------------
