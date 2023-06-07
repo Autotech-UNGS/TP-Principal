@@ -120,11 +120,11 @@ def obtener_duracion(fecha_inicio:date, hora_inicio:time, fecha_fin:date, hora_f
 
 # para crear un turno
 # retorna 0 si el service no existe
-def obtener_duracion_service_vehiculo(patente:str, km:int):
+def obtener_duracion_service_vehiculo(patente:str, km_solicitado:int):
     try:
         marca = obtener_marca(patente)
         modelo = obtener_modelo(patente)
-        service = Service.objects.get((Q(marca=marca) & Q(modelo=modelo) & Q(frecuencia_km=km)) | (Q(marca="generico") & Q(modelo="generico") & Q(frecuencia_km=km)), activo=True)
+        service = Service.objects.get((Q(marca=marca) & Q(modelo=modelo) & Q(frecuencia_km=km_solicitado)) | (Q(marca="generico") & Q(modelo="generico") & Q(frecuencia_km=km_solicitado)), activo=True)
     except ObjectDoesNotExist:
         return 0
     resultado = ceil(service.duracion_total / 60)
@@ -168,3 +168,4 @@ def obtener_duracion_extraordinario(patente:str):
 
     except ValidationError:
         return -1  # Error de validación
+

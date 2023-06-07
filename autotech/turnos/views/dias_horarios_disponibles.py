@@ -37,13 +37,17 @@ class DiasHorariosDisponiblesViewSet(ViewSet):
     
     
     @action(detail=True, methods=['get'])
-    def dias_horarios_disponibles_service(self, request, taller_id: int, marca:str, modelo:str, km:int):
+    def dias_horarios_disponibles_service(self, request, taller_id: int, patente:str, km_actual:int):
+        patente = patente.upper()
         if not existe_taller(taller_id):
             return HttpResponse(f"error: el id ingresado no pertenece a ningún taller en el sistema: {taller_id}", status=400)
         if not taller_es_valido(taller_id):
             return HttpResponse(f"error: el id ingresado pertenece a un taller inactivo: {taller_id}", status=400)
+        if not patente_registrada(patente):
+            return HttpResponse(f"error: la patente no está registrada como perteneciente a un cliente: {patente}", status=400)
 
-        duracion = obtener_duracion_service(marca, modelo, km)
+        km_solicitado = obtener_frecuencia_service_solicitado(patente=patente, kilometraje_actual=km_actual)
+        duracion = obtener_duracion_service_vehiculo(patente, km_solicitado)
         if duracion == 0:
             return HttpResponse("error: no existe un service con los datos especificados", status=400)
         dias_horarios_data = dias_disponibles_desde_hoy_a_treinta_dias(taller_id, duracion)
@@ -53,6 +57,7 @@ class DiasHorariosDisponiblesViewSet(ViewSet):
     
     @action(detail=True, methods=['get'])
     def dias_horarios_disponibles_reparaciones(self, request, taller_id: int, patente:str, origen:str):
+        patente = patente.upper()
         if not existe_taller(taller_id):
             return HttpResponse(f"error: el id ingresado no pertenece a ningún taller en el sistema: {taller_id}", status=400)
         if not taller_es_valido(taller_id):
@@ -77,4 +82,8 @@ def existe_taller(taller_id:int):
 def taller_es_valido(taller_id:int):
     taller = Taller.objects.get(id_taller= taller_id)
     return taller.estado == True
+
+def patente_registrada(patente:str):
+    existe_patente = ClientVehiculos.patente_registrada_vendido(patente=patente)
+    return existe_patente
        
