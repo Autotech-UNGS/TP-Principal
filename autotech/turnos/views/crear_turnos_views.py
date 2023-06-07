@@ -10,7 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from reparaciones.views import RegistroReparacionViewSet
 from ..validaciones_crear_turno import validaciones
-from ..garantias import GestionGarantias
+from garantias.gestion_garantia import GestionGarantias
 
 class CrearActualizarTurnosViewSet(ViewSet):
 
@@ -151,7 +151,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
             return resultado_validacion
         
         # garantia
-        garantia_vigente = GestionGarantias.garantia_vigente(patente=patente, fecha_turno=dia_inicio_date, ultimo_service=frecuencia_ultimo_service, service_actual=frecuencia_service_solicitado)
+        garantia_vigente = GestionGarantias.garantia_vigente(patente=patente, fecha_turno=dia_inicio_date, ultimo_service=frecuencia_ultimo_service, service_solicitado=frecuencia_service_solicitado)
         if not garantia_vigente:
             GestionGarantias.informar_perdida_garantia(patente)
                 # informar que se debe cobrar el service
