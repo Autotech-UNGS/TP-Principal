@@ -2,8 +2,8 @@ import requests
 import json
 
 class ClientClientes:
-    BASE_URL_DNI = 'http://34.139.89.18:8181/api-gc/clientes/cliente?dni='
-    # BASE_URL_DNI = 'http://34.74.194.25:8080/api-gc/clientes/cliente?dni='
+    # BASE_URL_DNI = 'http://34.139.89.18:8181/api-gc/clientes/cliente?dni='
+    BASE_URL_DNI = 'http://34.74.194.25:8080/api-gc/clientes/cliente?dni='
     
     @classmethod
     def obtener_email(cls, dni):
