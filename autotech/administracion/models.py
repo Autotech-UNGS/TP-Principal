@@ -4,7 +4,7 @@ from .validadores import *
 
 # ----------------------------------------------------------------------------------------------------#
 class Taller(models.Model):
-    id_taller = models.AutoField(primary_key=True, default=3)
+    id_taller = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=30, validators=[nombre_taller_regex])
     direccion = models.CharField(max_length=30)
     localidad = models.CharField(max_length=30)
