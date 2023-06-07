@@ -24,6 +24,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
+        patente = patente.upper()
         dia_inicio_date = datetime.strptime(request.data.get("fecha_inicio"), '%Y-%m-%d').date()
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
         
@@ -69,6 +70,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
+        patente = patente.upper()
         dia_inicio_date = datetime.strptime(request.data.get("fecha_inicio"), '%Y-%m-%d').date()
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
         
@@ -113,6 +115,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
+        patente = patente.upper()
         km = request.data.get("frecuencia_km")
         if not validaciones.patente_registrada(patente=patente):
             return HttpResponse(f"error: la patente no está registrada como perteneciente a un cliente: {patente}", status=400)
@@ -127,7 +130,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         # frecuencias de services, duracion y fecha/hora fin:
         frecuencia_service_solicitado = obtener_frecuencia_service_solicitado(patente, km)
         frecuencia_ultimo_service = obtener_frecuencia_ultimo_service(patente) 
-        duracion = obtener_duracion_service_vehiculo(patente, km=frecuencia_service_solicitado)
+        duracion = obtener_duracion_service_vehiculo(patente, km_solicitado=frecuencia_service_solicitado)
 
         if km <= obtener_km_de_venta(patente=patente):
                 return HttpResponse(f"error: el service ingresado no es valido: se solicita un service de {km}km para un vehiculo vendido con {obtener_km_de_venta(patente)}km", status=400)            
@@ -183,6 +186,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
+        patente = patente.upper()
         dia_inicio_date = datetime.strptime(request.data.get("fecha_inicio"), '%Y-%m-%d').date()
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
         origen = request.data.get("origen")
@@ -232,6 +236,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         # datos:
         taller_id = request.data.get("taller_id")
         patente = request.data.get("patente")
+        patente = patente.upper()
         dia_inicio_date = datetime.strptime(request.data.get("fecha_inicio"), '%Y-%m-%d').date()
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
         
