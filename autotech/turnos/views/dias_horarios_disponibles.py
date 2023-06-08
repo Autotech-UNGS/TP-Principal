@@ -46,6 +46,7 @@ class DiasHorariosDisponiblesViewSet(ViewSet):
         if not patente_registrada(patente):
             return HttpResponse(f"error: la patente no está registrada como perteneciente a un cliente: {patente}", status=400)
 
+        km_actual = redondear_a_multiplo_de_cincomil(km_actual)
         km_solicitado = obtener_frecuencia_service_solicitado(patente=patente, kilometraje_actual=km_actual)
         duracion = obtener_duracion_service_vehiculo(patente, km_solicitado)
         if duracion == 0:
