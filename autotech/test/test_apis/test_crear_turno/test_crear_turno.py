@@ -441,7 +441,7 @@ class CrearTurnoTestCase(TestSetUp):
                             "taller_id": 10}
         
         response = self.post_response_crear_turno_service(turno_incorrecto)
-        print("este: ", response.content.decode("utf-8"))
+        #print(response.content.decode("utf-8"))
         self.assertEqual(response.status_code, 400)            
         
     def test_service_km_ya_hecho(self):

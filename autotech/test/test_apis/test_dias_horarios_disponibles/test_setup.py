@@ -45,7 +45,7 @@ class TestSetUp(APITestCase):
         self.turno_test_22 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(15,0,0), fecha_fin=date(2023,6,26), hora_fin=time(16,0,0), estado='pendiente')
         self.turno_test_23 = G(Turno_taller, taller_id = 102, fecha_inicio=date(2023,6,26), hora_inicio=time(16,0,0), fecha_fin=date(2023,6,26), hora_fin=time(17,0,0), estado='pendiente')
         
-        self.service1 = G(Service, id_service= 200, costo_base = 0.0, costo_total = 0.0, marca="generico", modelo = "generico", frecuencia_km=5000, duracion_total=180)
+        self.service1 = G(Service, id_service= 200, costo_base = 0.0, costo_total = 0.0, marca="generico", modelo = "generico", frecuencia_km=5000, duracion_total=180, activo=True)
         
         # patente LCS262 es la evaluada
         self.turno_evaluacion = G(Turno_taller, id_turno = 400, taller_id = 101, patente = 'LCS262', tipo='evaluacion', estado="terminado", fecha_inicio=date(2023,6,25), hora_inicio=time(15,0,0), fecha_fin=date(2023,6,25), hora_fin=time(16,0,0))

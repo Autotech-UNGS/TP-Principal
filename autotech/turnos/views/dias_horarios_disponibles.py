@@ -48,9 +48,16 @@ class DiasHorariosDisponiblesViewSet(ViewSet):
         
         km_actual = redondear_a_multiplo_de_cincomil(km_actual)
         km_solicitado = obtener_frecuencia_service_solicitado(patente=patente, kilometraje_actual=km_actual)
-        duracion = obtener_duracion_service_vehiculo(patente, km_solicitado)
+        km_ultimo = obtener_frecuencia_ultimo_service(patente) 
+        duracion = obtener_duracion_service_vehiculo(patente=patente, km_solicitado=km_solicitado)
+        
+        if km_actual <= obtener_km_de_venta(patente=patente):
+                return HttpResponse(f"error: el service ingresado no es valido: se solicita un service de {km_actual}km para un vehiculo vendido con {obtener_km_de_venta(patente)}km", status=400)            
+        if km_ultimo != 0 and km_ultimo >= km_solicitado:
+                return HttpResponse(f"error: el service ingresado ya se había realizado antes: service de {km_ultimo}, {patente}", status=400)
         if duracion == 0:
-            return HttpResponse("error: no existe un service con los datos especificados", status=400)
+            return HttpResponse(f"error: no existe un service con los datos especificados: {km_solicitado}", status=400)
+        
         dias_horarios_data = dias_disponibles_desde_hoy_a_treinta_dias(taller_id, duracion)
         resultado = [{'dia': dia, 'horarios_disponibles':dias_horarios_data.get(dia)} for dia in dias_horarios_data]
         return JsonResponse({'dias_y_horarios':resultado})
