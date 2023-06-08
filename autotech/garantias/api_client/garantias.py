@@ -4,6 +4,7 @@ from datetime import date, time, datetime
 
 class ClientGarantias():
     #BASE_URL_FACTURA = inserte url aqui
+    #BASE_URL_ACTUALIZAR_ESTADO = inserte url aqui
     
     @classmethod
     def obtener_estado(cls, patente:str):

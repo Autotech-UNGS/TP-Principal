@@ -71,6 +71,6 @@ class GestionGarantias:
         except ValueError as e:
             return e
         """
-        maniana = date.today() + timedelta(days=1)
-        return date(maniana.year -1, maniana.month, maniana.day)
+        vencimiento = date(2023,6,12)
+        return date(vencimiento.year -1, vencimiento.month, vencimiento.day)
         
