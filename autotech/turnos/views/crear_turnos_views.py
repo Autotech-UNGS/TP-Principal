@@ -151,10 +151,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
             return resultado_validacion
         
         # garantia
-        garantia_vigente = GestionGarantias.garantia_vigente(patente=patente, fecha_turno=dia_inicio_date, ultimo_service=frecuencia_ultimo_service, service_solicitado=frecuencia_service_solicitado)
+        garantia_vigente = GestionGarantias.garantia_seguiria_vigente(patente=patente, fecha_turno=dia_inicio_date, ultimo_service=frecuencia_ultimo_service, service_solicitado=frecuencia_service_solicitado)
         if not garantia_vigente:
             GestionGarantias.informar_perdida_garantia(patente)
-                # informar que se debe cobrar el service
         
         datos = request.data.copy()
         datos['papeles_en_regla'] = True

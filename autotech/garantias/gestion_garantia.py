@@ -4,18 +4,16 @@ from .api_client.garantias import *
 class GestionGarantias:
     
     @classmethod
+    def garantia_seguiria_vigente(cls, patente:str, fecha_turno:date, ultimo_service:int, service_solicitado:int):
+        if cls.estado_garantia(patente) != 'no_anulada':
+            return False
+        garantia_vigente = cls.tiempo_valido(patente, fecha_turno) and cls.km_en_tiempo(patente, service_solicitado) and cls.no_salteo_service(ultimo_service, service_actual)
+        return garantia_vigente
+    
+    @classmethod
     def informar_perdida_garantia(cls, patente:str):
         #TODO
         return True
-        
-    # pierde garantía a partir de los 15k o si ya pasó un año desde que el cliente compro el auto
-    # perde la garantía si se salteó services
-    @classmethod
-    def garantia_vigente(cls, patente:str, fecha_turno:date, ultimo_service:int, service_solicitado:int):
-        if cls.estado_garantia(patente) != 'no_anulada':
-            return False
-        garantia_vigente = cls.tiempo_valido(patente, fecha_turno) and cls.km_en_tiempo(patente, service_solicitado) and cls.no_salteo_service(ultimo_service, service_solicitado)
-        return garantia_vigente
     
     @classmethod
     def estado_garantia(cls, patente) -> str:
@@ -73,6 +71,6 @@ class GestionGarantias:
         except ValueError as e:
             return e
         """
-        hoy = date.today()
-        return date(hoy.year -1, hoy.month, hoy.day)
+        maniana = date.today() + timedelta(days=1)
+        return date(maniana.year -1, maniana.month, maniana.day)
         

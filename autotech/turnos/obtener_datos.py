@@ -169,3 +169,26 @@ def obtener_duracion_extraordinario(patente:str):
     except ValidationError:
         return -1  # Error de validación
 
+# ------------------------------------------------------------------------------------------------ #
+# -------------------------------------- costos del service -------------------------------------- #
+# ------------------------------------------------------------------------------------------------ # 
+
+def obtener_costo_base_service_vehiculo(patente:str, km_solicitado:int):
+    try:
+        marca = obtener_marca(patente)
+        modelo = obtener_modelo(patente)
+        service = Service.objects.get((Q(marca=marca) & Q(modelo=modelo) & Q(frecuencia_km=km_solicitado)) | (Q(marca="generico") & Q(modelo="generico") & Q(frecuencia_km=km_solicitado)), activo=True)
+    except ObjectDoesNotExist:
+        return 0
+    resultado = service.costo_base
+    return resultado
+        
+def obtener_costo_total_service_vehiculo(patente:str, km_solicitado:int):
+    try:
+        marca = obtener_marca(patente)
+        modelo = obtener_modelo(patente)
+        service = Service.objects.get((Q(marca=marca) & Q(modelo=modelo) & Q(frecuencia_km=km_solicitado)) | (Q(marca="generico") & Q(modelo="generico") & Q(frecuencia_km=km_solicitado)), activo=True)
+    except ObjectDoesNotExist:
+        return 0
+    resultado = service.costo_total
+    return resultado
