@@ -107,7 +107,7 @@ class VisualizarTareasServicePorTurno(APIView):
 class VisualizarPrecioService(APIView):
     permission_classes = [permissions.AllowAny]
     # id_turno = 252
-    def get(self, request, id_turno, format=None):
+    def post(self, request, id_turno, format=None):
         # id_turno = request.data.get('id_turno')
         id_tasks_reemplazadas = request.data.get('id_tasks_remplazadas')
 
