@@ -7,7 +7,7 @@ class GestionGarantias:
     def garantia_seguiria_vigente(cls, patente:str, fecha_turno:date, ultimo_service:int, service_solicitado:int):
         if cls.estado_garantia(patente) != 'no_anulada':
             return False
-        garantia_vigente = cls.tiempo_valido(patente, fecha_turno) and cls.km_en_tiempo(patente, service_solicitado) and cls.no_salteo_service(ultimo_service, service_actual)
+        garantia_vigente = cls.tiempo_valido(patente, fecha_turno) and cls.km_en_tiempo(patente, service_solicitado) and cls.no_salteo_service(ultimo_service, service_solicitado)
         return garantia_vigente
     
     @classmethod

@@ -9,13 +9,15 @@ class DiasHorariosDisponiblesTestCase(TestSetUp):
     taller_invalido = 200
     taller_con_turnos = 101
     taller_con_dia_lleno = 102
+    patente = "STT811"
     
     def get_response_dias_horarios_disponibles(self, taller_id):
         url = reverse('dias-horarios-disponibles', args=[taller_id])
         return self.client.get(url)
     
-    def get_response_dias_horarios_disponibles_service(self, taller_id, marca, modelo, km):
-        url = reverse('dias-horarios-disponibles-service', args=[taller_id, marca, modelo, km])
+    def get_response_dias_horarios_disponibles_service(self, taller_id, patente, km):
+        #url = reverse('dias-horarios-disponibles-service', args=[taller_id, marca, modelo, km])
+        url = reverse('dias-horarios-disponibles-service', args=[taller_id, patente, km])
         return self.client.get(url)
 
     def get_response_dias_horarios_disponibles_reparaciones(self, taller_id, patente, origen):
@@ -90,7 +92,7 @@ class DiasHorariosDisponiblesTestCase(TestSetUp):
     def test_service_completo(self):
         response_esperado = self.generar_response_treinta_dias_completo()
         
-        response = self.get_response_dias_horarios_disponibles_service(self.taller_valido, "generico", "generico", 5000)
+        response = self.get_response_dias_horarios_disponibles_service(self.taller_valido, self.patente, 55000)
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.json(), response_esperado)         
         
@@ -100,15 +102,15 @@ class DiasHorariosDisponiblesTestCase(TestSetUp):
         response_esperado["dias_y_horarios"][posicion - 1]['horarios_disponibles'] = [8,9,10,11,12,13,14] # el 15 y 16 no, porque al otro dia, a las 8 estamos ocupados
         response_esperado["dias_y_horarios"][posicion]['horarios_disponibles'] = [11,12,16]
         
-        response = self.get_response_dias_horarios_disponibles_service(self.taller_con_turnos, 'generico', 'generico', 5000) # este service dura 3 horas
+        response = self.get_response_dias_horarios_disponibles_service(self.taller_con_turnos, self.patente, 55000) # este service dura 3 horas
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.json(), response_esperado)         
         
     def test_service_no_existe(self): 
-        self.assertEqual(self.get_response_dias_horarios_disponibles_service(self.taller_valido, "Ford", "Ka", 5000).status_code, 400) 
+        self.assertEqual(self.get_response_dias_horarios_disponibles_service(self.taller_valido, self.patente, 5000).status_code, 400) 
         
     def test_service_taller_no_existe(self):
-        self.assertEqual(self.get_response_dias_horarios_disponibles_service(self.taller_invalido, "generico", "generico", 5000).status_code, 400)     
+        self.assertEqual(self.get_response_dias_horarios_disponibles_service(self.taller_invalido, self.patente, 5000).status_code, 400)     
               
 # ----------------------------------------------------------------------------------- #    
 # ------------------------------ reparacion: evaluacion ----------------------------- #
