@@ -59,7 +59,7 @@ def obtener_frecuencia_service_solicitado(patente:str, kilometraje_actual: int):
 def obtener_frecuencia_ultimo_service(patente:str):
     try:
         # ultimo turno de service de x patente --> Registro_service de ese turno --> Service
-        ultimo_turno_service = Turno_taller.objects.filter(patente=patente, tipo='service', estado="terminado").latest('fecha_inicio')
+        ultimo_turno_service = Turno_taller.objects.filter(patente=patente, tipo='service', estado="terminado").order_by('-frecuencia_km').first()
         registro_de_ultimo_service = Registro_service.objects.get(id_turno=ultimo_turno_service.id_turno)
         ultimo_service = Service.objects.get(id_service=registro_de_ultimo_service.id_service.id_service)
         return ultimo_service.frecuencia_km

@@ -10,8 +10,8 @@ class ClientGarantias():
     def obtener_estado(cls, patente:str):
         factura = cls.obtener_datos_factura(patente)
         if factura:
-            estado = factura.get("estado")
-            return 'anulada' if estado else 'no_anulada'
+            estado_anulado = factura.get("estado")
+            return 'anulada' if estado_anulado else 'no_anulada'
         raise ValueError(f"No existe una factura asociada a la patente: {patente}")
         
     @classmethod
@@ -31,12 +31,21 @@ class ClientGarantias():
         raise ValueError(f"No existe una factura asociada a la patente: {patente}")       
       
     @classmethod    
-    def obtener_datos_cliente(cls, dni: str):
-        url = f'{cls.BASE_URL_DNI}{dni}'
+    def obtener_datos_factura(cls, patente: str):
+        url = f'{cls.BASE_URL_FACTURA}{patente}'
         response = requests.get(url)
         if response.status_code != 200:
             raise requests.HTTPError({'message error': response.status_code})
 
-        datos_cliente = response.json()
-        return datos_cliente
+        datos_factura = response.json()
+        return datos_factura
         
+    @classmethod    
+    def informar_perdida_garantia(cls, patente: str):
+        url = f'{cls.BASE_URL_ACTUALIZAR_ESTADO}{patente}'
+        data = {'estado': True}
+        response = requests.post(url, data=data)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise requests.HTTPError({'message error': response.status_code})
