@@ -101,29 +101,34 @@ def generar_reporte_administracion(sender, instance, created, **kwargs):
 
         # ----------------------- ARREGLO INTEGRACION GRUPO 4 ----------------------------------------------------------- #
         checklist = Checklist_evaluacion.objects.all()
-        turno_instancia = Turno_taller.objects.get(id_turno = reporte.id_turno)
+        turno_instancia = Turno_taller.objects.get(id_turno = reporte.id_turno.id_turno)
         patente = turno_instancia.patente
         puntaje_maximo_tasks = 0
         for registro in checklist:
             puntaje_maximo_tasks += registro.puntaje_max
 
+        """ print(f'puntaje total: {reporte.puntaje_total}')
+        print(f'puntaje maximo tareas: {puntaje_maximo_tasks}') """
 
-        porcentaje = ((reporte.puntaje_total / puntaje_maximo_tasks)/puntaje_maximo_tasks)*100
+        porcentaje = ((reporte.puntaje_total*100)/puntaje_maximo_tasks)
+        """ print(f'porcentaje: {porcentaje}') """
+
 
         url = 'https://gadmin-backend-production.up.railway.app/api/v1/vehicle/saveTechInfo'
         data = {
-                "plate": patente
-                ,"score": porcentaje
-                ,"repairCost":reporte.costo_total
-                ,"message": reporte.detalle
+                "plate": patente,
+                "score": porcentaje,
+                "repairCost":reporte.costo_total,
+                "message": reporte.detalle
                 }  # Datos adicionales que quieras enviar en el post
+        print(data)
         
-        response = requests.post(url, data=data)
-        
-        if response.status_code == 200:
-            return Response('¡Registro enviado existosamente!', response.status_code)
-        else:
-            return Response('Ocurrió un error al enviar el registro a admnistración', response.status_code)
+        try:
+            response = requests.post(url, data=json.dumps(data), headers={'Content-Type': 'application/json'})
+            response.raise_for_status()
+            print('¡Registro enviado existosamente!', response.status_code)
+        except requests.exceptions.RequestException as e:
+            print('Ocurrió un error al enviar el registro a administración:', str(e))
 
 
 # -----------------------------------------------------------------------------------------------------
