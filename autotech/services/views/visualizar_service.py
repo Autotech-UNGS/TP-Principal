@@ -9,6 +9,7 @@ from administracion.serializers import ServiceSerializer, ChecklistServiceSerial
 from services.views import registro_info_service
 from vehiculos.api_client.vehiculos import ClientVehiculos
 
+import urllib.parse
 
 import json
 
@@ -145,3 +146,39 @@ class VisualizarPrecioService(APIView):
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
+    
+    
+# -----------------------------------------------------------------------------------------------------
+#------------------------------------VISUALIZAR PRECIO DE SERVICE 2-------------------------------------
+# -----------------------------------------------------------------------------------------------------
+class VisualizarPrecioService2(APIView):
+    permission_classes = [permissions.AllowAny]
+    def get(self, request, id_turno:int, id_tasks_remplazadas:str, format=None):
+        print("precios 2")
+        id_tasks_remplazadas_decoded = urllib.parse.unquote(id_tasks_remplazadas)
+        
+        if not Turno_taller.objects.filter(id_turno=id_turno).exists():
+            return Response({'error': 'El turno pasado no existe'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        turno = Turno_taller.objects.get(id_turno=id_turno)
+        if not turno.tipo == "service":
+            return Response({'error': 'El turno pasado no es un turno para Service'}, status=status.HTTP_400_BAD_REQUEST)
+        if not turno.estado == "en_proceso":
+            return Response({'error': 'El turno pasado no está en estado en proceso'}, status=status.HTTP_400_BAD_REQUEST)
+# -----------------------------------------------------------------------------------------------------
+        tiene_garantia = False #verificar_garantia() metodo luci aun no hecho 
+# -----------------------------------------------------------------------------------------------------
+        patente_del_turno = turno.patente
+        modelo = ClientVehiculos.obtener_modelo(patente_del_turno)
+        marca = ClientVehiculos.obtener_marca(patente_del_turno)
+        km_del_turno = turno.frecuencia_km
+        print(f'patente: {patente_del_turno}, marca: {marca}, modelo: {modelo}, km: {km_del_turno}')
+        id_service = registro_info_service.obtener_service(modelo,marca,km_del_turno)
+        print(f'id service: {id_service}')
+        id_tasks_lista = eval(id_tasks_remplazadas_decoded)
+        print(f'partes a reemplazar {id_tasks_lista}')
+        costo_final_service = registro_info_service.obtener_costo_final_service(tiene_garantia, id_service, id_tasks_lista)
+        response_data = {
+            "precio": costo_final_service
+        }
+        return Response(response_data, status=status.HTTP_200_OK)    

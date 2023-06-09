@@ -15,6 +15,7 @@ urlpatterns = [
     path('listar/checklist-turno/<int:id_turno>/', visualizar_service.VisualizarTareasServicePorTurno.as_view(), name='visualizar-tareas-service-turno'),
 
     path('precio/<int:id_turno>/', visualizar_service.VisualizarPrecioService.as_view(), name ='visualizar-precio-service'),
+    path('precio2/<int:id_turno>/<str:id_tasks_remplazadas>/', visualizar_service.VisualizarPrecioService2.as_view(), name='visualizar-precio-service2'),
 
     path('crear/registro/', registro_info_service.RegistroServiceCreate.as_view(), name ='crear-registro-service'),
     path('listar/registros-pendientes/<int:id_tecnico>/', registro_info_service.ListarTurnosRegistroPendienteTecnico.as_view(), name='visualizar-registros-service-pendientes'),
