@@ -27,8 +27,8 @@ class validaciones:
                                                                    dia_fin= dia_fin, horario_fin=horario_fin)
         if resultado_validacion_general.status_code == 400:
             return resultado_validacion_general
-        if not validaciones.patente_esperando_revision_tecnica(patente):
-            return HttpResponse(f"error: la patente no está esperando revisión tecnica: {patente}", status=400)
+        if not (validaciones.patente_esperando_revision_tecnica(patente) or validaciones.patente_esperando_revision_legal(patente)):
+            return HttpResponse(f"error: la patente no está esperando revisión tecnica ni la revisión legal: {patente}", status=400)
         return HttpResponse("Datos correctos", status=200)
     
     @classmethod  
@@ -117,6 +117,11 @@ class validaciones:
     @classmethod
     def patente_esperando_revision_tecnica(cls, patente:str):
         existe_patente = ClientVehiculos.patente_esperando_revision_tecnica(patente=patente)
+        return existe_patente
+    
+    @classmethod
+    def patente_esperando_revision_legal(cls, patente:str):
+        existe_patente = ClientVehiculos.patente_esperando_revision_legal(patente=patente)
         return existe_patente
 
     @classmethod

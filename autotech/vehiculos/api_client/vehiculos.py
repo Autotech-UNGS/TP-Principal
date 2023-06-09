@@ -20,6 +20,14 @@ class ClientVehiculos():
              if datos_vehiculo.get("status") == 'ESPERA_REVISION_TECNICA':
                 return True
         return False
+    
+    @classmethod
+    def patente_esperando_revision_legal(cls, patente:str):
+        datos_vehiculo = cls.obtener_datos_vehiculo(patente)
+        if datos_vehiculo:
+             if datos_vehiculo.get("status") == 'ESPERA_REVISION_LEGAL':
+                return True
+        return False
         
     @classmethod
     def patente_registrada_vendido(cls, patente:str):
