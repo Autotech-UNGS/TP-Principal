@@ -130,7 +130,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         # frecuencias de services, duracion y fecha/hora fin:
         frecuencia_service_solicitado = obtener_frecuencia_service_solicitado(patente, km)
         frecuencia_ultimo_service = obtener_frecuencia_ultimo_service(patente) 
-        print(frecuencia_ultimo_service)
+        
         duracion = obtener_duracion_service_vehiculo(patente, km_solicitado=frecuencia_service_solicitado)
 
         if km <= obtener_km_de_venta(patente=patente):

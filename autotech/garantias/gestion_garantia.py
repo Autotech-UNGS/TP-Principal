@@ -12,7 +12,11 @@ class GestionGarantias:
     
     @classmethod
     def informar_perdida_garantia(cls, patente:str):
-        #TODO
+        #try:
+            #ClientGarantias.informar_perdida_garantia(patente=patente)
+            # return True
+        #except ValueError as e:
+            #return e
         return True
     
     @classmethod

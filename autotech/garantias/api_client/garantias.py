@@ -26,7 +26,7 @@ class ClientGarantias():
     def obtener_tipo(cls, patente:str):
         factura = cls.obtener_datos_factura(patente)
         if factura:
-            tipo = factura.get("tipo")
+            tipo = factura.get("tipo")  # si es extendida, el tipo es True, si es normal, es False
             return 'extendida' if tipo else 'normal'
         raise ValueError(f"No existe una factura asociada a la patente: {patente}")       
       
