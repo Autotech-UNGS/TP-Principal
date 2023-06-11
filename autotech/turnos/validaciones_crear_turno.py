@@ -9,12 +9,12 @@ from .gestion_agenda.gestionar_agenda import *
 class validaciones:  
     @classmethod  
     def validaciones_generales(cls, taller_id:str, patente:str, tipo:str, dia_inicio:date, horario_inicio:time, dia_fin:date, horario_fin:time) -> HttpResponse:
-        taller_valido = cls.validar_taller(taller_id= taller_id, dia_inicio=dia_inicio, horario_inicio= horario_inicio, dia_fin= dia_fin, horario_fin=horario_fin)
-        if taller_valido.status_code == 400:
-            return taller_valido
         dias_horarios_validos = cls.validar_dias_horarios(dia_inicio=dia_inicio, horario_inicio= horario_inicio, dia_fin= dia_fin, horario_fin=horario_fin)
         if dias_horarios_validos.status_code == 400:
             return dias_horarios_validos
+        taller_valido = cls.validar_taller(taller_id= taller_id, dia_inicio=dia_inicio, horario_inicio= horario_inicio, dia_fin= dia_fin, horario_fin=horario_fin)
+        if taller_valido.status_code == 400:
+            return taller_valido
         patente_valida = cls.validar_patente(patente=patente, tipo=tipo, fecha_inicio=dia_inicio, hora_inicio=horario_inicio, fecha_fin=dia_fin, hora_fin=horario_fin)
         if patente_valida.status_code == 400:
             return patente_valida
