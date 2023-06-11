@@ -21,6 +21,11 @@ class VerificarEstadoGarantia(ViewSet):
         ultimo_service = obtener_frecuencia_ultimo_service(patente)
         km_solicitado = obtener_frecuencia_service_solicitado(patente=patente, kilometraje_actual=service_solicitado)
         
+        if service_solicitado <= obtener_km_de_venta(patente=patente):
+                return HttpResponse(f"error: el service ingresado no es valido: se solicita un service de {service_solicitado}km para un vehiculo vendido con {obtener_km_de_venta(patente)}km", status=400)            
+        if ultimo_service != 0 and ultimo_service >= km_solicitado:
+                return HttpResponse(f"error: el service ingresado ya se había realizado antes: service de {ultimo_service}, {patente}", status=400)
+        
         #mantiene_garantia = GestionGarantias.garantia_seguiria_vigente(patente, fecha_turno, ultimo_service, service_actual)
         motivo = motivo_perdida_garantia(patente=patente, fecha_turno=fecha_turno, ultimo_service=ultimo_service, service_solicitado=km_solicitado)
         if motivo != "":
@@ -50,7 +55,7 @@ class VerificarEstadoGarantia(ViewSet):
     # pierde garantía a partir de los 15k o si ya pasó un año desde que el cliente compro el auto
     # perde la garantía si se salteó services
 def motivo_perdida_garantia(patente:str, fecha_turno:date, ultimo_service:int, service_solicitado:int):
-    if GestionGarantias.estado_garantia(patente) != 'no_anulada':
+    if GestionGarantias.estado_garantia(patente) == 'anulada':
         return "la misma llegó a su fin o ha sido anulada anteriormente."
     
     duracion = GestionGarantias.obtener_duracion_garantia(patente=patente)

@@ -47,6 +47,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         datos['hora_fin'] = fecha_hora_fin[1].strftime("%H:%M:%S")
         datos['tecnico_id'] = None
         datos['frecuencia_km'] = None
+        datos['patente'] = patente
         serializer = TurnoTallerSerializer(data=datos)
         
         if serializer.is_valid():
@@ -93,6 +94,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         datos['hora_fin'] = fecha_hora_fin[1].strftime("%H:%M:%S")
         datos['tecnico_id'] = None
         datos['frecuencia_km'] = None
+        datos['patente'] = patente
         serializer = TurnoTallerSerializer(data=datos)
         
         if serializer.is_valid():
@@ -153,6 +155,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         
         # garantia
         garantia_vigente = GestionGarantias.garantia_seguiria_vigente(patente=patente, fecha_turno=dia_inicio_date, ultimo_service=frecuencia_ultimo_service, service_solicitado=frecuencia_service_solicitado)
+        print("seguiria vigente: ", garantia_vigente)
         if not garantia_vigente:
             GestionGarantias.informar_perdida_garantia(patente)
         
@@ -164,6 +167,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         datos['hora_fin'] = fecha_hora_fin[1].strftime("%H:%M:%S")
         datos['tecnico_id'] = None
         datos['frecuencia_km'] = str(frecuencia_service_solicitado)
+        datos['patente'] = patente
         
         serializer = TurnoTallerSerializer(data=datos)
         if serializer.is_valid():
@@ -191,7 +195,6 @@ class CrearActualizarTurnosViewSet(ViewSet):
         horario_inicio_time = datetime.strptime(request.data.get("hora_inicio"), '%H:%M:%S').time()
         origen = request.data.get("origen")
         
-      
         duracion =  obtener_duracion_extraordinario(patente) if origen == 'extraordinario' else obtener_duracion_reparacion(patente)
     
         if duracion == -1:
@@ -217,6 +220,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         datos['estado'] = 'pendiente'
         datos['fecha_fin'] = fecha_hora_fin[0].strftime("%Y-%m-%d")
         datos['hora_fin'] = fecha_hora_fin[1].strftime("%H:%M:%S")
+        datos['patente'] = patente
         
         serializer = TurnoTallerSerializer(data=datos)
         if serializer.is_valid():
@@ -259,6 +263,7 @@ class CrearActualizarTurnosViewSet(ViewSet):
         datos['hora_fin'] = fecha_hora_fin[1].strftime("%H:%M:%S")
         datos['tecnico_id'] = None
         datos['frecuencia_km'] = None
+        datos['patente'] = patente
         
         serializer = TurnoTallerSerializer(data=datos)
         if serializer.is_valid():

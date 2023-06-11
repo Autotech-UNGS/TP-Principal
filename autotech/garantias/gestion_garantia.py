@@ -5,30 +5,27 @@ class GestionGarantias:
     
     @classmethod
     def garantia_seguiria_vigente(cls, patente:str, fecha_turno:date, ultimo_service:int, service_solicitado:int):
-        if cls.estado_garantia(patente) != 'no_anulada':
+        if cls.estado_garantia(patente) == 'anulada':
             return False
         garantia_vigente = cls.tiempo_valido(patente, fecha_turno) and cls.km_en_tiempo(patente, service_solicitado) and cls.no_salteo_service(ultimo_service, service_solicitado)
         return garantia_vigente
     
     @classmethod
     def informar_perdida_garantia(cls, patente:str):
-        #try:
-            #ClientGarantias.informar_perdida_garantia(patente=patente)
-            # return True
-        #except ValueError as e:
-            #return e
-        return True
+        try:
+            ClientGarantias.informar_perdida_garantia(patente=patente)
+            print("garantia modificada")
+            return True
+        except ValueError as e:
+            return e
     
     @classmethod
     def estado_garantia(cls, patente) -> str:
-        """
         try:
             estado = ClientGarantias.obtener_estado(patente=patente)
             return estado
         except ValueError as e:
             return e
-        """
-        return 'no_anulada'
     
     @classmethod
     def km_en_tiempo(cls, patente:str, kilometraje: int) -> bool: 
@@ -57,24 +54,17 @@ class GestionGarantias:
         
     @classmethod
     def obtener_duracion_garantia(cls, patente:str) -> int:
-        """
         try:
             tipo = ClientGarantias.obtener_tipo(patente=patente)
             return 1 if tipo == 'normal' else 2
         except ValueError as e:
             return e
-        """
-        return 1 # 1 año
     
     @classmethod
     def obtener_dia_de_venta(cls, patente:str) -> date:
-        """
         try:
             dia = ClientGarantias.obtener_dia_de_venta(patente=patente)
             return dia
         except ValueError as e:
             return e
-        """
-        vencimiento = date(2023,6,12)
-        return date(vencimiento.year -1, vencimiento.month, vencimiento.day)
         
