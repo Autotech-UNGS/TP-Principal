@@ -34,7 +34,7 @@ class ClientGarantias():
         url = f'{cls.BASE_URL_FACTURA}{patente}'
         response = requests.get(url)
         if response.status_code != 200:
-            raise requests.HTTPError({'message error': response.status_code})
+            raise ValueError(f"error: El vehiculo con la patente ingresada no fue vendido o no se le ha creado una factura: {patente}")
 
         datos_factura = response.json()
         return datos_factura
@@ -42,8 +42,10 @@ class ClientGarantias():
     @classmethod    
     def informar_perdida_garantia(cls, patente: str):
         url = f"https://api-gc.epicgamer.org/api-gc/facturas/anular-garantia?patente={patente}&garantiaAnulada=true"
+        #url = f'{cls.BASE_URL_ACTUALIZAR_ESTADO}{patente}{cls.BASE_URL_ACTUALIZAR_ESTADO_2}'
+        #data = {'garantiaAnulada': True}
         response = requests.put(url)
         if response.status_code == 200:
             return response.json()
         else:
-            raise requests.HTTPError({'message error': response.status_code})
+            raise ValueError(f"Error al informar perdida de garantia. Código: {response.status_code}")

@@ -27,7 +27,10 @@ class VerificarEstadoGarantia(ViewSet):
                 return HttpResponse(f"error: el service ingresado ya se había realizado antes: service de {ultimo_service}, {patente}", status=400)
         
         #mantiene_garantia = GestionGarantias.garantia_seguiria_vigente(patente, fecha_turno, ultimo_service, service_actual)
-        motivo = motivo_perdida_garantia(patente=patente, fecha_turno=fecha_turno, ultimo_service=ultimo_service, service_solicitado=km_solicitado)
+        try:
+            motivo = motivo_perdida_garantia(patente=patente, fecha_turno=fecha_turno, ultimo_service=ultimo_service, service_solicitado=km_solicitado)
+        except Exception:
+            return HttpResponse(f"error: El vehiculo con la patente ingresada no fue vendido o no se le ha creado una factura: {patente}", status=400)
         if motivo != "":
             costo_total = obtener_costo_base_service_vehiculo(patente=patente, km_solicitado=km_solicitado) + obtener_costo_total_service_vehiculo(patente=patente, km_solicitado=km_solicitado)
             if costo_total == 0:
@@ -55,19 +58,22 @@ class VerificarEstadoGarantia(ViewSet):
     # pierde garantía a partir de los 15k o si ya pasó un año desde que el cliente compro el auto
     # perde la garantía si se salteó services
 def motivo_perdida_garantia(patente:str, fecha_turno:date, ultimo_service:int, service_solicitado:int):
-    if GestionGarantias.estado_garantia(patente) == 'anulada':
-        return "la misma llegó a su fin o ha sido anulada anteriormente."
-    
-    duracion = GestionGarantias.obtener_duracion_garantia(patente=patente)
-    if not GestionGarantias.tiempo_valido(patente, fecha_turno):
-        return f"ha expirado el tiempo de cobertura de la misma (fecha de vencimiento: {GestionGarantias.obtener_tiempo_maximo(patente=patente)})."
-    
-    elif not GestionGarantias.km_en_tiempo(patente, service_solicitado):
-        return f"ha alcanzado el límite de cobertura de la misma ({duracion * 15000} kilometros)."
-    
-    elif not GestionGarantias.no_salteo_service(ultimo_service, service_solicitado):
-        return f"se ha salteado el service de {ultimo_service + 5000} kilometros."
-    return ""
+    try:
+        if GestionGarantias.estado_garantia(patente) == 'anulada':
+            return "la misma llegó a su fin o ha sido anulada anteriormente."
+        
+        duracion = GestionGarantias.obtener_duracion_garantia(patente=patente)
+        if not GestionGarantias.tiempo_valido(patente, fecha_turno):
+            return f"ha expirado el tiempo de cobertura de la misma (fecha de vencimiento: {GestionGarantias.obtener_tiempo_maximo(patente=patente)})."
+        
+        elif not GestionGarantias.km_en_tiempo(patente, service_solicitado):
+            return f"ha alcanzado el límite de cobertura de la misma ({duracion * 15000} kilometros)."
+        
+        elif not GestionGarantias.no_salteo_service(ultimo_service, service_solicitado):
+            return f"se ha salteado el service de {ultimo_service + 5000} kilometros."
+        return ""
+    except Exception as e:
+            raise HttpResponse(e, status=400)
     
 def patente_registrada(patente:str):
     existe_patente = ClientVehiculos.patente_registrada_vendido(patente=patente)
