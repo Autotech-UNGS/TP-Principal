@@ -154,10 +154,13 @@ class CrearActualizarTurnosViewSet(ViewSet):
             return resultado_validacion
         
         # garantia
-        garantia_vigente = GestionGarantias.garantia_seguiria_vigente(patente=patente, fecha_turno=dia_inicio_date, ultimo_service=frecuencia_ultimo_service, service_solicitado=frecuencia_service_solicitado)
-        print("seguiria vigente: ", garantia_vigente)
-        if not garantia_vigente:
-            GestionGarantias.informar_perdida_garantia(patente)
+        try:
+            garantia_vigente = GestionGarantias.garantia_seguiria_vigente(patente=patente, fecha_turno=dia_inicio_date, ultimo_service=frecuencia_ultimo_service, service_solicitado=frecuencia_service_solicitado)
+            print("seguiria vigente: ", garantia_vigente)
+            if not garantia_vigente:
+                GestionGarantias.informar_perdida_garantia(patente)
+        except Exception:
+            return HttpResponse(f"error: El vehiculo con la patente ingresada no fue vendido o no se le ha creado una factura: {patente}", status=400)
         
         datos = request.data.copy()
         datos['papeles_en_regla'] = True
