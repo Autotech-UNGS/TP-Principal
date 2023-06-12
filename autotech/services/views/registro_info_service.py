@@ -1,9 +1,6 @@
 import json
-import requests
 
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from rest_framework.decorators import action
+import requests
 
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -14,7 +11,11 @@ from rest_framework.exceptions import ValidationError
 from administracion.models import  Turno_taller, Registro_service, Checklist_service, Service, Service_tasks
 from administracion.serializers import TurnoTallerSerializer, RegistroServiceSerializer, ChecklistServiceSerializer
 from services import validadores
+
 from vehiculos.api_client.vehiculos import ClientVehiculos
+
+
+
 
 # -----------------------------------------------------------------------------------------------------
 #------------------------------------LISTAR REGISTROS DE SERVICE PENDIENTES----------------------------
@@ -137,7 +138,18 @@ class RegistroServiceCreate(APIView):
              return Response({'error': f'No existe un service para la marca "{marca}", modelo "{modelo}" para los {km_del_turno} km'}, status=status.HTTP_404_NOT_FOUND)
 
 # -----------------------------------OBTENER GARANTIA TURNO-------------------------------------------------------------------------
-        tiene_garantia = False #verificar_garantia() metodo luci aun no hecho 
+        url = f'https://autotech2.onrender.com/garantias/estado-garantia/{patente_del_turno}/'
+        response = requests.get(url)
+
+        if response.ok:
+            data = response.text
+            print(data)
+            if data == "no_anulada":
+                tiene_garantia = True
+            else:
+                tiene_garantia = False
+        else:
+            return Response({'error':response.text, 'status':response.status_code})
 # -----------------------------------OBTENER COSTO TOTAL SERVICE--------------------------------------------------------------------
         id_tasks_reemplazadas = request.data.get('id_tasks_remplazadas')
         id_tasks_lista = json.loads(id_tasks_reemplazadas)
