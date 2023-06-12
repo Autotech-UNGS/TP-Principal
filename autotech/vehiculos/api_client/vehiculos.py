@@ -2,7 +2,7 @@ import requests
 
 
 class ClientVehiculos():
-    BASE_URL_PATENTE = 'https://gadmin-backend-production.up.railway.app/api/v1/vehicle/getByPlate/'
+    BASE_URL_PATENTE = 'https://gadmin-backend-production2.up.railway.app/api/v1/vehicle/getByPlate/'
     
     @classmethod
     def obtener_dni_cliente(cls, patente:str):
