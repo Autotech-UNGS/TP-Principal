@@ -44,6 +44,8 @@ class ClientGarantias():
         url = f"https://api-gc.epicgamer.org/api-gc/facturas/anular-garantia?patente={patente}&garantiaAnulada=true"
         #url = f'{cls.BASE_URL_ACTUALIZAR_ESTADO}{patente}{cls.BASE_URL_ACTUALIZAR_ESTADO_2}'
         #data = {'garantiaAnulada': True}
+        if cls.obtener_estado(patente=patente) == 'anulada':
+            return
         response = requests.put(url)
         if response.status_code == 200:
             return response.json()

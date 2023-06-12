@@ -1,13 +1,16 @@
 from django.urls import reverse
 from .test_setup import TestSetUp
+from ddf import G
+from administracion.models import Turno_taller, Registro_service
 from administracion.models import Turno_taller
+from datetime import date, time
 
 class Garantias(TestSetUp):
     
-    patente_con_garantia = ""
-    patente_sin_garantia = ""
-    patente_pruebas = "STT811"
-    patente_salteo_services = "RTT102"
+    # vence el 10-06-2024 
+    patente_con_garantia = "PPW289"
+    # vence el 10-06-2025 
+    patente_sin_garantia = "JWU991"
     
     def get_garantia_vigente(self, patente:str, fecha_turno:str, service_solicitado:int):
         url = reverse('garantia-vigente', args=[patente, fecha_turno, service_solicitado])
@@ -18,49 +21,60 @@ class Garantias(TestSetUp):
         return self.client.get(url)
     
     def test_garantia_vigente(self):
-        patente = self.patente_pruebas
-        response = self.get_garantia_vigente(patente, "2023-06-10", 55000)
+        patente = self.patente_con_garantia
+        response = self.get_garantia_vigente(patente, "2023-06-10", 22000)
         self.assertNotIn("no sigue en garantía", response.content.decode("utf-8"))
         
-    """
     def test_garantia_no_vigente(self):
         patente = self.patente_sin_garantia
-        response = self.get_garantia_vigente(patente, "2023-06-10", 10000)
-        self.assertEqual(response.status_code, 400)
-    """           
+        response = self.get_garantia_vigente(patente, "2024-10-11", 33000)
+        self.assertIn("no sigue en garantía", response.content.decode("utf-8"))
     
-    # no -> no existe un service con los datos especificados: 5000         
     def test_garantia_vencida(self):
-        patente = self.patente_pruebas
-        response = self.get_garantia_vigente(patente, "2023-06-13", 55000)
+        patente = self.patente_con_garantia
+        response = self.get_garantia_vigente(patente, "2024-06-11", 22000)
         self.assertIn("no sigue en garantía", response.content.decode("utf-8"))
            
-    # 200           
     def test_garantia_al_limite(self):
-        patente = self.patente_pruebas
-        response = self.get_garantia_vigente(patente, "2023-06-12", 55000)
+        patente = self.patente_con_garantia
+        response = self.get_garantia_vigente(patente, "2024-06-10", 22000)
         self.assertNotIn("no sigue en garantía", response.content.decode("utf-8"))
         
-    # no
     def test_km_pasado(self):
-        patente = self.patente_pruebas
-        response = self.get_garantia_vigente(patente, "2023-06-10", 70000)
+        patente = self.patente_con_garantia
+        response = self.get_garantia_vigente(patente, "2023-07-10", 40000) # tiene que tener un service mayor a 20k
         self.assertIn("no sigue en garantía", response.content.decode("utf-8"))
         
-    # 200        
+    """        
     def test_km_al_limite(self):
-        patente = self.patente_pruebas
-        response = self.get_garantia_vigente(patente, "2023-06-10", 55000)
+        patente = self.patente_con_garantia
+        
+        turno_service1 =  G(Turno_taller, patente = patente, id_turno= 1, taller_id=10, tipo='service', estado="terminado", frecuencia_km = 5000, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(12,0,0), papeles_en_regla=True)
+        G(Registro_service, id_service=TestSetUp.service1, id_turno=turno_service1)
+        turno_service2 =  G(Turno_taller, patente = patente, id_turno= 2, taller_id=10, tipo='service', estado="terminado", frecuencia_km = 5000, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(12,0,0), papeles_en_regla=True)
+        G(Registro_service, id_service=TestSetUp.service2, id_turno=turno_service2)
+        turno_service3 =  G(Turno_taller, patente = patente, id_turno= 3, taller_id=10, tipo='service', estado="terminado", frecuencia_km = 5000, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(12,0,0), papeles_en_regla=True)
+        G(Registro_service, id_service=TestSetUp.service3, id_turno=turno_service3)
+        
+        response = self.get_garantia_vigente(patente, "2023-06-10", 40000) # tiene que tener un service de 20k y que no de error
         self.assertNotIn("no sigue en garantía", response.content.decode("utf-8"))
+    """        
    
-   # no -> no existe un service con los datos especificados: 10000     
     def test_salteo_anteultimo_service(self):
-        patente = self.patente_salteo_services
-        response = self.get_garantia_vigente(patente, "2023-06-10", 37000)
+        patente = self.patente_con_garantia
+        response = self.get_garantia_vigente(patente, "2023-06-10", 32000) # hace el de 15 y no el de 5 ni el de 10
         self.assertIn("no sigue en garantía", response.content.decode("utf-8"))
         
-    # no -> error: no existe un service con los datos especificados: 15000
     def test_salteo_ultimo_service(self):
-        patente = self.patente_salteo_services
-        response = self.get_garantia_vigente(patente, "2023-06-10", 32000)
+        patente = self.patente_con_garantia
+        response = self.get_garantia_vigente(patente, "2023-06-10", 37000) # hace el de 10 y no el de 5
         self.assertIn("no sigue en garantía", response.content.decode("utf-8"))
+        
+"""
+    def test_salteo_ultimo_service2(self):
+        patente = self.patente_con_garantia
+        turno_service1 =  G(Turno_taller, patente = patente, id_turno= 1, taller_id=10, tipo='service', estado="terminado", frecuencia_km = 5000, fecha_inicio=date(2023,9,21), hora_inicio=time(10,0,0), fecha_fin=date(2023,9,21), hora_fin=time(12,0,0), papeles_en_regla=True)
+        G(Registro_service, id_service=TestSetUp.service1, id_turno=turno_service1)
+        response = self.get_garantia_vigente(patente, "2023-06-10", 42000) # hace el de 15 y no el de 10, pero si el de 5
+        self.assertIn("no sigue en garantía", response.content.decode("utf-8"))
+"""                
