@@ -54,8 +54,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
             serializer.save()
             direccion_taller = obtener_direccion_taller(taller_id)
             email = obtener_email_usuario(patente)
+            nombre = obtener_nombre_usuario(patente)
             if email:
-                EnvioDeEmail.enviar_correo('evaluacion', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
+                EnvioDeEmail.enviar_correo('evaluacion', email, nombre, dia_inicio_date, horario_inicio_time, direccion_taller, patente, 0, 0)
                 print("email enviado a: ", email)
             return Response(serializer.data)        
         else:
@@ -101,8 +102,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
             serializer.save()
             direccion_taller = obtener_direccion_taller(taller_id)
             email = obtener_email_usuario(patente)
+            nombre = obtener_nombre_usuario(patente)
             if email:
-                EnvioDeEmail.enviar_correo('evaluacion', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
+                EnvioDeEmail.enviar_correo('evaluacion', email, nombre, dia_inicio_date, horario_inicio_time, direccion_taller, patente, 0, 0)
                 print("email enviado a: ", email)
             return Response(serializer.data)        
         else:
@@ -159,8 +161,12 @@ class CrearActualizarTurnosViewSet(ViewSet):
             print("seguiria vigente: ", garantia_vigente)
             if not garantia_vigente:
                 GestionGarantias.informar_perdida_garantia(patente)
+                costo = obtener_costo_base_service_vehiculo(patente=patente, km_solicitado=frecuencia_service_solicitado) + obtener_costo_total_service_vehiculo(patente=patente, km_solicitado=frecuencia_service_solicitado)
+            else:
+                costo = obtener_costo_base_service_vehiculo(patente=patente, km_solicitado=frecuencia_service_solicitado)
         except Exception:
             return HttpResponse(f"error: El vehiculo con la patente ingresada no fue vendido o no se le ha creado una factura: {patente}", status=400)
+        
         
         datos = request.data.copy()
         datos['papeles_en_regla'] = True
@@ -177,8 +183,9 @@ class CrearActualizarTurnosViewSet(ViewSet):
             serializer.save()
             direccion_taller = obtener_direccion_taller(taller_id)
             email = obtener_email_usuario(patente)
+            nombre = obtener_nombre_usuario(patente)
             if email:
-                EnvioDeEmail.enviar_correo('service', email, dia_inicio_date, horario_inicio_time, direccion_taller, patente)
+                EnvioDeEmail.enviar_correo('service', email, nombre, dia_inicio_date, horario_inicio_time, direccion_taller, patente, duracion, costo)
                 print("email enviado a: ", email)
             return Response(serializer.data)        
         else:

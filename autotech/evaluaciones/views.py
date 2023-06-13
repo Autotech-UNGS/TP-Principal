@@ -121,12 +121,12 @@ def generar_reporte_administracion(sender, instance, created, **kwargs):
                 "repairCost":reporte.costo_total,
                 "message": reporte.detalle
                 }  # Datos adicionales que quieras enviar en el post
-        print(data)
+        #print(data)
         
         try:
             response = requests.post(url, data=json.dumps(data), headers={'Content-Type': 'application/json'})
             response.raise_for_status()
-            print('¡Registro enviado existosamente!', response.status_code)
+            #print('¡Registro enviado existosamente!', response.status_code)
         except requests.exceptions.RequestException as e:
             print('Ocurrió un error al enviar el registro a administración:', str(e))
 

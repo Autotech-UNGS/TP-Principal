@@ -12,7 +12,6 @@ from clientes.api_client.clientes import *
 # ------------------------------------------------------------------------------------------------ # 
 
 def obtener_email_usuario(patente:str):
-    #return "luciacsoria5@gmail.com"
     try:
         dni = ClientVehiculos.obtener_dni_cliente(patente)
         email = ClientClientes.obtener_email(dni)
@@ -24,6 +23,14 @@ def obtener_email_usuario(patente:str):
 def obtener_direccion_taller(taller_id) -> str:
     taller = Taller.objects.get(id_taller= taller_id)
     return f'{taller.direccion}, {taller.localidad}, {taller.provincia}.'
+
+def obtener_nombre_usuario(patente:str):
+    try:
+        dni = ClientVehiculos.obtener_dni_cliente(patente)
+        nombre = ClientClientes.obtener_nombre(dni)
+        return nombre
+    except:
+        return None
 
 # ------------------------------------------------------------------------------------------------ #
 # -------------------------------------- datos del vehículo -------------------------------------- #

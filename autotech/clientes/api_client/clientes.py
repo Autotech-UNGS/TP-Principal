@@ -13,6 +13,14 @@ class ClientClientes:
             email = cliente.get("email")
             return email
         raise ValueError(f"Cliente no existente: {dni}")
+    
+    @classmethod
+    def obtener_nombre(cls, dni):
+        cliente = cls.obtener_datos_cliente(dni)
+        if cliente:
+            email = cliente.get("nombre")
+            return email
+        raise ValueError(f"Cliente no existente: {dni}")
         
     @classmethod    
     def obtener_datos_cliente(cls, dni: str):
