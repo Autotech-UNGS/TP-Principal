@@ -6,7 +6,7 @@ from datetime import date, time
 class EnvioDeEmail:
     username = 'insomnia.autotech@gmail.com'
     password = 'tlrgdovrwrsacygp'
-    url = 'https://karu-web-git-dev-autotechfront.vercel.app/'  
+    url = 'https://karu-web-back.onrender.com/'  
     
     @classmethod
     def enviar_correo(cls, tipo_turno:str, destinatario: str, nombre:str, fecha_inicio: date, hora_inicio: time, direccion_taller: str, patente: str, duracion: int, costo:float):
