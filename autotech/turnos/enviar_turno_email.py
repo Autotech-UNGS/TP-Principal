@@ -53,7 +53,7 @@ class EnvioDeEmail:
         <body>
             <h1> ¡Hola de nuevo, {nombre}! </h1>
             <p> Solicitaste un turno con KarU para realizarle un service a tu vehículo con patente {patente}, para el día {fecha_inicio} a las {hora_inicio}hs. </p>
-            <p> Te esperamos ese día en nuestro taller en {direccion_taller} El service durará aproximadamente {duracion} horas, y su costo será de ${costo}.</p>
+            <p> Te esperamos ese día en nuestro taller en {direccion_taller} El service durará aproximadamente {duracion} horas, y su costo será de hasta ${costo}.</p>
             <p> Recorda traer tu cédula verde.</p>
             
             <br>

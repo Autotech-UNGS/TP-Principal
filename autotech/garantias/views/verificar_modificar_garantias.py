@@ -35,7 +35,7 @@ class VerificarEstadoGarantia(ViewSet):
             costo_total = obtener_costo_base_service_vehiculo(patente=patente, km_solicitado=km_solicitado) + obtener_costo_total_service_vehiculo(patente=patente, km_solicitado=km_solicitado)
             if costo_total == 0:
                 return HttpResponse(f"error: no existe un service con los datos especificados: {km_solicitado}", status=400)
-            mensaje = f"La patente {patente} no sigue en garantía, debido a que {motivo} El service tendrá un costo total de: ${costo_total}"
+            mensaje = f"La patente {patente} no sigue en garantía, debido a que {motivo} El service tendrá un costo total de hasta: ${costo_total}"
         else:
             costo_base = obtener_costo_base_service_vehiculo(patente=patente, km_solicitado=km_solicitado)
             if costo_base == 0:
