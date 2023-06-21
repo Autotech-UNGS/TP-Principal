@@ -175,10 +175,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://\w+\.*\.com$",
-    r"^http://\w+\.*\.com$",
-    r"^https:\/\/",
-    r"^http:\/\/"
+    r"^https?://[\w.-]+\.[a-zA-Z]{2,}$",
+    r"^http?://[\w.-]+\.[a-zA-Z]{2,}$",
+    r"^https?://",
+    r"^http?://"
 ]
 
 
