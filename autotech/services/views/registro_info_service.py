@@ -138,9 +138,10 @@ class RegistroServiceCreate(APIView):
              return Response({'error': f'No existe un service para la marca "{marca}", modelo "{modelo}" para los {km_del_turno} km'}, status=status.HTTP_404_NOT_FOUND)
 
 # -----------------------------------OBTENER GARANTIA TURNO-------------------------------------------------------------------------
-        url = f'https://autotech2.onrender.com/garantias/estado-garantia/{patente_del_turno}/'
+        """url = f'https://autotech2.onrender.com/garantias/estado-garantia/{patente_del_turno}/'
         response = requests.get(url)
-
+        print("llegue 1")
+        print(response)
         if response.ok:
             data = response.text
             print(data)
@@ -149,13 +150,15 @@ class RegistroServiceCreate(APIView):
             else:
                 tiene_garantia = False
         else:
-            return Response({'error':response.text, 'status':response.status_code})
+            return print({'error':response.text, 'status':response.status_code})
+        print("llegue 2") """
+    
 # -----------------------------------OBTENER COSTO TOTAL SERVICE--------------------------------------------------------------------
         id_tasks_reemplazadas = request.data.get('id_tasks_remplazadas')
         id_tasks_lista = json.loads(id_tasks_reemplazadas)
 
         print(f'partes a reemplazar {id_tasks_lista}')
-
+        tiene_garantia = False
         costo_final_service = obtener_costo_final_service(tiene_garantia, id_service, id_tasks_lista)
 # -----------------------------------OBTENER DURACION TOTAL SERVICE-----------------------------------------------------------------
 
@@ -165,6 +168,7 @@ class RegistroServiceCreate(APIView):
             return Response({'error': 'El turno pasado ya existe en los registros'}, status=status.HTTP_400_BAD_REQUEST)
 
         turno_taller = Turno_taller.objects.get(pk=id_turno)
+        print("llegue 3")
         registro_service = Registro_service.objects.create(id_turno = turno_taller
                                                               , id_service = service
                                                               , costo_total = costo_final_service
