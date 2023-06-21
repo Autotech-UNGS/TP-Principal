@@ -45,9 +45,9 @@ class ClientGarantias():
         #url = f'{cls.BASE_URL_ACTUALIZAR_ESTADO}{patente}{cls.BASE_URL_ACTUALIZAR_ESTADO_2}'
         #data = {'garantiaAnulada': True}
         if cls.obtener_estado(patente=patente) == 'anulada':
-            return
+            return True
         response = requests.put(url)
         if response.status_code == 200:
-            return response.json()
+            return True
         else:
             raise ValueError(f"Error al informar perdida de garantia. Código: {response.status_code}")

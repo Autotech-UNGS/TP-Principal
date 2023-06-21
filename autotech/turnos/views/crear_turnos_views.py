@@ -161,10 +161,13 @@ class CrearActualizarTurnosViewSet(ViewSet):
             print("seguiria vigente: ", garantia_vigente)
             if not garantia_vigente:
                 GestionGarantias.informar_perdida_garantia(patente)
+                print("llegue al costo")
                 costo = obtener_costo_base_service_vehiculo(patente=patente, km_solicitado=frecuencia_service_solicitado) + obtener_costo_total_service_vehiculo(patente=patente, km_solicitado=frecuencia_service_solicitado)
+                print("pase el costo")
             else:
                 costo = obtener_costo_base_service_vehiculo(patente=patente, km_solicitado=frecuencia_service_solicitado)
-        except Exception:
+        except Exception as e:
+            print(e)
             return HttpResponse(f"error: El vehiculo con la patente ingresada no fue vendido o no se le ha creado una factura: {patente}", status=400)
         
         

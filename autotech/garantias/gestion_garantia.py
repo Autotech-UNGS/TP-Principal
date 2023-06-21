@@ -40,7 +40,7 @@ class GestionGarantias:
             raise e
     
     @classmethod
-    def no_salteo_service(cls, ultimo_service, service_actual) -> bool:
+    def no_salteo_service(cls, ultimo_service:int, service_actual:int) -> bool:
         return ultimo_service + 5000 == service_actual
     
     @classmethod
