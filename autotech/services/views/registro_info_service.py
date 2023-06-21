@@ -13,6 +13,7 @@ from administracion.serializers import TurnoTallerSerializer, RegistroServiceSer
 from services import validadores
 
 from vehiculos.api_client.vehiculos import ClientVehiculos
+from garantias.api_client import garantias
 
 
 
@@ -138,27 +139,19 @@ class RegistroServiceCreate(APIView):
              return Response({'error': f'No existe un service para la marca "{marca}", modelo "{modelo}" para los {km_del_turno} km'}, status=status.HTTP_404_NOT_FOUND)
 
 # -----------------------------------OBTENER GARANTIA TURNO-------------------------------------------------------------------------
-        """url = f'https://autotech2.onrender.com/garantias/estado-garantia/{patente_del_turno}/'
-        response = requests.get(url)
-        print("llegue 1")
-        print(response)
-        if response.ok:
-            data = response.text
-            print(data)
-            if data == "no_anulada":
-                tiene_garantia = True
-            else:
-                tiene_garantia = False
+       
+        data = garantias.ClientGarantias.obtener_estado(patente_del_turno)
+        print(data)
+        if data == "no_anulada":
+            tiene_garantia = True
         else:
-            return print({'error':response.text, 'status':response.status_code})
-        print("llegue 2") """
+            tiene_garantia = False
     
 # -----------------------------------OBTENER COSTO TOTAL SERVICE--------------------------------------------------------------------
         id_tasks_reemplazadas = request.data.get('id_tasks_remplazadas')
         id_tasks_lista = json.loads(id_tasks_reemplazadas)
 
         print(f'partes a reemplazar {id_tasks_lista}')
-        tiene_garantia = False
         costo_final_service = obtener_costo_final_service(tiene_garantia, id_service, id_tasks_lista)
 # -----------------------------------OBTENER DURACION TOTAL SERVICE-----------------------------------------------------------------
 
