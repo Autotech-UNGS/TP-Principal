@@ -31,9 +31,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-""" ALLOWED_HOSTS = ['*'] """
+ALLOWED_HOSTS = ['*']
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:    
@@ -174,12 +174,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGIN_REGEXES = [
+"""CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://\w+\.*\.com$",
     r"^http://\w+\.*\.com$",
     r"^https:\/\/",
     r"^http:\/\/"
 ]
+"""
 
 """
 # para la automatización de los cambios de estado a 'Cancelado' de los turnos
